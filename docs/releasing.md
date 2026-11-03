@@ -16,7 +16,7 @@ This process was copied from DesignCraft and renamed. User-facing names say
 | WiX UpgradeCode `5511327B-F305-41BE-92D0-EB84944E7C4D` (fixed forever) | `packaging/windows/gridcraft.wxs` |
 | File types `.xlsx` `.xlsm` `.xlsb` `.ods` `.csv` `.tsv` | Info.plist (`CFBundleDocumentTypes`), WiX (ProgIds/OpenWithProgids), `.desktop` `MimeType=`, `ph.iridium.sheets.mime.xml`, metainfo |
 | Web app dir `apps/gridcraft-web` | `packaging/web/package.sh` |
-| App colour `#0b6e4f` (ink `#147a40`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
+| App colour `#0b6e4f` (ink `#084f39`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
 
 ## Application release prerequisites
 

@@ -21,7 +21,7 @@ Exactly three colours:
 | Iridium Sheets green (app colour, **proposed**) | `#0b6e4f` | The full-bleed field and the header cells |
 
 The app colour is a proposal pending the owner's approval: Iridium Sheets green `#0b6e4f`, with ink
-(darker) variant `#147a40` for text and accents on light backgrounds. It differs from
+(darker) variant `#084f39` for text and accents on light backgrounds. It differs from
 DesignCraft's `#7bb51c`.
 
 ## Geometry
