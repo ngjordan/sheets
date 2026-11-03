@@ -16,7 +16,7 @@ fn main() {
     res.set_icon("../../assets/app-icon/iridium-sheets.ico")
         .set("ProductName", "Iridium Sheets")
         .set("FileDescription", "Iridium Sheets spreadsheet")
-        .set("CompanyName", "Learning Machines LLC")
+        .set("CompanyName", "Iridium Technologies, Inc.")
         .set("LegalCopyright", "Copyright (c) the Iridium Sheets authors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "gridcraft.exe")
         .set("InternalName", "gridcraft");
