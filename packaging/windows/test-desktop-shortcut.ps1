@@ -16,7 +16,7 @@ if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows' -or $env:RUN
 }
 if (-not $WorkDir) { $WorkDir = Join-Path $env:RUNNER_TEMP 'gridcraft-shortcut-smoke' }
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$InstallDir = Join-Path $env:ProgramFiles 'ArtCraft\Iridium Sheets'
+$InstallDir = Join-Path $env:ProgramFiles 'Iridium\Iridium Sheets'
 $DesktopLink = Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'Iridium Sheets.lnk'
 $StartLink = Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'Iridium Sheets.lnk'
 $ChoiceKey = 'HKLM:\Software\Iridium Sheets\Installer'

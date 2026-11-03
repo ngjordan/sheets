@@ -128,7 +128,7 @@
     </AdminUISequence>
 
     <StandardDirectory Id="ProgramFiles6432Folder">
-      <Directory Id="CraftSuiteFolder" Name="ArtCraft">
+      <Directory Id="CraftSuiteFolder" Name="Iridium">
         <Directory Id="INSTALLFOLDER" Name="Iridium Sheets" />
       </Directory>
     </StandardDirectory>
