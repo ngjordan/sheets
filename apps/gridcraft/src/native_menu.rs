@@ -184,8 +184,8 @@ fn tree() -> Vec<(&'static str, Vec<Entry>)> {
                 ("Check for Updates…", "app.checkForUpdates", None),
                 ("Agent Control (MCP)…", "dialog:agents", None),
                 ("Contributors…", "dialog:about:Contributors", None),
-                ("Iridium Sheets on getartcraft.com", "url:https://getartcraft.com/apps/gridcraft", None),
-                ("Join the ArtCraft Discord…", "url:https://discord.gg/artcraft", None),
+                ("Iridium Sheets on iridium.ph", "url:https://iridium.ph", None),
+                ("Based on GridCraft by the ArtCraft team", "url:https://github.com/storytold/gridcraft", None),
             ],
         ),
     ]

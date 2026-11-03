@@ -7,7 +7,7 @@ column, a selected cell with its fill handle and a double rule under a total, on
 Iridium Sheets-green tile. It is original geometry written by hand for this repository, deliberately
 not modelled on any vendor's spreadsheet logo (no letters, no "X", no overlapping panels).
 
-When the owner's art arrives, replace `gridcraft.svg`, run `packaging/icons.sh`, update this
+When the owner's art arrives, replace `iridium-sheets.svg`, run `packaging/icons.sh`, update this
 README (provenance, creature) and the rows in `ATTRIBUTION.md`, and drop the word placeholder.
 
 ## Palette
@@ -27,18 +27,18 @@ DesignCraft's `#7bb51c`.
 ## Geometry
 
 A 512 × 512 viewBox, clipped to a rounded square with `rx=112`. Windows and Linux use the full
-tile. The macOS icons (`.icns`, `gridcraft-macos-512.png`) sit on Apple's grid: an 824/1024
+tile. The macOS icons (`.icns`, `iridium-sheets-macos-512.png`) sit on Apple's grid: an 824/1024
 body with a transparent margin.
 
 ## Files
 
 | File | Use |
 |---|---|
-| `gridcraft.svg` | Canonical artwork; also `hicolor/scalable` |
-| `gridcraft-1024.png` | 1024 px render of the full tile |
-| `gridcraft-macos-512.png` | Runtime Dock icon on macOS (for `apps/gridcraft` to embed) |
-| `gridcraft.icns` | macOS bundle icon (`CFBundleIconFile`) |
-| `gridcraft.ico` | Windows exe icon, 16–256 px (embedded by `apps/gridcraft/build.rs`) |
+| `iridium-sheets.svg` | Canonical artwork; also `hicolor/scalable` |
+| `iridium-sheets-1024.png` | 1024 px render of the full tile |
+| `iridium-sheets-macos-512.png` | Runtime Dock icon on macOS (for `apps/gridcraft` to embed) |
+| `iridium-sheets.icns` | macOS bundle icon (`CFBundleIconFile`) |
+| `iridium-sheets.ico` | Windows exe icon, 16–256 px (embedded by `apps/gridcraft/build.rs`) |
 | `hicolor/<size>/apps/ph.iridium.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
 | `hicolor/scalable/apps/ph.iridium.sheets.svg` | Linux scalable icon |
 | `LICENSE.txt` | MIT OR Apache-2.0 |
@@ -48,5 +48,5 @@ ID and `packaging/linux/ph.iridium.sheets.desktop`.
 
 ## Regenerate
 
-Edit `gridcraft.svg`, then run `packaging/icons.sh`. It needs `resvg`, and `iconutil` for the
+Edit `iridium-sheets.svg`, then run `packaging/icons.sh`. It needs `resvg`, and `iconutil` for the
 `.icns` (macOS only). It packs the `.ico` with `cargo xtask ico`.

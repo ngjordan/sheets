@@ -27,7 +27,7 @@
   <url type="homepage">https://getartcraft.com/apps/gridcraft</url>
   <url type="bugtracker">https://github.com/storytold/gridcraft/issues</url>
   <url type="help">https://github.com/storytold/gridcraft</url>
-  <url type="contact">https://discord.gg/artcraft</url>
+  <url type="contact">https://iridium.ph</url>
   <categories>
     <category>Office</category>
     <category>Spreadsheet</category>
@@ -41,8 +41,8 @@
   </keywords>
   <!-- Proposed app colour (Iridium Sheets green #1f9d55 / ink #147a40); see assets/app-icon/README.md. -->
   <branding>
-    <color type="primary" scheme_preference="light">#a7e3bf</color>
-    <color type="primary" scheme_preference="dark">#147a40</color>
+    <color type="primary" scheme_preference="light">#0B6E4F</color>
+    <color type="primary" scheme_preference="dark">#0B6E4F</color>
   </branding>
   <requires>
     <display_length compare="ge">760</display_length>
