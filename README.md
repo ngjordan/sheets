@@ -9,16 +9,16 @@
 </p>
 
 <p align="center">
-  A fast, open-source, clean-room take on modern spreadsheet workflows. It runs natively on macOS,
+  A fast, open-source, independent take on modern spreadsheet workflows. It runs natively on macOS,
   Windows, Linux and BSD, and in the browser via WebAssembly.<br>
-  <i>By the ArtCraft team.</i>
+  
 </p>
 
 <p align="center">
   <img alt="Written in Rust" src="https://img.shields.io/badge/written%20in-Rust-147a40?style=flat-square&logo=rust&logoColor=white">
-  <img alt="Runs on macOS, Windows, Linux, BSD and the web" src="https://img.shields.io/badge/runs%20on-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux%20%C2%B7%20BSD%20%C2%B7%20Web-1f9d55?style=flat-square">
+  <img alt="Runs on macOS, Windows, Linux, BSD and the web" src="https://img.shields.io/badge/runs%20on-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux%20%C2%B7%20BSD%20%C2%B7%20Web-0b6e4f?style=flat-square">
   <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20%2F%20Apache--2.0-147a40?style=flat-square">
-  <img alt="Agent-drivable over MCP" src="https://img.shields.io/badge/agents-MCP-1f9d55?style=flat-square">
+  <img alt="Agent-drivable over MCP" src="https://img.shields.io/badge/agents-MCP-0b6e4f?style=flat-square">
   <br>
   <a href="https://sonarcloud.io/project/overview?id=storytold_gridcraft"><img alt="Scanned by SonarCloud" src="https://img.shields.io/badge/Scanned_by-SonarCloud-4b9fd5?style=flat-square&logo=sonarqubecloud&logoColor=white"></a>
   <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/storytold/gridcraft?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
@@ -186,7 +186,7 @@ egui frontend is a separate crate, so the UI can be swapped without touching the
 | L6 | `ui-egui` (spreadsheet UI, control channel) · `mcp` (MCP server) |
 | L7 | `apps/gridcraft`, `apps/gridcraft-cli`, `apps/gridcraft-web` |
 
-- **Contributor and agent rules** (clean-room, asset policy, never-crash, quality gates): [`AGENTS.md`](AGENTS.md)
+- **Contributor and agent rules** (independent, asset policy, never-crash, quality gates): [`AGENTS.md`](AGENTS.md)
 - **Bundled assets:** each one is listed with its licence in [`ATTRIBUTION.md`](ATTRIBUTION.md)
 - **Releases:** signed macOS, Windows, Linux, BSD and web builds; see [`docs/releasing.md`](docs/releasing.md)
 
@@ -275,7 +275,7 @@ handling again for troubleshooting.
 ## The Crafting Apps
 
 Iridium Sheets is one of the Iridium applications, alongside the Iridium Docs word processor.
-Each is built from an open-source clean-room project, in pure Rust, and each stands on its own.
+Each is built from an open-source independent project, in pure Rust, and each stands on its own.
 
 | App | What it's for | Code |
 |:-:|---|---|
@@ -286,7 +286,7 @@ Each is built from an open-source clean-room project, in pure Rust, and each sta
 ## License and credits
 
 Iridium Sheets is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
-Copyright (c) 2026 ArtCraft Team and the Iridium Sheets contributors. Required notices are in [NOTICE](NOTICE).
+Copyright (c) 2026 ArtCraft Team and the GridCraft contributors. Required notices are in [NOTICE](NOTICE).
 
 Bundled fonts, icons, images and other assets keep their own open licenses; each one is listed
 with its author, source and license in [ATTRIBUTION.md](ATTRIBUTION.md).

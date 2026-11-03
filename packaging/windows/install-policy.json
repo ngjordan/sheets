@@ -1,7 +1,7 @@
 {
   "id": "gridcraft",
   "name": "Iridium Sheets",
-  "upgradeCode": "5511327B-F305-41BE-92D0-EB84944E7C4D",
+  "upgradeCode": "552EE2C8-4AE1-513A-8B74-AB2833F32150",
   "sources": [
     "gridcraft.wxs"
   ],
@@ -125,7 +125,7 @@
       "-1",
       "Software\\Iridium Sheets\\Installer",
       "DesktopShortcutComponent",
-      "1"
+      "#1"
     ],
     [
       "-1",

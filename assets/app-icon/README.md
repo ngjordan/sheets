@@ -18,9 +18,9 @@ Exactly three colours:
 |---|---|---|
 | Ink | `#0b0b0c` | Line work and contour |
 | Paper | `#efe9dc` | The page |
-| Iridium Sheets green (app colour, **proposed**) | `#1f9d55` | The full-bleed field and the header cells |
+| Iridium Sheets green (app colour, **proposed**) | `#0b6e4f` | The full-bleed field and the header cells |
 
-The app colour is a proposal pending the owner's approval: Iridium Sheets green `#1f9d55`, with ink
+The app colour is a proposal pending the owner's approval: Iridium Sheets green `#0b6e4f`, with ink
 (darker) variant `#147a40` for text and accents on light backgrounds. It differs from
 DesignCraft's `#7bb51c`.
 

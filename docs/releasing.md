@@ -16,7 +16,7 @@ This process was copied from DesignCraft and renamed. User-facing names say
 | WiX UpgradeCode `5511327B-F305-41BE-92D0-EB84944E7C4D` (fixed forever) | `packaging/windows/gridcraft.wxs` |
 | File types `.xlsx` `.xlsm` `.xlsb` `.ods` `.csv` `.tsv` | Info.plist (`CFBundleDocumentTypes`), WiX (ProgIds/OpenWithProgids), `.desktop` `MimeType=`, `ph.iridium.sheets.mime.xml`, metainfo |
 | Web app dir `apps/gridcraft-web` | `packaging/web/package.sh` |
-| App colour `#1f9d55` (ink `#147a40`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
+| App colour `#0b6e4f` (ink `#147a40`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
 
 ## Application release prerequisites
 
@@ -121,7 +121,7 @@ is GUI, `gridcraft-cli.exe` console), signs both executables, builds the MSI wit
 the MSI, and zips a portable build.
 
 - `gridcraft.wxs`: a dual-scope package (per-user by default into
-  `%LOCALAPPDATA%\Programs\ArtCraft\Iridium Sheets`, per-machine into `Program Files\ArtCraft\Iridium Sheets` (`Program Files (x86)` for the 32-bit build),
+  `%LOCALAPPDATA%\Programs\Iridium\Iridium Sheets`, per-machine into `Program Files\Iridium\Iridium Sheets` (`Program Files (x86)` for the 32-bit build),
   see `packaging/windows/INSTALLATION.md`), advertised Start Menu shortcut, App
   Paths (Win+R `gridcraft`). File types: ProgIds `Iridium Sheets.Workbook` (`.xlsx`, `.xlsm`) and
   `Iridium Sheets.TextData` (`.csv`, `.tsv`), listed under each extension's `OpenWithProgids` and

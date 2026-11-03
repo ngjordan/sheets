@@ -3,7 +3,7 @@
   <?ifndef HasCraftFontLicences ?>
   <?define HasCraftFontLicences=0 ?>
   <?endif?>
-  <Package Name="Iridium Sheets" Manufacturer="Iridium Technologies, Inc." Version="$(var.Version)" UpgradeCode="5511327B-F305-41BE-92D0-EB84944E7C4D" Scope="perUserOrMachine" Compressed="yes" Language="1033">
+  <Package Name="Iridium Sheets" Manufacturer="Iridium Technologies, Inc." Version="$(var.Version)" UpgradeCode="552EE2C8-4AE1-513A-8B74-AB2833F32150" Scope="perUserOrMachine" Compressed="yes" Language="1033">
     <SummaryInformation Description="Iridium Sheets spreadsheet" Manufacturer="Iridium Technologies, Inc." />
     <?include $(sys.SOURCEFILEDIR)install-policy.wxi?>
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
