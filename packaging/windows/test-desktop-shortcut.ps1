@@ -22,7 +22,7 @@ $StartLink = Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'Iridium
 $ChoiceKey = 'HKLM:\Software\Iridium Sheets\Installer'
 $ComponentKey = 'HKLM:\Software\Iridium Sheets\Installer'
 $UninstallRoot = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
-$Icon = Join-Path $Root 'assets\app-icon\gridcraft.ico'
+$Icon = Join-Path $Root 'assets\app-icon\iridium-sheets.ico'
 if ((Test-Path $InstallDir) -or (Test-Path $DesktopLink) -or (Test-Path $StartLink) -or
     (Test-Path 'HKLM:\Software\Iridium Sheets') -or (Test-Path 'HKCU:\Software\Iridium Sheets')) {
   throw 'Refusing to run against an existing Iridium Sheets installation or its settings.'

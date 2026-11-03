@@ -5,7 +5,7 @@
   "sources": [
     "gridcraft.wxs"
   ],
-  "icon": "assets/app-icon/gridcraft.ico",
+  "icon": "assets/app-icon/iridium-sheets.ico",
   "localization": [],
   "extensions": [],
   "payloads": [

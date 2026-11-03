@@ -33,7 +33,7 @@ The `apps/gridcraft` and `apps/gridcraft-web` crates are workspace members, and
   use `env!("CARGO_PKG_VERSION")` from `[workspace.package]`. `packaging/env.sh` also exports
   `GRIDCRAFT_BUILD_SHA` and `GRIDCRAFT_BUILD_DATE` for artifact metadata.
 - **Runtime icon:** `apps/gridcraft/src/main.rs` embeds
-  `assets/app-icon/gridcraft-macos-512.png` (macOS Dock) and
+  `assets/app-icon/iridium-sheets-macos-512.png` (macOS Dock) and
   `hicolor/256x256/apps/ph.iridium.sheets.png` (Windows/Linux) as the window icon, and
   uses `ph.iridium.sheets` as the Wayland app id / `StartupWMClass`.
 
@@ -271,7 +271,7 @@ the publisher.
 
 ## Icons
 
-`assets/app-icon/gridcraft.svg` is a **placeholder** (an original ledger-page drawing on
+`assets/app-icon/iridium-sheets.svg` is a **placeholder** (an original ledger-page drawing on
 Iridium Sheets green) until the owner makes Iridium Sheets's engraved creature portrait. `packaging/icons.sh` regenerates the 1024 px PNG, the macOS 512 px
 PNG, the `.icns` (iconutil), the `.ico` (`cargo xtask ico`) and the hicolor PNGs from it; it
 needs `resvg`. The outputs are committed, so packaging never needs those tools. Every file has a
