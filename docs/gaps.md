@@ -3,7 +3,7 @@
 > **Last reviewed:** 2026-10-11 · **Last updated:** 2026-11-02 · **Change:** minor (§17: equations; earlier: §13: Solver Sensitivity report; earlier: §4: chart resizing is no longer a gap; earlier: §13: Analysis ToolPak has all 19 tools; earlier: §4: chart data tables implemented with XLSX round-trip and print/PDF; earlier: §13: Solver Options; earlier: §13: Solver Load/Save Model and Reset All) · **Target:** Microsoft Excel (Microsoft 365)
 
 Every known shortfall against Excel, one entry each, ranked by user impact (what blocks someone
-using GridCraft for real work first). This is the work list: pick from the top, check the open
+using Iridium Sheets for real work first). This is the work list: pick from the top, check the open
 PRs first (50 open on 2026-10-10; several already address entries here), and update the entry
 when you land work. Estimates are Opus 5.5 agent-hours. Area detail lives in the linked parity
 docs; the summary is in [target-app-parity.md](target-app-parity.md).
@@ -76,7 +76,7 @@ No alpha blockers: every core workflow passes the [alpha gate](roadmap.md#alpha-
   formats, merges, sizes, names, and cell formatting: fonts, fills, borders, alignment); exact theme colours (XFExt), charts, pictures, comments, conditional
   formats, validation and BIFF5 files are not read, and `.xls` is never written. Password-encrypted
   `.xlsx` workbooks (Agile and Standard encryption) open with their password since #11, but are
-  saved without it: GridCraft can't write an encrypted file yet. Encrypted `.xls` (FILEPASS) and
+  saved without it: Iridium Sheets can't write an encrypted file yet. Encrypted `.xls` (FILEPASS) and
   RC4-encrypted files are still refused with a message.
 - **Impact:** common in finance, government and anything older than 2007; encrypted files are
   routine in business.

@@ -1,4 +1,4 @@
-//! GridCraft equations. LaTeX source is laid out by RaTeX (`ratex-parser`, `ratex-layout`; MIT)
+//! Iridium Sheets equations. LaTeX source is laid out by RaTeX (`ratex-parser`, `ratex-layout`; MIT)
 //! into a [`MathList`]: plain glyph, rule and path data that the UI and the PDF writer paint
 //! without calling RaTeX again.
 //!
@@ -188,7 +188,7 @@ pub fn check(latex: &str) -> Result<(), MathError> {
     guarded(|| parse(latex).map(|_| ()))
 }
 
-/// The equation gallery (Insert › Equation): GridCraft's own examples, as (name, LaTeX).
+/// The equation gallery (Insert › Equation): Iridium Sheets's own examples, as (name, LaTeX).
 pub const GALLERY: &[(&str, &str)] = &[
     ("Quadratic formula", "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"),
     ("Pythagoras", "a^2 + b^2 = c^2"),

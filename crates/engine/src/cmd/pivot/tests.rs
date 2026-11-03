@@ -1016,7 +1016,7 @@ fn detail_cells_are_the_cells_show_details_takes() {
 
 #[test]
 fn rank_ties_are_dense_and_count_numbers_is_captioned_count_of() {
-    // #1448 items 10 and 12: Excel ranks 5, 4, 3, 3, 4 as 1, 2, 3, 3, 2 (GridCraft gave 1, 2, 4,
+    // #1448 items 10 and 12: Excel ranks 5, 4, 3, 3, 4 as 1, 2, 3, 3, 2 (Iridium Sheets gave 1, 2, 4,
     // 4, 2), and captions a Count Numbers field "Count of Val".
     let mut s = Session::new();
     s.new_workbook();

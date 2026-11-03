@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerate every app icon from assets/app-icon/gridcraft.svg.
+# Regenerate every app icon from assets/app-icon/iridium-sheets.svg.
 #
 # Needs: resvg (brew install resvg / cargo install resvg). On macOS, iconutil also writes the
 # .icns. The outputs are committed, so builds and packaging never need these tools.
@@ -8,8 +8,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIR="$ROOT/assets/app-icon"
-SVG="$DIR/gridcraft.svg"
-ID="ai.storyteller.gridcraft"
+SVG="$DIR/iridium-sheets.svg"
+ID="ph.iridium.sheets"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -26,9 +26,9 @@ render() {
   resvg -w "$size" -h "$size" "$svg" "$out" </dev/null
 }
 
-render "$SVG" 1024 "$DIR/gridcraft-1024.png"
-# Runtime window/Dock icon on macOS (for apps/gridcraft to embed); other platforms use hicolor 256.
-render "$MAC" 512 "$DIR/gridcraft-macos-512.png"
+render "$SVG" 1024 "$DIR/iridium-sheets-1024.png"
+# Runtime window/Dock icon on macOS (for the desktop app to embed); other platforms use hicolor 256.
+render "$MAC" 512 "$DIR/iridium-sheets-macos-512.png"
 
 # Linux hicolor theme.
 for s in 16 24 32 48 64 128 256 512; do
@@ -44,18 +44,18 @@ for s in 16 20 24 32 40 48 64 128 256; do
   render "$SVG" "$s" "$TMP/ico-$s.png"
   ICO_PNGS+=("$TMP/ico-$s.png")
 done
-(cd "$ROOT" && cargo run -q -p xtask --no-default-features -- ico "$DIR/gridcraft.ico" "${ICO_PNGS[@]}")
+(cd "$ROOT" && cargo run -q -p xtask --no-default-features -- ico "$DIR/iridium-sheets.ico" "${ICO_PNGS[@]}")
 
 # macOS .icns.
 if command -v iconutil >/dev/null; then
-  SET="$TMP/gridcraft.iconset"
+  SET="$TMP/iridium-sheets.iconset"
   mkdir -p "$SET"
   for s in 16 32 128 256 512; do
     render "$MAC" "$s" "$SET/icon_${s}x${s}.png"
     render "$MAC" $((s * 2)) "$SET/icon_${s}x${s}@2x.png"
   done
-  iconutil -c icns -o "$DIR/gridcraft.icns" "$SET"
+  iconutil -c icns -o "$DIR/iridium-sheets.icns" "$SET"
 else
-  echo "warning: iconutil not found (macOS only); gridcraft.icns not regenerated" >&2
+  echo "warning: iconutil not found (macOS only); iridium-sheets.icns not regenerated" >&2
 fi
 echo "icons written to $DIR"

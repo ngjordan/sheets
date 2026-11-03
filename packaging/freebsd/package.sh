@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package GridCraft for FreeBSD (<arch> is x86_64 or aarch64):
+# Build and package Iridium Sheets for FreeBSD (<arch> is x86_64 or aarch64):
 #
 #   $DIST/gridcraft-<version>-freebsd-<arch>.tar.gz   bin/ + share/ (desktop entry, icons,
 #                                                      AppStream, MIME), extract under /usr/local
@@ -12,7 +12,7 @@
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
-APP_ID=ai.storyteller.gridcraft
+APP_ID=ph.iridium.sheets
 LINUX="$ROOT/packaging/linux"
 
 SKIP_BUILD=0
@@ -41,7 +41,7 @@ else
 fi
 BASENAME="gridcraft-$VERSION-freebsd-$ARCH"
 
-echo "==> GridCraft $VERSION for FreeBSD $ARCH"
+echo "==> Iridium Sheets $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   (cd "$ROOT" && cargo build --release --locked -p gridcraft -p gridcraft-cli ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"})

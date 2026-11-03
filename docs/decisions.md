@@ -22,7 +22,7 @@ merged. Those locales retain their existing formula fallback; this change adds o
 
 ## Preserve array evaluation when exporting formulas (#64)
 
-GridCraft evaluates ordinary formulas with array semantics even when the final result occupies one cell. XLSX export marks actual spills and formulas whose results may differ under legacy implicit intersection as dynamic, using the spill range or a single-cell array reference. Legacy CSE array ranges keep their existing representation.
+Iridium Sheets evaluates ordinary formulas with array semantics even when the final result occupies one cell. XLSX export marks actual spills and formulas whose results may differ under legacy implicit intersection as dynamic, using the spill range or a single-cell array reference. Legacy CSE array ranges keep their existing representation.
 
 The exporter inspects the parsed formula without evaluating it. It distinguishes range-taking functions such as `SUM` from scalar arguments and operators: `SUM(A1:A3)` and `A1*2` stay ordinary, while `SUM(A1:A3*B1:B3)` and `SQRT(A1:A3)` retain array evaluation. Legacy array-aware contexts such as `SUMPRODUCT` do not need an extra marker. Explicit `@` scalarizes its result without hiding array-sensitive operations inside it.
 
@@ -83,7 +83,7 @@ steps, so the wheel and the buttons now step differently. Whether they should sh
 
 ## Equations are laid out by RaTeX, behind a guard
 
-GridCraft lays equations out with RaTeX (`ratex-parser`, `ratex-layout`, `ratex-types`,
+Iridium Sheets lays equations out with RaTeX (`ratex-parser`, `ratex-layout`, `ratex-types`,
 `ratex-font`, MIT), pinned exactly at 0.1.14. The gate that chose it, rather than an in-house
 LaTeX subset:
 
@@ -122,5 +122,5 @@ cached on the shape; painting (egui and PDF) reads only that cache, so nothing i
 can reach RaTeX. On the web build (`wasm32-unknown-unknown`) a panic aborts instead of unwinding,
 so there the caps and the fuzzed input space are the protection. `crates/math/tests/gate.rs` re-runs a smaller, deterministic version of the
 gate on every test run, so a version bump has to pass it. RaTeX positions glyphs with KaTeX
-font metrics; GridCraft never bundles the KaTeX fonts, so glyphs are drawn with system fonts
+font metrics; Iridium Sheets never bundles the KaTeX fonts, so glyphs are drawn with system fonts
 and a glyph no font has is drawn as a `[?]` box.

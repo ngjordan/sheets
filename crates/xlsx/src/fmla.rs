@@ -195,7 +195,7 @@ fn dummy_function_inner(e: &Expr, known: &dyn Fn(&str) -> bool) -> Option<Expr> 
         return None;
     }
     let parsed = gridcraft_formula::parse(src).ok()?;
-    // A function GridCraft can't calculate would show `#NAME?` where Excel shows the cached
+    // A function Iridium Sheets can't calculate would show `#NAME?` where Excel shows the cached
     // value; a wrapper inside the text is one too, so only one level is ever unwrapped.
     let mut all_known = true;
     parsed.walk(&mut |x| {
@@ -420,14 +420,14 @@ mod tests {
         );
     }
 
-    /// Text that doesn't parse, calls a function GridCraft lacks, or shapes that aren't exactly
+    /// Text that doesn't parse, calls a function Iridium Sheets lacks, or shapes that aren't exactly
     /// the wrapper, are kept as they were, so the cell keeps the cached value as in Excel.
     #[test]
     fn google_sheets_dummy_function_kept_when_not_the_wrapper() {
         for file in [
             "IFERROR(__xludf.DUMMYFUNCTION(\"SUM(\"),5)",
             "IFERROR(__xludf.DUMMYFUNCTION(\"1+\"),5)+1",
-            // Google-only functions: GridCraft would show #NAME? instead of the cached value.
+            // Google-only functions: Iridium Sheets would show #NAME? instead of the cached value.
             "IFERROR(__xludf.DUMMYFUNCTION(\"GOOGLETRANSLATE(A1,\"\"en\"\",\"\"fr\"\")\"),\"x\")",
             "IFERROR(__xludf.DUMMYFUNCTION(\"ARRAYFORMULA(A1:A3*2)\"),2)",
             "IFERROR(__xludf.DUMMYFUNCTION(\"SUM(QUERY(A1:B3,\"\"select B\"\"))\"),2)",

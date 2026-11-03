@@ -231,7 +231,7 @@ fn read_shape(obj: &El, anchor: Anchor) -> Option<Shape> {
         "rightArrow" => ShapeKind::Arrow,
         _ => ShapeKind::Rectangle,
     };
-    // An equation: GridCraft's own source while the marker in the description still matches the
+    // An equation: Iridium Sheets's own source while the marker in the description still matches the
     // body (another application that edits the Office Math, or the text of a box without Office
     // Math, leaves the description alone, as Excel does), else the Office Math converted back to
     // LaTeX. A box without Office Math whose text was edited is a text box with the edited text,

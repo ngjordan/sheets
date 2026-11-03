@@ -1,6 +1,6 @@
 # Contributors in the About window
 
-**About ▸ Contributors** credits everyone who contributed to GridCraft, and **About ▸ Models** credits
+**About ▸ Contributors** credits everyone who contributed to Iridium Sheets, and **About ▸ Models** credits
 the AI models named in `Co-Authored-By` trailers.
 
 ## Decision
@@ -19,10 +19,10 @@ the AI models named in `Co-Authored-By` trailers.
   first or last commit date. The name toggle cycles **Username → Display name → Real name**; a
   missing name falls back to `@username`. Alphabetical sorting is case-insensitive and ignores the `@`.
 
-## In GridCraft
+## In Iridium Sheets
 
-- Open it from the macOS menu GridCraft ▸ About GridCraft or Help ▸ Contributors…, or the ribbon's
-  Automate ▸ About GridCraft (all platforms); agents: `ui.dialog {"name":"about","tab":"Contributors"}`.
+- Open it from the macOS menu Iridium Sheets ▸ About Iridium Sheets or Help ▸ Contributors…, or the ribbon's
+  Automate ▸ About Iridium Sheets (all platforms); agents: `ui.dialog {"name":"about","tab":"Contributors"}`.
 
 ## Credit yourself
 

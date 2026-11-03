@@ -577,7 +577,7 @@ fn content_wins_over_a_mismatched_extension() {
 }
 
 /// #2871: opening an XLSX reads Google Sheets' `IFERROR(__xludf.DUMMYFUNCTION("…"),cached)`
-/// wrapper as the formula inside when GridCraft calculates every function it calls (including
+/// wrapper as the formula inside when Iridium Sheets calculates every function it calls (including
 /// the evaluator's own, such as ROW), and keeps the wrapper, and so the cached value, for a
 /// Google-only function.
 #[test]

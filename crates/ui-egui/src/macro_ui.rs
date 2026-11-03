@@ -276,7 +276,7 @@ pub fn status(app: &mut SheetApp, ui: &mut Ui) {
 
 // ---------------------------------------------------------------- shortcuts
 
-/// The macro whose shortcut is Ctrl+Shift+`key` in the active workbook. GridCraft's own
+/// The macro whose shortcut is Ctrl+Shift+`key` in the active workbook. Iridium Sheets's own
 /// shortcuts win over a macro's (a file can carry any letter).
 pub fn shortcut_macro(app: &SheetApp, key: egui::Key) -> Option<String> {
     let letter = parse_shortcut(key.name())?;
@@ -507,7 +507,7 @@ pub fn macros_dialog(app: &mut SheetApp, ui: &mut Ui, d: &mut Dialog, open: &mut
     if vba {
         ui.add_space(6.0);
         ui.label(
-            egui::RichText::new("This workbook also has a VBA project. GridCraft keeps it when you save but does not run it.").color(t.text_dim),
+            egui::RichText::new("This workbook also has a VBA project. Iridium Sheets keeps it when you save but does not run it.").color(t.text_dim),
         );
     }
     d.values.insert("name".into(), json!(name));

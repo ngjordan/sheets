@@ -14,7 +14,7 @@ use gridcraft_ui_egui::{Services, SheetApp};
 
 pub type Harness = egui_kittest::Harness<'static, SheetApp>;
 
-/// A kittest builder with the deterministic font set and GridCraft's visuals installed.
+/// A kittest builder with the deterministic font set and Iridium Sheets's visuals installed.
 pub fn builder<State>() -> HarnessBuilder<State> {
     egui_kittest::Harness::builder().with_context_setup(|ctx| {
         ctx.set_fonts(gridcraft_ui_egui::theme::pinned_font_definitions());

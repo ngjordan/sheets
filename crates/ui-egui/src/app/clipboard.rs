@@ -27,8 +27,8 @@ impl SheetApp {
     /// Paste text that came from the system clipboard (Cmd/Ctrl+V, or the ribbon and menu Paste),
     /// with the clipboard's HTML flavour when the host can read it.
     ///
-    /// Excel pastes a cut once: after GridCraft's cut has been pasted, the system clipboard text
-    /// that came with it is not pasted again over the moved block; GridCraft's own (empty)
+    /// Excel pastes a cut once: after Iridium Sheets's cut has been pasted, the system clipboard text
+    /// that came with it is not pasted again over the moved block; Iridium Sheets's own (empty)
     /// clipboard is pasted instead, which reports "Nothing to paste.". Other text means the
     /// clipboard has moved on, so the cut's text is forgotten and pastes normally later.
     pub fn paste_external(&mut self, text: String) {
@@ -49,7 +49,7 @@ impl SheetApp {
 
     /// Ribbon and menu Paste: paste the text on the system clipboard, as Cmd/Ctrl+V does. With no
     /// text there but a picture, the picture is pasted. With neither, no host clipboard (web), or
-    /// the text that was there when GridCraft last copied without publishing, GridCraft's own
+    /// the text that was there when Iridium Sheets last copied without publishing, Iridium Sheets's own
     /// clipboard is pasted.
     pub fn paste_from_clipboard(&mut self) {
         match self.system_clipboard_text() {

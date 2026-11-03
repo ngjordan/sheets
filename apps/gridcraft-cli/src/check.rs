@@ -2,12 +2,12 @@
 //!
 //! **Calc oracle.** A workbook saved by Excel (or another calculating producer) carries the
 //! producer's own result next to every formula (`<v>` beside `<f>`). The file is read keeping
-//! those cached values, recalculated from scratch by GridCraft, and every formula cell's new value
+//! those cached values, recalculated from scratch by Iridium Sheets, and every formula cell's new value
 //! is compared with the cached one. Formulas without a cached value (files from writers that don't
 //! calculate) count as *no oracle*; volatile formulas (`RAND`, `NOW`…) and the formulas that read
 //! them are skipped.
 //!
-//! **Round trip.** The recalculated workbook is written with GridCraft's XLSX writer, the package is
+//! **Round trip.** The recalculated workbook is written with Iridium Sheets's XLSX writer, the package is
 //! validated (content types cover every part, every internal relationship target exists, no kind of
 //! relationship the source had is missing) and read back, and the two workbooks are compared feature
 //! by feature.
@@ -93,7 +93,7 @@ pub struct Mismatch {
     pub formula: String,
     pub expected: Value,
     pub actual: Value,
-    /// `numeric`, `text`, `bool`, `error`, `blank` (GridCraft produced no value) or `type`.
+    /// `numeric`, `text`, `bool`, `error`, `blank` (Iridium Sheets produced no value) or `type`.
     pub kind: &'static str,
     pub functions: Vec<String>,
     pub primary: bool,
@@ -110,7 +110,7 @@ pub struct CalcReport {
     /// aren't results, so every formula counts as no oracle.
     pub stale_cache: bool,
     pub volatile: usize,
-    /// Matched cells whose producer saved GridCraft's TRUE or FALSE as the number 1 or 0 (no
+    /// Matched cells whose producer saved Iridium Sheets's TRUE or FALSE as the number 1 or 0 (no
     /// `t="b"`, as Business Central's Excel exports do); counted in `matched` too.
     pub bool_as_number: usize,
     /// The first `max_report` mismatches, primary ones first.
@@ -337,7 +337,7 @@ fn walk(dir: &Path, depth: usize, out: &mut Discovery, seen: &mut std::collectio
 }
 
 /// Checks one file's bytes. Never fails: problems are recorded in the report. A panic escaping
-/// GridCraft's reader, calculator or writer is caught and reported as an internal error, so one
+/// Iridium Sheets's reader, calculator or writer is caught and reported as an internal error, so one
 /// bad file doesn't end a corpus run.
 pub fn check_bytes(path: &str, bytes: &[u8], opts: &Options) -> FileReport {
     let guarded = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| check_inner(path, bytes, opts)));

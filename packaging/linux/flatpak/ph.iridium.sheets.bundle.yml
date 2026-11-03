@@ -1,21 +1,20 @@
-# Flatpak manifest for GridCraft, ready for a Flathub submission.
+# Flatpak manifest for the single-file bundle attached to every GitHub release
+# (gridcraft-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
 #
-# Flatpak builds run offline, so the crate sources must be vendored first. From the repo root:
+# It repackages the release's own Linux tarball (gridcraft-<version>-linux-<arch>.tar.gz,
+# built on Ubuntu 22.04 by package.sh) instead of compiling Rust inside flatpak-builder: no
+# network and no vendored crate sources during the build, a few seconds instead of 20+ minutes,
+# and byte-for-byte the same binaries as the AppImage/deb/rpm. The script unpacks the tarball
+# into `stage/` next to a copy of this file. The binaries need glibc >= 2.35 and load X11,
+# Wayland, xkbcommon and Vulkan/GL at runtime; the freedesktop runtime has all of them, and the
+# GPU driver comes from its org.freedesktop.Platform.GL extension.
 #
-#   curl -fsSLO https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
-#   python3 flatpak-cargo-generator.py Cargo.lock -o packaging/linux/flatpak/cargo-sources.json
-#   flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/ai.storyteller.gridcraft.yml
-#   flatpak run ai.storyteller.gridcraft
-#
-# For Flathub, replace the `dir` source with a `git` source pinned to a release tag and commit.
-# The single-file .flatpak attached to each release comes from ai.storyteller.gridcraft.bundle.yml,
-# which repackages the prebuilt release binaries. Keep runtime-version and finish-args identical.
-id: ai.storyteller.gridcraft
+# ph.iridium.sheets.yml (same directory) is the from-source manifest for Flathub. Keep
+# runtime, runtime-version, sdk and finish-args identical in both (packaging-lint checks this).
+id: ph.iridium.sheets
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.rust-stable
 command: gridcraft
 finish-args:
   - --filesystem=xdg-data/ArtCraft/versions:ro
@@ -42,8 +41,11 @@ finish-args:
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
   # Network: update checks reach GitHub. Home/host filesystem access is deliberately not granted.
+# The release runner's flatpak-builder has no eu-strip (elfutils), which its debuginfo pass runs
+# on cups-client's unstripped tools, in whichever module comes first after they're installed. The
+# app's own binaries come from the release tarball, already stripped.
 build-options:
-  append-path: /usr/lib/sdk/rust-stable/bin
+  no-debuginfo: true
 modules:
   # CUPS client tools for craft-print: the runtime has libcups but not lpstat/lp/lpoptions.
   # Linked statically against this release's libcups, so a runtime update can't break them;
@@ -91,32 +93,15 @@ modules:
           - 'exec "/app/libexec/cups/${0##*/}" "$@"'
   - name: gridcraft
     buildsystem: simple
-    build-options:
-      env:
-        CARGO_HOME: /run/build/gridcraft/cargo
-        CARGO_NET_OFFLINE: 'true'
     build-commands:
-      - cargo --offline build --release --locked -p gridcraft -p gridcraft-cli
-      - install -Dm755 target/release/gridcraft /app/bin/gridcraft
-      - install -Dm755 target/release/gridcraft-cli /app/bin/gridcraft-cli
-      - install -Dm644 packaging/linux/ai.storyteller.gridcraft.desktop /app/share/applications/ai.storyteller.gridcraft.desktop
-      - install -Dm644 packaging/linux/ai.storyteller.gridcraft.mime.xml /app/share/mime/packages/ai.storyteller.gridcraft.xml
-      - mkdir -p /app/share/icons && cp -R assets/app-icon/hicolor /app/share/icons/
-      - install -Dm644 NOTICE /app/share/doc/gridcraft/NOTICE
-      - install -Dm644 ATTRIBUTION.md /app/share/doc/gridcraft/ATTRIBUTION.md
-      - >-
-        version=$(awk '/^\[/{p=($0=="[workspace.package]");next} p&&$1=="version"{gsub(/[" ]/,"",$3);print $3;exit}' Cargo.toml);
-        install -d /app/share/metainfo;
-        sed -e "s/@VERSION@/$version/" -e "s/@DATE@/$(date -u +%Y-%m-%d)/"
-        packaging/linux/ai.storyteller.gridcraft.metainfo.xml.in > /app/share/metainfo/ai.storyteller.gridcraft.metainfo.xml
+      - install -Dm755 bin/gridcraft /app/bin/gridcraft
+      # Headless CLI and MCP server: `flatpak run --command=gridcraft-cli ph.iridium.sheets`.
+      - install -Dm755 bin/gridcraft-cli /app/bin/gridcraft-cli
+      - install -Dm644 share/applications/ph.iridium.sheets.desktop /app/share/applications/ph.iridium.sheets.desktop
+      - install -Dm644 share/mime/packages/ph.iridium.sheets.xml /app/share/mime/packages/ph.iridium.sheets.xml
+      # Already has the release's version and date substituted by package.sh.
+      - install -Dm644 share/metainfo/ph.iridium.sheets.metainfo.xml /app/share/metainfo/ph.iridium.sheets.metainfo.xml
+      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/gridcraft /app/share/doc/
     sources:
       - type: dir
-        path: ../../..
-        skip:
-          - target
-          - target-xtask
-          - dist
-          - corpus
-          - build-flatpak
-          - .flatpak-builder
-      - cargo-sources.json
+        path: stage

@@ -8,7 +8,7 @@
 //! the log of a run that crashed survives the next launch. Runs without preferences
 //! (`GRIDCRAFT_NO_PREFS`) log to standard error only.
 //!
-//! Levels: `info` for GridCraft's own crates, `warn` for everything else (wgpu and naga are
+//! Levels: `info` for Iridium Sheets's own crates, `warn` for everything else (wgpu and naga are
 //! chatty). `RUST_LOG` replaces that with env_logger-style directives: `debug`,
 //! `warn,gridcraft_engine=trace`, `wgpu_core=info`. A directive ending in `*` matches every target
 //! that starts with it (`gridcraft*=debug`).

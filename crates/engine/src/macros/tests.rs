@@ -239,7 +239,7 @@ fn xlsx_round_trip(wb: &Workbook) -> (Vec<String>, Workbook) {
 
 #[test]
 fn a_visible_name_of_the_storage_shape_does_not_block_a_save() {
-    // The index a macro is stored under is GridCraft's choice, so a person's own visible name
+    // The index a macro is stored under is Iridium Sheets's choice, so a person's own visible name
     // of that shape (here in capitals: names compare without case) is stepped around, not
     // refused. Stale hidden items still go in the same pass.
     let mut wb = Workbook::new();
@@ -334,7 +334,7 @@ fn damaged_or_oversized_macros_are_dropped_with_a_warning() {
     let mut wb = Workbook::new();
     wb.macros = (0..MAX_MACROS + 5).map(|i| Macro { name: format!("M{i}"), ..Macro::default() }).collect();
     wb.macros[0].steps = vec![Step::command("x", json!({})); MAX_MACRO_STEPS + 1];
-    // Written as another program would: a GridCraft save refuses a macro that fails `check`.
+    // Written as another program would: a Iridium Sheets save refuses a macro that fails `check`.
     let bytes = serde_json::to_vec(&wb).unwrap();
     let (back, warnings) = crate::io::open_bytes("many.json", &bytes).unwrap();
     // Only the first MAX_MACROS entries are read, as in xlsx.
@@ -348,7 +348,7 @@ fn damaged_or_oversized_macros_are_dropped_with_a_warning() {
     assert!(err.contains("too large"), "{err}");
     let mut wb = Workbook::new();
     wb.macros.push(Macro { name: "Huge".into(), steps: vec![Step::command("cell.set", json!({"input": huge}))], ..Macro::default() });
-    // Written as another program would: a GridCraft save refuses a macro that fails `check`.
+    // Written as another program would: a Iridium Sheets save refuses a macro that fails `check`.
     let bytes = serde_json::to_vec(&wb).unwrap();
     let (back, warnings) = crate::io::open_bytes("huge.json", &bytes).unwrap();
     assert!(back.macros.is_empty() && warnings[0].starts_with("1 macro "), "{warnings:?}");
@@ -386,7 +386,7 @@ fn json_field_macros_get_the_name_check_too() {
     let mut wb = Workbook::new();
     wb.macros.push(Macro { name: "a\nb".into(), ..Macro::default() });
     wb.macros.push(Macro { name: "Fine".into(), ..Macro::default() });
-    // Written as another program would: a GridCraft save refuses a macro that fails `check`.
+    // Written as another program would: a Iridium Sheets save refuses a macro that fails `check`.
     let bytes = serde_json::to_vec(&wb).unwrap();
     let (back, warnings) = crate::io::open_bytes("ctl.json", &bytes).unwrap();
     let names: Vec<&str> = back.macros.iter().map(|m| m.name.as_str()).collect();

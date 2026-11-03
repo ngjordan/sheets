@@ -356,12 +356,12 @@ fn ref_text(sheet_name: &str, cells: &str) -> String {
 
 /// The evaluation limit and the generations without improvement have no Excel equivalent:
 /// Excel's `solver_itr` counts iterations (100 by default) and `solver_mni` seconds, so a
-/// workbook from Excel would cut GridCraft's search short. They are saved under GridCraft's own
+/// workbook from Excel would cut Iridium Sheets's search short. They are saved under Iridium Sheets's own
 /// names, which Excel ignores.
 const EVALS_NAME: &str = "gridcraft_solver_evals";
 const STALL_NAME: &str = "gridcraft_solver_stall";
 
-/// The names of a saved model after `solver_`, as Excel's Solver writes them (GridCraft writes
+/// The names of a saved model after `solver_`, as Excel's Solver writes them (Iridium Sheets writes
 /// some of them). Saving a model and Reset All remove these and no other `solver_` names.
 const SOLVER_KEYS: [&str; 28] = [
     "adj", "cvg", "drv", "eng", "est", "itr", "lin", "mip", "mni", "mrt", "msl", "neg", "nod", "num", "nwt", "opt", "pre", "rbv", "rlx", "rsd",
@@ -369,7 +369,7 @@ const SOLVER_KEYS: [&str; 28] = [
 ];
 
 /// Whether `name` is one of the names of a saved model: Excel's Solver names (`solver_opt`,
-/// `solver_lhs1` and so on) and GridCraft's own. A user's name such as `solver_budget` is not.
+/// `solver_lhs1` and so on) and Iridium Sheets's own. A user's name such as `solver_budget` is not.
 pub(super) fn is_model_name(name: &str) -> bool {
     let name = name.to_ascii_lowercase();
     if name == EVALS_NAME || name == STALL_NAME {

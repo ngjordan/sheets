@@ -1718,7 +1718,7 @@ fn r1c1_reference_style_is_kept() {
 #[test]
 fn remove_personal_information_is_kept_and_honoured() {
     // #3089: `<workbookPr filterPrivacy="1"/>` was dropped, so a workbook cleaned of personal
-    // information came back with it switched off, and GridCraft wrote the author and company back.
+    // information came back with it switched off, and Iridium Sheets wrote the author and company back.
     let bytes = super::minimal("<sheetData/>", &[], "", r#"<workbookPr filterPrivacy="1"/>"#);
     let (mut wb, _) = read_xlsx(&bytes).unwrap();
     assert!(wb.remove_personal_info);

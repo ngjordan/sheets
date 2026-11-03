@@ -1,6 +1,6 @@
 {
   "id": "gridcraft",
-  "name": "GridCraft",
+  "name": "Iridium Sheets",
   "upgradeCode": "5511327B-F305-41BE-92D0-EB84944E7C4D",
   "sources": [
     "gridcraft.wxs"
@@ -21,127 +21,127 @@
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.Workbook",
+      "Software\\Classes\\Iridium Sheets.Workbook",
       "",
-      "GridCraft Workbook"
+      "Iridium Sheets Workbook"
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.Workbook\\DefaultIcon",
+      "Software\\Classes\\Iridium Sheets.Workbook\\DefaultIcon",
       "",
       "\"[#GridcraftExe]\",0"
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.Workbook\\shell\\open\\command",
+      "Software\\Classes\\Iridium Sheets.Workbook\\shell\\open\\command",
       "",
       "\"[#GridcraftExe]\" \"%1\""
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.TextData",
+      "Software\\Classes\\Iridium Sheets.TextData",
       "",
-      "GridCraft Text Data"
+      "Iridium Sheets Text Data"
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.TextData\\DefaultIcon",
+      "Software\\Classes\\Iridium Sheets.TextData\\DefaultIcon",
       "",
       "\"[#GridcraftExe]\",0"
     ],
     [
       "-1",
-      "Software\\Classes\\GridCraft.TextData\\shell\\open\\command",
+      "Software\\Classes\\Iridium Sheets.TextData\\shell\\open\\command",
       "",
       "\"[#GridcraftExe]\" \"%1\""
     ],
     [
       "-1",
       "Software\\Classes\\.xlsx\\OpenWithProgids",
-      "GridCraft.Workbook",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook",
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.xlsm\\OpenWithProgids",
-      "GridCraft.Workbook",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook",
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.xlsb\\OpenWithProgids",
-      "GridCraft.Workbook",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook",
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.ods\\OpenWithProgids",
-      "GridCraft.Workbook",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook",
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.csv\\OpenWithProgids",
-      "GridCraft.TextData",
-      "GridCraft.TextData"
+      "Iridium Sheets.TextData",
+      "Iridium Sheets.TextData"
     ],
     [
       "-1",
       "Software\\Classes\\.tsv\\OpenWithProgids",
-      "GridCraft.TextData",
-      "GridCraft.TextData"
+      "Iridium Sheets.TextData",
+      "Iridium Sheets.TextData"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities",
+      "Software\\Iridium Sheets\\Capabilities",
       "ApplicationName",
-      "GridCraft"
+      "Iridium Sheets"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities",
+      "Software\\Iridium Sheets\\Capabilities",
       "ApplicationDescription",
       "Open-source spreadsheet for .xlsx, CSV and TSV files"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities\\FileAssociations",
+      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
       ".xlsx",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities\\FileAssociations",
+      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
       ".xlsm",
-      "GridCraft.Workbook"
+      "Iridium Sheets.Workbook"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities\\FileAssociations",
+      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
       ".csv",
-      "GridCraft.TextData"
+      "Iridium Sheets.TextData"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Capabilities\\FileAssociations",
+      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
       ".tsv",
-      "GridCraft.TextData"
+      "Iridium Sheets.TextData"
     ],
     [
       "-1",
       "Software\\RegisteredApplications",
-      "GridCraft",
-      "Software\\GridCraft\\Capabilities"
+      "Iridium Sheets",
+      "Software\\Iridium Sheets\\Capabilities"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Installer",
+      "Software\\Iridium Sheets\\Installer",
       "DesktopShortcut",
       "[DESKTOPSHORTCUT]"
     ],
     [
       "-1",
-      "Software\\GridCraft\\Installer",
+      "Software\\Iridium Sheets\\Installer",
       "DesktopShortcutComponent",
       "#1"
     ]

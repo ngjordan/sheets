@@ -1,4 +1,4 @@
-//! GridCraft file formats: XLSX (transitional and strict) and CSV import/export, plus XLSB and ODS data import
+//! Iridium Sheets file formats: XLSX (transitional and strict) and CSV import/export, plus XLSB and ODS data import
 //! and legacy Excel 97-2003 `.xls` (BIFF8) import, and password-encrypted workbooks (Agile and Standard encryption).
 //!
 //! Clean-room implementation from ECMA-376 / ISO/IEC 29500 and observed behaviour. All entry
@@ -94,7 +94,7 @@ pub fn read_xlsx(bytes: &[u8]) -> Result<(Workbook, ReadReport), IoError> {
 /// Google writes a formula that uses a function it thinks Excel lacks as
 /// `IFERROR(__xludf.DUMMYFUNCTION("<formula, quotes doubled>"),<cached value>)`; Excel shows the
 /// cached value. A cell formula holding that wrapper, whole or inside a larger formula, is read
-/// as the formula inside when it parses and `known` says GridCraft calculates every function it
+/// as the formula inside when it parses and `known` says Iridium Sheets calculates every function it
 /// calls. Otherwise (a Google-only function such as `GOOGLETRANSLATE`, inner text that doesn't
 /// parse, or nesting past the parser's limit) the wrapper stays, so the cell keeps showing the
 /// cached value as in Excel. `known` is passed in because this crate doesn't depend on the

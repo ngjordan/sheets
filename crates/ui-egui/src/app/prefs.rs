@@ -27,10 +27,10 @@ impl SheetApp {
         self.effective_dark = ctx.theme() == egui::Theme::Dark;
     }
 
-    /// Keeps egui's own keyboard zoom and quit shortcuts off and applies GridCraft's zoom factor.
+    /// Keeps egui's own keyboard zoom and quit shortcuts off and applies Iridium Sheets's zoom factor.
     pub(super) fn sync_input_options(&mut self, ctx: &egui::Context) {
         // Interface size: the preference owns the zoom factor, so egui's own Ctrl/Cmd +/-/0 zoom
-        // keys stay off (they would also swallow GridCraft's shortcuts).
+        // keys stay off (they would also swallow Iridium Sheets's shortcuts).
         if ctx.options(|o| o.zoom_with_keyboard) {
             ctx.options_mut(|o| o.zoom_with_keyboard = false);
         }
@@ -49,19 +49,19 @@ impl SheetApp {
     }
 
     /// Look for a newer release once, in the background, as the desktop app starts (a no-op on the
-    /// web). A found release opens the update prompt; nothing is shown when GridCraft is current.
+    /// web). A found release opens the update prompt; nothing is shown when Iridium Sheets is current.
     pub fn start_update_check(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         updates_ui::start(self, false);
     }
 
-    /// Help ▸ Check for Updates…: look now, and say so when GridCraft is up to date or the check fails.
+    /// Help ▸ Check for Updates…: look now, and say so when Iridium Sheets is up to date or the check fails.
     pub fn check_for_updates(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         updates_ui::start(self, true);
         #[cfg(target_arch = "wasm32")]
         {
-            self.message = Some(("GridCraft".into(), "The web version is always the latest release.".into()));
+            self.message = Some(("Iridium Sheets".into(), "The web version is always the latest release.".into()));
         }
     }
 }

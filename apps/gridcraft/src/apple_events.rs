@@ -1,9 +1,9 @@
 //! macOS open-documents and quit Apple events (#69).
 //!
-//! Finder double-clicks, Open With, drops on the Dock icon and `open -a GridCraft book.xlsx` don't
+//! Finder double-clicks, Open With, drops on the Dock icon and `open -a Iridium Sheets book.xlsx` don't
 //! pass paths on the command line: LaunchServices sends the running (or just-launched) app a
 //! `kAEOpenDocuments` ('odoc') Apple event. winit 0.30 doesn't handle it and owns the
-//! `NSApplicationDelegate`, so AppKit answered "GridCraft cannot open files in the Excel Workbook
+//! `NSApplicationDelegate`, so AppKit answered "Iridium Sheets cannot open files in the Excel Workbook
 //! format". Handling it ourselves needs Objective-C class declarations, i.e. `unsafe`, which this
 //! workspace forbids. The audited `fmv-macos-events` crate (also used by PdfCraft and PhotoCraft)
 //! wraps exactly that, an `NSAppleEventManager` handler registered before Finder's launch event
@@ -56,7 +56,7 @@ pub fn poll(inbox: &Inbox, app: &mut SheetApp, ctx: &egui::Context) {
     }
 }
 
-/// A Dock quit reaches GridCraft behind other apps, hidden or minimized, and its question has to
+/// A Dock quit reaches Iridium Sheets behind other apps, hidden or minimized, and its question has to
 /// be seen. egui's Focus goes through winit, which skips a minimized window or a hidden app, and
 /// macOS may refuse an activation it didn't expect, so ask AppKit directly and bounce the Dock
 /// icon until the user switches over.

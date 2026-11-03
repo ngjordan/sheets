@@ -34,7 +34,7 @@ pub struct Ctx<'a> {
     pub cell_pictures: Vec<Option<Arc<CellPicture>>>,
     /// x14 conditional-format ids of the current sheet's data bars, with the index of the rule in `cond_formats`.
     pub cf_ext_ids: Vec<(String, usize)>,
-    /// Whether GridCraft calculates a function, when the caller says: cell formulas wrapped by
+    /// Whether Iridium Sheets calculates a function, when the caller says: cell formulas wrapped by
     /// Google Sheets' export are then read as the formula inside (see [`crate::read_xlsx_with`]).
     pub known_function: Option<&'a dyn Fn(&str) -> bool>,
     /// The code of the workbook's Python cells, from its Python part.
@@ -230,7 +230,7 @@ fn read_workbook_properties(cx: &mut Ctx<'_>, wb: &mut Workbook, xml: &El) {
     }
 }
 
-/// The single window modelled by GridCraft: prefer the first visible window,
+/// The single window modelled by Iridium Sheets: prefer the first visible window,
 /// including the format's default visibility, and otherwise retain the first one.
 fn selected_workbook_view(workbook: &El) -> Option<&El> {
     let views = workbook.child("bookViews")?;
@@ -433,7 +433,7 @@ pub fn read_xlsx<'a>(bytes: &'a [u8], known_function: Option<&'a dyn Fn(&str) ->
         wb.props.company = x.child("Company").map(|e| e.text.clone()).unwrap_or_default();
     }
 
-    // A VBA project is carried through unchanged: GridCraft never runs macros, but preserving the
+    // A VBA project is carried through unchanged: Iridium Sheets never runs macros, but preserving the
     // binary keeps macro-enabled workbooks from being silently stripped on save.
     if let Some(r) = find_rel(&wb_rels, "vbaProject").cloned() {
         match cx.pkg.read(&r.target) {

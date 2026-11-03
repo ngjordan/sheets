@@ -69,7 +69,7 @@ impl CellError {
     }
     /// `ERROR.TYPE` number. Microsoft documents 1 to 8; 9 (#SPILL!), 11 (#BLOCKED!) and 14 (#CALC!)
     /// are the numbers Excel returns. Microsoft documents no number for #PYTHON!, #BUSY! or
-    /// #TIMEOUT!: 19, 20 and 21 are GridCraft's own choice, after the numbers Excel is known to use,
+    /// #TIMEOUT!: 19, 20 and 21 are Iridium Sheets's own choice, after the numbers Excel is known to use,
     /// and may change if Excel's numbers become known.
     pub fn code(&self) -> u32 {
         match self {

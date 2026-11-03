@@ -23,6 +23,6 @@ jobs:
     uses: storytold/craft-common-actions/.github/workflows/windows-arm64.yml@main
     with:
       app-name: gridcraft
-      app-dir: GridCraft
-      install-relative-path: Programs/ArtCraft/GridCraft
+      app-dir: Iridium Sheets
+      install-relative-path: Programs/ArtCraft/Iridium Sheets
       install-scope: perUser

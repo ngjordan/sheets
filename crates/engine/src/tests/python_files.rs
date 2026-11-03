@@ -219,10 +219,10 @@ fn excel_authored_python_cells_are_read_as_python() {
     assert_eq!(b1.code, "df = xl(\"C1:C3\", headers=True)\ndf.describe()", "a parameter is put back as its reference");
     assert!(b1.object);
     assert_eq!(v(&s, "B1"), Value::text("DataFrame"));
-    // Saved by GridCraft, the code goes back into a Python part, the reference as text.
+    // Saved by Iridium Sheets, the code goes back into a Python part, the reference as text.
     let again = save(&mut s, "xlsx");
     assert!(part(&again, "xl/python.xml").contains("<code>df = xl(\"C1:C3\", headers=True)\ndf.describe()</code>"));
-    // The string-literal form (other applications, files GridCraft wrote before) still reads.
+    // The string-literal form (other applications, files Iridium Sheets wrote before) still reads.
     let literal = "<sheetData><row r=\"1\"><c r=\"A1\"><f>_xlfn._xlws.PY(\"1 + 1\",1)</f><v>2</v></c></row></sheetData>";
     open(&mut s, "literal.xlsx", &excel_shaped(literal, None));
     assert_eq!(code(&s, "A1").map(|p| (p.code, p.object)), Some(("1 + 1".to_string(), true)));
