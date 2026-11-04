@@ -171,7 +171,7 @@ foreach ($fixture in @(@('gridcraft.exe', 'winexe'), @('gridcraft-cli.exe', 'exe
 }
 $packages = @()
 foreach ($version in '90.0.0', '90.0.1', '90.0.2') {
-  $msi = Join-Path $WorkDir "gridcraft-$version.msi"
+  $msi = Join-Path $WorkDir "iridium-sheets-$version.msi"
   & wix build (Join-Path $PSScriptRoot 'gridcraft.wxs') -arch x64 `
     -d "Version=$version" -d "BinDir=$Bin" -d "IconPath=$Icon" -o $msi | Write-Host
   if ($LASTEXITCODE -ne 0) { throw "WiX failed to build $version" }

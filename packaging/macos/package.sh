@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/gridcraft-<version>-macos-<arch>.dmg          Iridium Sheets.app on a drag-to-Applications DMG
-#   $DIST/gridcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   $DIST/iridium-sheets-<version>-macos-<arch>.dmg          Iridium Sheets.app on a drag-to-Applications DMG
+#   $DIST/iridium-sheets-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -40,8 +40,8 @@ IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
 APP="$WORK/Iridium Sheets.app"
-DMG="$DIST/gridcraft-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/gridcraft-cli-$VERSION-macos-$ARCH.zip"
+DMG="$DIST/iridium-sheets-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/iridium-sheets-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
 if [[ "$IDENTITY" = "-" ]]; then
@@ -169,7 +169,7 @@ fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
-CLI_DIR="$WORK/gridcraft-cli-$VERSION-macos-$ARCH"
+CLI_DIR="$WORK/iridium-sheets-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
 cp "$WORK/bin/gridcraft-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"

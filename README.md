@@ -202,15 +202,15 @@ numbers and estimates are in [ROADMAP.md](ROADMAP.md); the ranked work list is [
 
 ## Downloads
 
-**Download Iridium Sheets** from GitHub: the [latest release](https://github.com/storytold/gridcraft/releases/latest) has every build listed below, and [all releases](https://github.com/storytold/gridcraft/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
+**Download Iridium Sheets** from GitHub: the [latest release](https://github.com/ngjordan/iridium-sheets/releases/latest) has every build listed below, and [all releases](https://github.com/ngjordan/iridium-sheets/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
 
 ### Windows
 
 | Build | Installer | Portable |
 |---|---|---|
-| x64 (64-bit Intel/AMD) | `gridcraft-<ver>-windows-x64.msi` | `gridcraft-<ver>-windows-x64-portable.zip` |
-| arm64 (Snapdragon and other ARM PCs) | `gridcraft-<ver>-windows-arm64.msi` | `gridcraft-<ver>-windows-arm64-portable.zip` |
-| x86 (32-bit) | `gridcraft-<ver>-windows-x86.msi` | `gridcraft-<ver>-windows-x86-portable.zip` |
+| x64 (64-bit Intel/AMD) | `iridium-sheets-<ver>-windows-x64.msi` | `iridium-sheets-<ver>-windows-x64-portable.zip` |
+| arm64 (Snapdragon and other ARM PCs) | `iridium-sheets-<ver>-windows-arm64.msi` | `iridium-sheets-<ver>-windows-arm64-portable.zip` |
+| x86 (32-bit) | `iridium-sheets-<ver>-windows-x86.msi` | `iridium-sheets-<ver>-windows-x86-portable.zip` |
 
 Installers and executables are code-signed. The MSI installer offers an optional desktop shortcut
 (unchecked on a new installation).
@@ -247,30 +247,30 @@ handling again for troubleshooting.
 
 | Build | File | Notes |
 |---|---|---|
-| App, universal (Apple silicon + Intel) | `gridcraft-<ver>-macos-universal.dmg` | Signed and notarized |
-| Command-line tool, universal | `gridcraft-cli-<ver>-macos-universal.zip` | Signed and notarized |
+| App, universal (Apple silicon + Intel) | `iridium-sheets-<ver>-macos-universal.dmg` | Signed and notarized |
+| Command-line tool, universal | `iridium-sheets-cli-<ver>-macos-universal.zip` | Signed and notarized |
 
 ### Linux
 
 | Format | x86_64 | aarch64 (ARM64) | Notes |
 |---|---|---|---|
-| AppImage | `gridcraft-<ver>-linux-x86_64.AppImage` | `gridcraft-<ver>-linux-aarch64.AppImage` | Runs anywhere; updates itself with [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate) (`.zsync` files) |
-| Flatpak | `gridcraft-<ver>-linux-x86_64.flatpak` | `gridcraft-<ver>-linux-aarch64.flatpak` | Sandboxed; `flatpak install --user <file>` |
-| Debian/Ubuntu | `gridcraft-<ver>-linux-x86_64.deb` | `gridcraft-<ver>-linux-aarch64.deb` | |
-| Fedora/RHEL/openSUSE | `gridcraft-<ver>-linux-x86_64.rpm` | `gridcraft-<ver>-linux-aarch64.rpm` | |
-| Tarball | `gridcraft-<ver>-linux-x86_64.tar.gz` | `gridcraft-<ver>-linux-aarch64.tar.gz` | Unpack anywhere |
+| AppImage | `iridium-sheets-<ver>-linux-x86_64.AppImage` | `iridium-sheets-<ver>-linux-aarch64.AppImage` | Runs anywhere; updates itself with [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate) (`.zsync` files) |
+| Flatpak | `iridium-sheets-<ver>-linux-x86_64.flatpak` | `iridium-sheets-<ver>-linux-aarch64.flatpak` | Sandboxed; `flatpak install --user <file>` |
+| Debian/Ubuntu | `iridium-sheets-<ver>-linux-x86_64.deb` | `iridium-sheets-<ver>-linux-aarch64.deb` | |
+| Fedora/RHEL/openSUSE | `iridium-sheets-<ver>-linux-x86_64.rpm` | `iridium-sheets-<ver>-linux-aarch64.rpm` | |
+| Tarball | `iridium-sheets-<ver>-linux-x86_64.tar.gz` | `iridium-sheets-<ver>-linux-aarch64.tar.gz` | Unpack anywhere |
 
 ### FreeBSD
 
 | Build | File |
 |---|---|
-| x86_64 | `gridcraft-<ver>-freebsd-x86_64.tar.gz` |
+| x86_64 | `iridium-sheets-<ver>-freebsd-x86_64.tar.gz` |
 
 ### Web (WebAssembly)
 
 | Build | File | Notes |
 |---|---|---|
-| Static site | `gridcraft-web-<ver>.zip` | Runs in a modern browser; host it on any static server |
+| Static site | `iridium-sheets-web-<ver>.zip` | Runs in a modern browser; host it on any static server |
 
 ## The Crafting Apps
 

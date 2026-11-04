@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build and package Iridium Sheets for FreeBSD (<arch> is x86_64 or aarch64):
 #
-#   $DIST/gridcraft-<version>-freebsd-<arch>.tar.gz   bin/ + share/ (desktop entry, icons,
+#   $DIST/iridium-sheets-<version>-freebsd-<arch>.tar.gz   bin/ + share/ (desktop entry, icons,
 #                                                      AppStream, MIME), extract under /usr/local
 #
 # Usage: packaging/freebsd/package.sh [--skip-build]
@@ -39,7 +39,7 @@ else
     *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
   esac
 fi
-BASENAME="gridcraft-$VERSION-freebsd-$ARCH"
+BASENAME="iridium-sheets-$VERSION-freebsd-$ARCH"
 
 echo "==> Iridium Sheets $VERSION for FreeBSD $ARCH"
 
