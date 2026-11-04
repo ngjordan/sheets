@@ -8,3 +8,8 @@ plan/
 /.claude/
 /target-*/
 /craft-fonts/
+
+# The Google API libraries the Google Sheets helper needs. They are third-party
+# and fetched at package time (see packaging/fetch-google-libs.py), not committed.
+packaging/macos/pylib/
+packaging/windows/pylib/

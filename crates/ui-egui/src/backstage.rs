@@ -584,6 +584,72 @@ fn open_page(app: &mut SheetApp, ui: &mut Ui, bs: &mut Backstage, out: &mut Outc
     ui.add_space(22.0);
     section(ui, lang, "Recent");
     recent_list(app, ui, bs, out, usize::MAX);
+    ui.add_space(22.0);
+    google_sheets_section(app, ui, out);
+}
+
+/// File › Open › Google Sheets: the spreadsheets the signed-in account can open.
+///
+/// The list is fetched in the background (the host does the network work), so
+/// this draws what has arrived so far and offers a way to ask for it.
+fn google_sheets_section(app: &mut SheetApp, ui: &mut Ui, out: &mut Outcome) {
+    use crate::services::gsheets::Provider;
+
+    let lang = app.ui.language;
+    let t = Tokens::get(ui.ctx());
+    section(ui, lang, "Cloud spreadsheets");
+
+    if app.services.gsheets.is_empty() {
+        dim(ui, lang.tr("Cloud spreadsheets are not available in this build."));
+        return;
+    }
+
+    for provider in [Provider::Google, Provider::Excel] {
+        if !app.services.gsheets.iter().any(|b| b.provider() == provider) {
+            continue;
+        }
+        let (signed_in, email) = match provider {
+            Provider::Google => (app.gsheets_account.signed_in, app.gsheets_account.email.clone()),
+            Provider::Excel => (app.gsheets_excel_account.signed_in, app.gsheets_excel_account.email.clone()),
+        };
+        if !signed_in {
+            dim(ui, lang.tr(&format!("Sign in to {} to open one of its spreadsheets.", provider.label())));
+            ui.add_space(6.0);
+            if square_button(ui, Icon::OpenFolder, lang.tr(&format!("Sign in to {}", provider.label()))).clicked() {
+                crate::app::gsheets::account(app, provider);
+                crate::app::gsheets::sign_in(app, provider);
+            }
+            ui.add_space(14.0);
+            continue;
+        }
+        if !email.is_empty() {
+            dim(ui, &email);
+            ui.add_space(6.0);
+        }
+        let sheets: Vec<_> = app.gsheets_sheets.iter().filter(|s| s.provider == provider).cloned().collect();
+        if sheets.is_empty() {
+            dim(ui, lang.tr("No spreadsheets loaded yet."));
+            ui.add_space(6.0);
+            if square_button(ui, Icon::OpenFolder, lang.tr(&format!("Load my {}", provider.label()))).clicked() {
+                crate::app::gsheets::list(app, provider);
+            }
+            ui.add_space(14.0);
+            continue;
+        }
+        for sheet in sheets {
+            let label = if sheet.tabs.is_empty() { sheet.title.clone() } else { format!("{}  ·  {}", sheet.title, sheet.tabs.join(", ")) };
+            if ui.button(label).clicked() {
+                crate::app::gsheets::fetch(app, provider, &sheet.id);
+                out.close = true;
+            }
+        }
+        ui.add_space(6.0);
+        if ui.link("Refresh").clicked() {
+            crate::app::gsheets::list(app, provider);
+        }
+        ui.add_space(14.0);
+    }
+    let _ = t;
 }
 
 /// Review › Protect Workbook and File › Info › Protect Workbook: the protect dialog (with an
@@ -698,6 +764,36 @@ fn save_as(app: &mut SheetApp, ui: &mut Ui, bs: &mut Backstage, out: &mut Outcom
     // Desktop: the system Save dialog. Web: the file downloads.
     let web = app.services.pick_save.is_none() && app.services.download.is_some();
     let label = if web { format!("{} (.{fmt})", lang.tr("Download")) } else { lang.tr("Browse…").to_string() };
+    // Save to Google Sheets: the same workbook, in the account's Drive.
+    if !app.services.gsheets.is_empty() {
+        use crate::services::gsheets::Provider;
+        ui.add_space(18.0);
+        section(ui, lang, "Cloud");
+        for provider in [Provider::Google, Provider::Excel] {
+            if !app.services.gsheets.iter().any(|b| b.provider() == provider) {
+                continue;
+            }
+            let text = format!("Save to {}", provider.label());
+            let label = lang.tr(&text);
+            if square_button(ui, Icon::Save, label).clicked() {
+                // Commit the cell being edited first, or the edit would be lost.
+                app.commit_edit(0, 0, false, false);
+                // The target is the spreadsheet this workbook came from.
+                let target = app.gsheets_current.clone().filter(|(pr, _)| *pr == provider).map(|(_, id)| id);
+                match target {
+                    Some(id) => {
+                        crate::app::gsheets::push(app, provider, &id, None);
+                        out.close = true;
+                    }
+                    None => {
+                        // No target yet: list the spreadsheets so the user can pick one.
+                        crate::app::gsheets::list(app, provider);
+                        app.open_backstage(Page::Open);
+                    }
+                }
+            }
+        }
+    }
     if square_button(ui, Icon::OpenFolder, &label).clicked() && app.commit_edit(0, 0, false, false) {
         if fmt == "xlsx" {
             let before = app.session.active().map(|d| (d.path.clone(), d.is_dirty()));

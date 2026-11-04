@@ -14,6 +14,7 @@ mod apple_events;
 mod control_server;
 #[cfg(any(target_os = "windows", target_os = "macos", test))]
 mod graphics;
+mod gsheets;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
@@ -201,6 +202,7 @@ fn services() -> Services {
             dialog.save_file().and_then(|p| p.to_str().map(str::to_string))
         })),
         open_url: Some(Box::new(|url: &str| open_with_system(url))),
+        gsheets: vec![std::sync::Arc::new(gsheets::DesktopBackend::google()), std::sync::Arc::new(gsheets::DesktopBackend::excel())],
         printers: Some(print::discover()),
         print_native: Some(print::submit()),
         ..Default::default()

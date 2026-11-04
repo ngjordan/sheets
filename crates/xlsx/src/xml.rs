@@ -213,6 +213,11 @@ pub fn parse(xml: &[u8]) -> Result<El, IoError> {
     parse_streaming(xml, &[], &mut |_| Ok(()))
 }
 
+/// How many elements an element and its descendants hold.
+fn subtree_size(el: &El) -> usize {
+    1 + el.children.iter().map(subtree_size).sum::<usize>()
+}
+
 /// Parses a part; complete elements named in `split` (below the root) are handed to `cb` and not
 /// kept in the returned tree.
 pub fn parse_streaming(xml: &[u8], split: &[&str], cb: &mut dyn FnMut(El) -> Result<(), IoError>) -> Result<El, IoError> {
@@ -244,6 +249,12 @@ pub fn parse_streaming(xml: &[u8], split: &[&str], cb: &mut dyn FnMut(El) -> Res
         match stack.last_mut() {
             Some(parent) => {
                 if split.contains(&el.name.as_str()) {
+                    // A streamed element and everything under it leave the tree here: the
+                    // callback owns them. Counting its children against the kept-tree limit
+                    // would refuse a sheet with a million rows, even though none of those
+                    // elements is ever held in memory.
+                    let subtree = subtree_size(&el);
+                    *kept = kept.saturating_sub(subtree);
                     cb(el)?;
                 } else {
                     *kept = kept.saturating_add(1);
@@ -557,6 +568,26 @@ mod tests {
         for s in ["plain", " leading ", "a & <b>", "line\nbreak", "日本語", "x_x0041_"] {
             assert_eq!(si_body(s, None), t_el(s));
         }
+    }
+
+    /// A worksheet with more rows than the kept-tree limit must still open: the rows are
+    /// streamed, so none of their cells is ever held in the tree. Counting a streamed
+    /// element's children against the limit refused a sheet with a million rows.
+    #[test]
+    fn a_sheet_with_a_million_streamed_rows_is_not_refused() {
+        let mut xml = String::from("<worksheet><sheetData>");
+        for r in 1..=(MAX_XML_NODES + 1000) {
+            xml.push_str(&format!("<row r=\"{r}\"><c r=\"A{r}\"><v>1</v></c></row>"));
+        }
+        xml.push_str("</sheetData></worksheet>");
+        let mut rows = 0usize;
+        let root = parse_streaming(xml.as_bytes(), &["row"], &mut |_row| {
+            rows += 1;
+            Ok(())
+        })
+        .expect("a million streamed rows must not trip the kept-tree limit");
+        assert_eq!(rows, MAX_XML_NODES + 1000);
+        assert_eq!(root.name, "worksheet");
     }
 
     #[test]

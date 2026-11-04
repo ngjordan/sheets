@@ -18,6 +18,7 @@ mod editing;
 pub(crate) use editing::{DRAFT_CODE_HIDDEN, DRAFT_SHEET_GONE};
 mod files;
 mod fonts;
+pub(crate) mod gsheets;
 mod input;
 mod keys;
 mod prefs;
@@ -42,6 +43,11 @@ impl SheetApp {
             notice: None,
             services,
             printing: Default::default(),
+            gsheets_state: Default::default(),
+            gsheets_sheets: Vec::new(),
+            gsheets_account: Default::default(),
+            gsheets_excel_account: Default::default(),
+            gsheets_current: None,
             print_feedback_seen: None,
             synthetic: Default::default(),
             synthetic_pending: false,
@@ -140,6 +146,7 @@ impl SheetApp {
         updates_ui::tick(self, ctx);
         // Files read asynchronously (web file picker, dropped files).
         self.poll_async_opens();
+        gsheets::poll(self);
         self.autosave(ctx);
         self.update_title(ctx);
         self.request_hidden_paint(ctx);

@@ -1,6 +1,6 @@
 use super::{
     INTERFACE_SCALE_MAX, INTERFACE_SCALE_MIN, Json, NoticeKind, SheetApp, UiRequest, backstage, clamp_interface_scale, clean_error, dialogs,
-    formula_locale, i18n, json, now_ms, printing,
+    formula_locale, gsheets, i18n, json, now_ms, printing,
 };
 
 impl SheetApp {
@@ -150,6 +150,43 @@ impl SheetApp {
         let r = match id {
             "app.checkForUpdates" | "help.checkForUpdates" => {
                 self.check_for_updates();
+                Ok(Json::Null)
+            }
+            "ui.gsheets.list" => {
+                gsheets::list(self, provider_of(p));
+                Ok(Json::Null)
+            }
+            "ui.gsheets.open" => {
+                let id = p.get("id").and_then(Json::as_str).unwrap_or_default().to_string();
+                if id.is_empty() {
+                    Err("ui.gsheets.open needs a spreadsheet id".into())
+                } else {
+                    gsheets::fetch(self, provider_of(p), &id);
+                    Ok(Json::Null)
+                }
+            }
+            "ui.gsheets.save" => {
+                let provider = provider_of(p);
+                let id = p
+                    .get("id")
+                    .and_then(Json::as_str)
+                    .map(str::to_string)
+                    .or_else(|| self.gsheets_current.clone().filter(|(pr, _)| *pr == provider).map(|(_, id)| id));
+                match id {
+                    Some(id) => {
+                        let tab = p.get("tab").and_then(Json::as_str).map(str::to_string);
+                        gsheets::push(self, provider, &id, tab.as_deref());
+                        Ok(Json::Null)
+                    }
+                    None => Err("ui.gsheets.save needs a spreadsheet id, or an open cloud sheet to save back to".into()),
+                }
+            }
+            "ui.gsheets.signIn" => {
+                gsheets::sign_in(self, provider_of(p));
+                Ok(Json::Null)
+            }
+            "ui.gsheets.account" => {
+                gsheets::account(self, provider_of(p));
                 Ok(Json::Null)
             }
             "ui.printSettings" => printing::settings(&mut self.printing, p, self.services.printers.as_ref()),
@@ -435,5 +472,18 @@ impl SheetApp {
             Some(b) => b.page = page,
             None => self.backstage = Some(backstage::Backstage::new(page)),
         }
+    }
+}
+
+/// The cloud provider a command is about: `{"provider": "excel"}` or Google.
+fn provider_of(p: &Json) -> crate::services::gsheets::Provider {
+    p.get("provider").and_then(Json::as_str).map(provider_from).unwrap_or_default()
+}
+
+/// The provider named in a command's parameters.
+fn provider_from(name: &str) -> crate::services::gsheets::Provider {
+    match name.trim().to_ascii_lowercase().as_str() {
+        "excel" | "m365" | "microsoft" | "onedrive" => crate::services::gsheets::Provider::Excel,
+        _ => crate::services::gsheets::Provider::Google,
     }
 }

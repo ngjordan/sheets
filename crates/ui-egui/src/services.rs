@@ -1,5 +1,7 @@
 use super::printing;
 
+pub mod gsheets;
+
 type PickSave = Box<dyn Fn(&str) -> Option<String>>;
 type OpenUrl = Box<dyn Fn(&str)>;
 type CopyHtml = Box<dyn FnMut(&str, &str) -> Result<(), String>>;
@@ -21,6 +23,10 @@ pub struct Services {
     /// insert into a subsequent dialog or open the image as a workbook.
     pub pick_picture_async: Option<Box<dyn Fn(Inbox)>>,
     pub open_url: Option<OpenUrl>,
+    /// The cloud spreadsheet backends the host offers (Google Sheets, Excel).
+    /// Empty on hosts without them (the web build); the UI then reports the
+    /// feature as unavailable rather than failing.
+    pub gsheets: Vec<std::sync::Arc<dyn gsheets::Backend>>,
     /// Publish HTML and its plain-text alternative together. `Ok` means the host owns the
     /// write (including any asynchronous fallback); an immediate error uses egui's text path.
     pub copy_html: Option<CopyHtml>,

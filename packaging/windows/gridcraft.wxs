@@ -140,6 +140,7 @@
       <ComponentGroupRef Id="CraftFontLicences" />
       <?endif?>
       <ComponentGroupRef Id="GridcraftFiles" />
+      <ComponentGroupRef Id="GoogleLibFiles" />
     </Feature>
   <Property Id="CRAFT_OPTION_1_M" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_MSearch" Root="HKLM" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcut" Type="raw" />
     </Property><SetProperty Id="SAVEDDESKTOPSHORTCUT" Action="CraftLoadOption1M" Value="[CRAFT_OPTION_1_M]" After="LaunchConditions" Sequence="both" Condition="ALLUSERS = 1" /><Property Id="CRAFT_OPTION_1_U" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_USearch" Root="HKCU" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcut" Type="raw" />
@@ -151,6 +152,13 @@
       <Files Include="$(var.DocsDir)\**" />
     </ComponentGroup>
     <?endif?>
+    <!-- The Google Sheets helper and its libraries: a directory of their own, so the
+         harvest does not collide with the app's own files. Optional - the app runs
+         without them and reports Google Sheets as unavailable. -->
+    <Directory Id="GoogleLibDir" Name="pylib" />
+    <ComponentGroup Id="GoogleLibFiles" Directory="GoogleLibDir">
+      <Files Include="$(var.BinDir)\pylib\**" />
+    </ComponentGroup>
     <ComponentGroup Id="GridcraftFiles" Directory="INSTALLFOLDER">
       <Component Id="GridcraftApp" Guid="0507D4B6-12FF-4882-84E1-59083E74A4EB">
         <File Id="GridcraftExe" Source="$(var.BinDir)\gridcraft.exe" KeyPath="yes">

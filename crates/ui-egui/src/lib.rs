@@ -76,7 +76,7 @@ pub use control::{ControlRequest, ControlResponse};
 
 mod app;
 mod clock;
-mod services;
+pub mod services;
 mod state;
 
 pub use clock::{monotonic_ms, now_ms};
@@ -239,6 +239,16 @@ pub struct SheetApp {
     pub notice: Option<Notice>,
     pub services: Services,
     pub printing: printing::State,
+    /// Google Sheets work in flight and its result.
+    pub gsheets_state: app::gsheets::State,
+    /// The spreadsheets the signed-in accounts can open, from every provider.
+    pub gsheets_sheets: Vec<services::gsheets::SheetInfo>,
+    /// The signed-in Google account.
+    pub gsheets_account: services::gsheets::Account,
+    /// The signed-in Microsoft account.
+    pub gsheets_excel_account: services::gsheets::Account,
+    /// The spreadsheet the open workbook came from, so Save to the cloud knows where to go.
+    pub gsheets_current: Option<(services::gsheets::Provider, String)>,
     print_feedback_seen: Option<printing::Feedback>,
     /// Synthetic input from agents, one batch per step (drags need several steps).
     pub synthetic: std::collections::VecDeque<Vec<egui::Event>>,
