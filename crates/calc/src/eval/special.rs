@@ -107,6 +107,10 @@ fn is_special(n: &str) -> bool {
             | "INDIRECT"
             | "INDEX"
             | "CELL"
+            | "GETPIVOTDATA"
+            | "SHEETSNAME"
+            | "BOOKNAME"
+            | "EVALUATE"
             | "TRIMRANGE"
             | "SUBTOTAL"
             | "AGGREGATE"
@@ -145,6 +149,10 @@ pub const SPECIAL_FUNCTIONS: &[&str] = &[
     "INDIRECT",
     "INDEX",
     "CELL",
+    "GETPIVOTDATA",
+    "SHEETSNAME",
+    "BOOKNAME",
+    "EVALUATE",
     "TRIMRANGE",
     "SUBTOTAL",
     "AGGREGATE",

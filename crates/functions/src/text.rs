@@ -10,7 +10,7 @@ use crate::util::{
 };
 use crate::{Arg, Ctx, FnSpec, VAR};
 
-const TJ: &[bool] = &[false, true, false];
+pub(crate) const TJ: &[bool] = &[false, true, false];
 const TB: &[bool] = &[true, false, true, true, true, false];
 const TS: &[bool] = &[true, false, false, true, true, false];
 const ATT: &[bool] = &[false, true];

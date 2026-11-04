@@ -70,13 +70,16 @@ pub(crate) mod engineering;
 pub(crate) mod ets;
 pub(crate) mod financial;
 pub(crate) mod info;
+pub(crate) mod language;
 pub(crate) mod lift;
 pub(crate) mod lookup;
 pub(crate) mod math;
+pub(crate) mod service;
 pub(crate) mod special;
 pub(crate) mod stat;
 pub(crate) mod text;
 pub(crate) mod util;
+pub(crate) mod wps;
 
 pub use ets::Timeline;
 pub use stat::{aggregate_values, aggregate_values_k};
@@ -216,6 +219,8 @@ fn registry() -> &'static (Vec<FnSpec>, HashMap<&'static str, usize>) {
             info::specs(),
             engineering::specs(),
             database::specs(),
+            service::specs(),
+            wps::specs(),
         ] {
             v.extend(list);
         }

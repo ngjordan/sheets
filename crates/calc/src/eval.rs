@@ -15,8 +15,10 @@ mod array;
 mod call;
 mod format;
 mod lambda;
+mod pivot_lookup;
 mod reference_fns;
 mod special;
+mod wps;
 
 use array::map_unary;
 pub use array::{binary_values, zip2};

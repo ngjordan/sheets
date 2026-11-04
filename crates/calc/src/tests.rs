@@ -2372,3 +2372,55 @@ fn formulas_read_a_dirty_python_cell_after_it_is_laid_out() {
     assert_eq!((t.num("B1"), t.num("B2")), (5.0, 6.0));
     assert_eq!((t.num("A1"), t.num("A2"), t.num("A3")), (5.0, 100.0, 111.0));
 }
+
+#[test]
+fn sheetsname_and_bookname_read_the_workbook() {
+    // WPS's own functions (its "WPS独有函数" release): the names of the
+    // workbook's sheets, and the workbook's own name.
+    let mut t = T::new();
+    t.wb.sheet_mut(0).unwrap().name = "一班".into();
+    t.wb.sheets.push(std::sync::Arc::new(gridcraft_model::Sheet::new("二班")));
+    t.wb.sheets.push(std::sync::Arc::new(gridcraft_model::Sheet::new("三班")));
+
+    // The names of every sheet, as an array.
+    t.set("A1", "=SHEETSNAME()");
+    assert_eq!(t.get("A1"), Value::from("一班"));
+
+    // The nth of them.
+    t.set("A2", "=SHEETSNAME(,2)");
+    assert_eq!(t.get("A2"), Value::from("二班"));
+    t.set("A3", "=SHEETSNAME(,3)");
+    assert_eq!(t.get("A3"), Value::from("三班"));
+    // Past the end is an error, not an empty cell.
+    t.set("A4", "=SHEETSNAME(,9)");
+    assert_eq!(t.get("A4"), Value::Error(CellError::Value));
+
+    // The workbook's name: the file's name without its folder or extension.
+    t.wb.source_path = Some(std::path::PathBuf::from("books/报表.xlsx"));
+    t.calc = Calc::new();
+    t.set("A5", "=BOOKNAME()");
+    assert_eq!(t.get("A5"), Value::from("报表"));
+
+    // No file yet: an empty string, as in Excel.
+    t.wb.source_path = None;
+    t.calc = Calc::new();
+    t.set("A6", "=BOOKNAME()");
+    assert_eq!(t.get("A6"), Value::from(""));
+}
+
+#[test]
+fn evaluate_computes_the_formula_the_text_holds() {
+    // Excel's own function, which WPS also has: the value of the formula the
+    // text holds.
+    let mut t = T::new();
+    t.set("A1", "3");
+    t.set("A2", "4");
+    t.set("B1", "=EVALUATE(\"A1+A2\")");
+    assert_eq!(t.get("B1"), Value::Number(7.0));
+    // A reference evaluates to what it points at.
+    t.set("B2", "=EVALUATE(\"A1\")");
+    assert_eq!(t.get("B2"), Value::Number(3.0));
+    // Text that is not a formula is #NAME?.
+    t.set("B3", "=EVALUATE(\"not a formula\")");
+    assert_eq!(t.get("B3"), Value::Error(CellError::Name));
+}

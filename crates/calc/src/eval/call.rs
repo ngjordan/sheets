@@ -68,6 +68,10 @@ impl<'h> Evaluator<'h> {
             "INDEX" => self.index(args),
             "XLOOKUP" => self.xlookup(args),
             "CELL" => self.cell_info(args),
+            "GETPIVOTDATA" => super::pivot_lookup::getpivotdata(self, args),
+            "SHEETSNAME" => super::wps::sheetsname(self, args),
+            "BOOKNAME" => super::wps::bookname(self, args),
+            "EVALUATE" => super::wps::evaluate(self, args),
             "TRIMRANGE" => self.trimrange(args),
             "SUBTOTAL" | "AGGREGATE" => self.subtotal(name, args),
             "TEXT" => {

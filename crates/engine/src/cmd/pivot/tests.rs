@@ -1046,3 +1046,46 @@ fn legacy_count_numbers_caption_follows_the_function() {
         assert_eq!(text(&s, "E3"), after, "{legacy}");
     }
 }
+
+#[test]
+fn getpivotdata_reads_a_value_from_the_report() {
+    // A pivot's report is ordinary cells, so GETPIVOTDATA looks the value up
+    // there: the value field's caption names the column, the row label names
+    // the row, and the cell where they meet holds the number.
+    let mut s = sales();
+    s.execute("insert.pivotTable", json!({"source": "Sheet1!$A$1:$E$13", "destination": "Sheet1!G3", "rows": ["Region"], "values": ["Sales"]}))
+        .unwrap();
+    assert_eq!(text(&s, "H3"), "Sum of Sales");
+    assert_eq!(text(&s, "G4"), "East");
+
+    // The value for the "East" row: 100 + 120 + 60 + 60 + 75.
+    s.execute("cell.set", json!({"cell": "L1", "input": "=GETPIVOTDATA(\"Sum of Sales\",\"PivotTable1\",\"East\")"})).unwrap();
+    assert_eq!(val(&s, "L1"), Value::Number(415.0));
+
+    // The grand total, with no item.
+    s.execute("cell.set", json!({"cell": "L2", "input": "=GETPIVOTDATA(\"Sum of Sales\",\"PivotTable1\")"})).unwrap();
+    assert_eq!(val(&s, "L2"), Value::Number(TOTAL));
+
+    // A field that is not there is #REF!, not a wrong number.
+    s.execute("cell.set", json!({"cell": "L3", "input": "=GETPIVOTDATA(\"Sum of Units\",\"PivotTable1\",\"East\")"})).unwrap();
+    assert_eq!(val(&s, "L3"), Value::Error(CellError::Ref));
+
+    // An item that is not there is #REF! too.
+    s.execute("cell.set", json!({"cell": "L4", "input": "=GETPIVOTDATA(\"Sum of Sales\",\"PivotTable1\",\"Nowhere\")"})).unwrap();
+    assert_eq!(val(&s, "L4"), Value::Error(CellError::Ref));
+}
+
+#[test]
+fn getpivotdata_reads_a_column_item() {
+    // With two items the first is the row label and the second the column
+    // label, as in Excel.
+    let mut s = sales();
+    s.execute(
+        "insert.pivotTable",
+        json!({"source": "Sheet1!$A$1:$E$13", "destination": "Sheet1!G3", "rows": ["Region"], "columns": ["Product"], "values": ["Sales"]}),
+    )
+    .unwrap();
+    // Row "East", column "Pears": 120 + 60 + 15.
+    s.execute("cell.set", json!({"cell": "L1", "input": "=GETPIVOTDATA(\"Sum of Sales\",\"PivotTable1\",\"East\",\"Pears\")"})).unwrap();
+    assert_eq!(val(&s, "L1"), Value::Number(195.0));
+}
