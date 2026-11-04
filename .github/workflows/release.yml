@@ -9,6 +9,16 @@ on:
         description: "Version override for a test run, e.g. 0.2.0-rc.1 (empty: Cargo.toml)"
         type: string
         default: ""
+      has-freebsd:
+        description: "Build the FreeBSD release. Off by default: the shared workflow's VM asks for 12 GB and 4 vCPUs, which a 16 GB runner cannot allocate."
+        type: boolean
+        required: false
+        default: false
+      has-web:
+        description: "Build the WebAssembly (wasm) release"
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: write
@@ -27,6 +37,8 @@ jobs:
       app-title: Iridium Sheets
       craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
       version: ${{ inputs.version }}
+      has-freebsd: ${{ inputs.has-freebsd }}
+      has-web: ${{ inputs.has-web }}
     secrets:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
