@@ -233,8 +233,6 @@ fn runs(candidate: &PathBuf) -> bool {
         .unwrap_or(false)
 }
 
-/// Write a file that only the user can read.
-#[cfg(unix)]
 /// A directory only this user may enter, for the helper that is written out.
 ///
 /// The name has a random part: another account must not be able to guess it
@@ -268,6 +266,8 @@ fn set_private(path: &std::path::Path) {
 #[cfg(not(unix))]
 fn set_private(_path: &std::path::Path) {}
 
+/// Write a file that only the user can read.
+#[cfg(unix)]
 fn write_private(path: &PathBuf, contents: &str) -> std::io::Result<()> {
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
