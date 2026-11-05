@@ -120,24 +120,18 @@ cp "$ROOT/assets/app-icon/iridium-sheets.icns" "$APP/Contents/Resources/Iridium 
 # Bundled dependency font notices are installed before the app is signed.
 cp "$ROOT/NOTICE" "$ROOT/ATTRIBUTION.md" "$APP/Contents/Resources/"
 
-# ---- Google Sheets support --------------------------------------------------------------------
-# The app talks to Google through a small Python helper (one JSON request on
-# stdin, one on stdout), so the helper and the Google API libraries ship
-# inside the bundle. They are optional: without them the File menu reports
-# Google Sheets as unavailable and everything else works.
-GOOGLE_LIB="$ROOT/packaging/macos/pylib"
-if [[ ! -d "$GOOGLE_LIB" ]] && command -v python3 >/dev/null 2>&1; then
-  # The libraries are third-party, so they are fetched here rather than committed.
-  python3 "$ROOT/packaging/fetch-google-libs.py" "$GOOGLE_LIB" || \
-    warn "macOS: could not fetch the Google libraries; Google Sheets will be unavailable"
-fi
-if [[ -d "$GOOGLE_LIB" ]]; then
+# ---- Cloud spreadsheet helpers ----------------------------------------------------------------
+# The app talks to Google and Microsoft through small Python helpers (one
+# JSON request on stdin, one on stdout). The helpers use only the standard
+# library, so nothing has to be fetched or shipped beside them: there is no
+# third-party code in the bundle to go missing, and no download at build
+# time to go wrong.
+if command -v python3 >/dev/null 2>&1; then
   mkdir -p "$APP/Contents/Resources/pylib"
   cp "$ROOT/tools/gsheets_backend.py" "$APP/Contents/Resources/pylib/"
   cp "$ROOT/tools/m365_backend.py" "$APP/Contents/Resources/pylib/"
-  cp -R "$GOOGLE_LIB/." "$APP/Contents/Resources/pylib/"
 else
-  warn "macOS: no packaging/macos/pylib; Google Sheets will be unavailable in this build"
+  warn "macOS: no python3 on this build machine; the cloud spreadsheet helpers will be unavailable"
 fi
 # Licences of the embedded craft-fonts fonts (only when built with CRAFT_FONTS_DIR).
 copy_font_licences "$APP/Contents/Resources"

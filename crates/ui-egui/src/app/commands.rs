@@ -1,6 +1,6 @@
 use super::{
-    INTERFACE_SCALE_MAX, INTERFACE_SCALE_MIN, Json, NoticeKind, SheetApp, UiRequest, backstage, clamp_interface_scale, clean_error, dialogs,
-    formula_locale, gsheets, i18n, json, now_ms, printing,
+    INTERFACE_SCALE_MAX, INTERFACE_SCALE_MIN, Json, NoticeKind, SheetApp, UiRequest, backstage, clamp_interface_scale, clean_error, connector,
+    dialogs, formula_locale, gsheets, i18n, json, now_ms, printing,
 };
 
 impl SheetApp {
@@ -188,6 +188,41 @@ impl SheetApp {
             "ui.gsheets.account" => {
                 gsheets::account(self, provider_of(p));
                 Ok(Json::Null)
+            }
+            "ui.connector.list" => {
+                connector::list(self);
+                Ok(Json::Null)
+            }
+            "ui.connector.fetch" => {
+                // By name, when the user names a connector they saved; otherwise
+                // from the parameters, so a one-off pull needs no saved setup.
+                if let Some(name) = p.get("name").and_then(Json::as_str).filter(|s| !s.is_empty()) {
+                    connector::fetch_named(self, name);
+                    return Some(Ok(Json::Null));
+                }
+                match connector::connector_param(p) {
+                    Ok(c) => {
+                        connector::fetch(self, c);
+                        Ok(Json::Null)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
+            "ui.connector.save" => match connector::connector_param(p) {
+                Ok(c) => {
+                    connector::save(self, c);
+                    Ok(Json::Null)
+                }
+                Err(e) => Err(e),
+            },
+            "ui.connector.remove" => {
+                let name = p.get("name").and_then(Json::as_str).unwrap_or_default().to_string();
+                if name.is_empty() {
+                    Err("ui.connector.remove needs a connector name".into())
+                } else {
+                    connector::remove(self, name);
+                    Ok(Json::Null)
+                }
             }
             "ui.printSettings" => printing::settings(&mut self.printing, p, self.services.printers.as_ref()),
             "ui.printSubmit" => self.submit_print(p.clone()),

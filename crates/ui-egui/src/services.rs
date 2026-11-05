@@ -1,5 +1,6 @@
 use super::printing;
 
+pub mod connector;
 pub mod gsheets;
 
 type PickSave = Box<dyn Fn(&str) -> Option<String>>;
@@ -27,6 +28,10 @@ pub struct Services {
     /// Empty on hosts without them (the web build); the UI then reports the
     /// feature as unavailable rather than failing.
     pub gsheets: Vec<std::sync::Arc<dyn gsheets::Backend>>,
+    /// The external-data connectors the host offers. Empty on hosts without
+    /// them (the web build); the UI then reports the feature as unavailable
+    /// rather than failing.
+    pub connectors: Vec<std::sync::Arc<dyn connector::Backend>>,
     /// Publish HTML and its plain-text alternative together. `Ok` means the host owns the
     /// write (including any asynchronous fallback); an immediate error uses egui's text path.
     pub copy_html: Option<CopyHtml>,

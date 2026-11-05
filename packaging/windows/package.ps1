@@ -88,27 +88,15 @@ Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage | Out-Null
 Copy-Item (Join-Path $Bin 'gridcraft.exe'), (Join-Path $Bin 'gridcraft-cli.exe') $Stage
 
-# ---- Google Sheets support --------------------------------------------------------------------
-# The app talks to Google through a small Python helper (one JSON request on
-# stdin, one on stdout), so the helper and the Google API libraries ship
-# beside the app. They are optional: without them the File menu reports
-# Google Sheets as unavailable and everything else works.
+# ---- Cloud spreadsheet helpers ----------------------------------------------------------------
+# The app talks to Google and Microsoft through small Python helpers (one
+# JSON request on stdin, one on stdout). The helpers use only the standard
+# library, so nothing has to be fetched or shipped beside them: there is no
+# third-party code in the bundle to go missing, and no download at build
+# time to go wrong.
 $GoogleDir = Join-Path $Stage 'pylib'
 New-Item -ItemType Directory -Force -Path $GoogleDir | Out-Null
 Copy-Item -LiteralPath (Join-Path $Root 'tools\gsheets_backend.py'), (Join-Path $Root 'tools\m365_backend.py') -Destination $GoogleDir
-$GoogleLib = Join-Path $Root 'packaging\windows\pylib'
-if (-not (Test-Path $GoogleLib)) {
-  # The libraries are third-party, so they are fetched here rather than committed.
-  $Fetch = Join-Path $Root 'packaging\fetch-google-libs.py'
-  if (Test-Path $Fetch) {
-    try { & python $Fetch $GoogleLib } catch { Write-Output "note: could not fetch the Google libraries; Google Sheets will be unavailable" }
-  }
-}
-if (Test-Path $GoogleLib) {
-  Copy-Item -Recurse -Force -Path (Join-Path $GoogleLib '*') -Destination $GoogleDir
-} else {
-  Write-Output 'note: no packaging\windows\pylib; Google Sheets will be unavailable in this build'
-}
 
 & (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'gridcraft.exe') (Join-Path $Stage 'gridcraft-cli.exe')
 

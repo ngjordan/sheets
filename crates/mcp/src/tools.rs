@@ -386,6 +386,23 @@ fn base_tool_definitions() -> Vec<Value> {
         ),
         tool("redo", "Redo", "Redo the last undone change(s).", obj(json!({"steps": int("Number of steps (default 1)")}), &[]), false),
         tool(
+            "pull_connector",
+            "Pull from a connector",
+            "Pull rows from an external source into a new sheet as a table. Give either the name of a saved connector, or the source itself: `url` (http/https, or a local file), `source` (rest|csv|json), `method`, `headers` (a header value of `env:NAME` is replaced by that environment variable, so a secret never enters the workbook), and `path` (a JSON path to the rows inside the reply). The rows land in a new sheet named after the connector.",
+            obj(
+                json!({
+                    "name": string("Name of a saved connector"),
+                    "url": string("The endpoint or file to read"),
+                    "source": string("rest (default), csv or json"),
+                    "method": string("HTTP method (default GET)"),
+                    "headers": {"type": "object", "description": "Headers to send; a value of env:NAME is read from the environment"},
+                    "path": string("JSON path to the rows inside the reply, e.g. data.items"),
+                }),
+                &[],
+            ),
+            false,
+        ),
+        tool(
             "screenshot",
             "Screenshot",
             "Save a PNG screenshot of the Iridium Sheets window to `path`. Desktop app only (`gridcraft-cli mcp --connect 7979`).",
@@ -662,6 +679,7 @@ fn dispatch(b: &mut dyn Backend, name: &str, a: &Args) -> Result<Value, String> 
         "undo" => exec(b, "edit.undo", pick(a, &["steps"])),
         "redo" => exec(b, "edit.redo", pick(a, &["steps"])),
         "screenshot" => screenshot(b, a),
+        "pull_connector" => exec(b, "ui.connector.fetch", pick(a, &["name", "url", "source", "method", "headers", "path"])),
         "list_functions" => exec(b, "formulas.functions", pick(a, &["search", "category"])),
         other => Err(format!("unknown tool `{other}`")),
     }

@@ -278,9 +278,13 @@ impl Import {
                 }
                 Event::CData(t) => self.append(&t.decode().map_err(xml_error)?)?,
                 Event::GeneralRef(r) => {
+                    // The type is named so the method is picked: another
+                    // dependency has an `AsRef` impl for `[u8]` too, and
+                    // without the hint the call is ambiguous.
+                    let name: &[u8] = r.as_ref();
                     let ch = match r.resolve_char_ref().map_err(xml_error)? {
                         Some(c) => c,
-                        None => match r.as_ref() {
+                        None => match name {
                             b"amp" => '&',
                             b"lt" => '<',
                             b"gt" => '>',

@@ -11,6 +11,7 @@
 
 #[cfg(target_os = "macos")]
 mod apple_events;
+mod connector;
 mod control_server;
 #[cfg(any(target_os = "windows", target_os = "macos", test))]
 mod graphics;
@@ -203,6 +204,7 @@ fn services() -> Services {
         })),
         open_url: Some(Box::new(|url: &str| open_with_system(url))),
         gsheets: vec![std::sync::Arc::new(gsheets::DesktopBackend::google()), std::sync::Arc::new(gsheets::DesktopBackend::excel())],
+        connectors: vec![std::sync::Arc::new(connector::DesktopBackend::new())],
         printers: Some(print::discover()),
         print_native: Some(print::submit()),
         ..Default::default()

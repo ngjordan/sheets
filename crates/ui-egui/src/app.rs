@@ -13,6 +13,7 @@ use super::{
 
 mod clipboard;
 mod commands;
+pub(crate) mod connector;
 mod editing;
 #[cfg(test)]
 pub(crate) use editing::{DRAFT_CODE_HIDDEN, DRAFT_SHEET_GONE};
@@ -44,6 +45,8 @@ impl SheetApp {
             services,
             printing: Default::default(),
             gsheets_state: Default::default(),
+            connector_state: Default::default(),
+            connectors: Vec::new(),
             gsheets_sheets: Vec::new(),
             gsheets_account: Default::default(),
             gsheets_excel_account: Default::default(),
@@ -146,6 +149,7 @@ impl SheetApp {
         updates_ui::tick(self, ctx);
         // Files read asynchronously (web file picker, dropped files).
         self.poll_async_opens();
+        connector::poll(self);
         gsheets::poll(self);
         self.autosave(ctx);
         self.update_title(ctx);

@@ -616,7 +616,8 @@ fn google_sheets_section(app: &mut SheetApp, ui: &mut Ui, out: &mut Outcome) {
             dim(ui, lang.tr(&format!("Sign in to {} to open one of its spreadsheets.", provider.label())));
             ui.add_space(6.0);
             if square_button(ui, Icon::OpenFolder, lang.tr(&format!("Sign in to {}", provider.label()))).clicked() {
-                crate::app::gsheets::account(app, provider);
+                // One job runs at a time, and this is the one the button asks
+                // for: an account check here would replace it.
                 crate::app::gsheets::sign_in(app, provider);
             }
             ui.add_space(14.0);

@@ -30,10 +30,21 @@ pub enum Outcome {
 /// Work the host thread does, so the UI thread never waits on the network.
 type Job = Box<dyn FnOnce(&dyn Backend) -> Outcome + Send + 'static>;
 
+/// A job and the provider it is for.
+///
+/// The provider is part of the job because the host offers one backend per
+/// provider, and the worker has to pick the right one: running an Excel job
+/// against the Google backend asked Google's helper for an op it does not
+/// have.
+struct Task {
+    provider: Provider,
+    job: Job,
+}
+
 /// A pending job and its result.
 #[derive(Default)]
 pub struct Pending {
-    job: Option<Job>,
+    task: Option<Task>,
     result: Option<Outcome>,
 }
 
@@ -50,17 +61,17 @@ pub type State = Arc<Mutex<Pending>>;
 /// touches the app, so the UI thread is never blocked on the network.
 pub fn poll(app: &mut SheetApp) {
     let state = app.gsheets_state.clone();
-    let job = {
+    let task = {
         let mut s = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-        s.job.take()
+        s.task.take()
     };
-    if let Some(job) = job {
-        let backend = app.services.gsheets.first().cloned();
+    if let Some(Task { provider, job }) = task {
+        let backend = app.services.gsheets.iter().find(|b| b.provider() == provider).cloned();
         let state_for_worker = state.clone();
         std::thread::spawn(move || {
             let out = match backend {
                 Some(b) => job(b.as_ref()),
-                None => Outcome::Failed { provider: Provider::Google, message: "the cloud service is not available in this build".into() },
+                None => Outcome::Failed { provider, message: "the cloud service is not available in this build".into() },
             };
             let mut s = state_for_worker.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
             s.result = Some(out);
@@ -119,10 +130,10 @@ pub fn poll(app: &mut SheetApp) {
 
 /// Set a job, replacing any job still running: the older one's result is
 /// dropped, which is what the user expects when they pick something else.
-fn set_job(app: &SheetApp, job: Job) {
+fn set_job(app: &SheetApp, provider: Provider, job: Job) {
     let state = app.gsheets_state.clone();
     let mut s = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-    s.job = Some(job);
+    s.task = Some(Task { provider, job });
 }
 
 /// The backend for a provider, if the host offers one.
@@ -138,6 +149,7 @@ pub fn list(app: &mut SheetApp, provider: Provider) {
     }
     set_job(
         app,
+        provider,
         Box::new(move |b: &dyn Backend| match b.list() {
             Ok(v) => Outcome::List { provider, sheets: v },
             Err(e) => Outcome::Failed { provider, message: e },
@@ -153,6 +165,7 @@ pub fn fetch(app: &mut SheetApp, provider: Provider, id: &str) {
     let id = id.to_string();
     set_job(
         app,
+        provider,
         Box::new(move |b: &dyn Backend| match b.fetch(&id) {
             Ok(bytes) => {
                 let title =
@@ -185,6 +198,7 @@ pub fn push(app: &mut SheetApp, provider: Provider, id: &str, tab: Option<&str>)
     };
     set_job(
         app,
+        provider,
         Box::new(move |b: &dyn Backend| match b.push(&id, &bytes, tab.as_deref()) {
             Ok(title) => Outcome::Pushed { id, title, provider },
             Err(e) => Outcome::Failed { provider, message: e },
@@ -199,6 +213,7 @@ pub fn sign_in(app: &mut SheetApp, provider: Provider) {
     }
     set_job(
         app,
+        provider,
         Box::new(move |b: &dyn Backend| match b.sign_in_url() {
             Ok(url) => Outcome::SignIn { provider, url },
             Err(e) => Outcome::Failed { provider, message: e },
@@ -211,7 +226,7 @@ pub fn account(app: &mut SheetApp, provider: Provider) {
     if backend_for(app, provider).is_none() {
         return;
     }
-    set_job(app, Box::new(move |b: &dyn Backend| Outcome::Account { provider, account: b.account() }));
+    set_job(app, provider, Box::new(move |b: &dyn Backend| Outcome::Account { provider, account: b.account() }));
 }
 
 #[cfg(test)]

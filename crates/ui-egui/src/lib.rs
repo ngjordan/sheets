@@ -249,6 +249,10 @@ pub struct SheetApp {
     pub gsheets_excel_account: services::gsheets::Account,
     /// The spreadsheet the open workbook came from, so Save to the cloud knows where to go.
     pub gsheets_current: Option<(services::gsheets::Provider, String)>,
+    /// Connector work in flight and its result.
+    pub connector_state: app::connector::State,
+    /// The external-data connectors the host offers.
+    pub connectors: Vec<services::connector::Connector>,
     print_feedback_seen: Option<printing::Feedback>,
     /// Synthetic input from agents, one batch per step (drags need several steps).
     pub synthetic: std::collections::VecDeque<Vec<egui::Event>>,

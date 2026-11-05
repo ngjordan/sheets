@@ -20,7 +20,7 @@ use gridcraft_core::{CellError, Value};
 
 use crate::VAR;
 use crate::text::TJ;
-use crate::util::{A, R, S, arg, num, text};
+use crate::util::{A, MAX_CELLS, R, S, arg, num, text};
 
 /// ROUNDBANK(number, num_digits): round by the banker's rule.
 ///
@@ -132,11 +132,18 @@ fn reptarray(a: &[crate::Arg], _c: &mut dyn crate::Ctx) -> R<Value> {
     if count == 0 {
         return Ok(Value::Empty);
     }
-    let mut data = Vec::with_capacity(arr.data.len() * count);
+    // The result cannot be bigger than a sheet. Without the check,
+    // REPTARRAY(SEQUENCE(3), 1E18) asks for a vector of three quintillion
+    // values and the allocation aborts the process.
+    let total = arr.data.len().saturating_mul(count);
+    if total > MAX_CELLS {
+        return Err(CellError::Num);
+    }
+    let mut data = Vec::with_capacity(total);
     for _ in 0..count {
         data.extend(arr.data.iter().cloned());
     }
-    let out = gridcraft_core::Array::new(arr.rows * count, arr.cols, data).ok_or(CellError::Calc)?;
+    let out = gridcraft_core::Array::new(arr.rows.saturating_mul(count), arr.cols, data).ok_or(CellError::Calc)?;
     Ok(Value::from(out))
 }
 

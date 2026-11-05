@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
-"""Fetch the Google API libraries the Google Sheets helper needs.
+"""Fetch the Google API libraries for the Hermes-side Google bridge.
 
-The app talks to Google through a small Python helper, so the helper's
-dependencies have to be present wherever the app runs. They are third-party,
-so they are fetched here rather than committed - the same arrangement the
-project uses for its fonts.
+The application itself no longer needs these: its Google helper talks to the
+Google APIs over HTTPS with only the standard library, so nothing is
+fetched at build time and no third-party code is shipped in the bundle.
+
+The bridge in `tools/gsheets.py` still uses the Google API client, and the
+workspace scripts that use it need the libraries on their path, so they are
+fetched here rather than committed - the same arrangement the project uses
+for its fonts.
+
+Every download is checked against the sha256 PyPI publishes for that exact
+file, so a wheel that does not match is never unpacked.
 
 The set is deliberately small: the Google API client, its auth helpers and
 their dependencies, plus the two discovery documents the app actually uses
@@ -19,6 +26,7 @@ The target directory ends up holding the packages to put on PYTHONPATH.
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import shutil
 import sys
@@ -51,6 +59,14 @@ PACKAGES = {
     "googleapis-common-protos": "google.api_core",
     "proto-plus": "proto",
     "protobuf": "google.protobuf",
+    # The hard dependencies of the packages above. Without them the import
+    # fails inside the app, where the message is "No module named ..." and
+    # the user cannot tell what to do.
+    "oauthlib": "oauthlib",
+    "pyparsing": "pyparsing",
+    "opentelemetry-api": "opentelemetry",
+    "opentelemetry-sdk": "opentelemetry.sdk",
+    "opentelemetry-semantic-conventions": "opentelemetry.semconv",
 }
 
 # The discovery documents the app uses. Anything else in the cache is another
@@ -170,8 +186,34 @@ def main() -> int:
     # Byte-code caches are rebuilt on first run; they only add size.
     for cache in dest.rglob("__pycache__"):
         shutil.rmtree(cache, ignore_errors=True)
+
+    # Prove the libraries import with only this directory on the path. A
+    # missing dependency is otherwise found by the user, in the app, as
+    # "No module named ...".
+    check_imports(dest)
     print(f"  ready: {dest}")
     return 0
+
+
+def check_imports(dest: Path) -> None:
+    """Fail if the libraries do not import from `dest` alone."""
+    import subprocess
+    import sys as _sys
+
+    script = (
+        "import googleapiclient.discovery, google.oauth2.credentials, "
+        "google_auth_oauthlib.flow, httplib2, requests_oauthlib"
+    )
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(dest)
+    proc = subprocess.run(
+        [_sys.executable, "-c", script], capture_output=True, text=True, env=env, timeout=120
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            "the fetched libraries do not import: "
+            + (proc.stderr.strip().splitlines() or ["unknown error"])[-1]
+        )
 
 
 
