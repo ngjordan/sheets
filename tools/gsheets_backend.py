@@ -171,6 +171,37 @@ def list_sheets() -> list[dict]:
     return out
 
 
+def a1(row: int, col: int) -> str:
+    """A cell's address, counting from zero."""
+    letters = ""
+    c = col + 1
+    while c > 0:
+        letters = chr(ord("A") + (c - 1) % 26) + letters
+        c = (c - 1) // 26
+    return f"{letters}{row + 1}"
+
+
+def split_formula_like(rows: list[list[str]]) -> tuple[list[list[str]], list[tuple[str, str]]]:
+    """The rows, and the cells whose text Google would read as a formula.
+
+    Google reads a value that begins with "=" as a formula, so a cell that
+    holds text like "=SUM(A1)" would arrive in the user's sheet as a live
+    formula. Those cells are written separately, as text.
+    """
+    risky: list[tuple[str, str]] = []
+    out: list[list[str]] = []
+    for r, row in enumerate(rows):
+        new_row = []
+        for c, value in enumerate(row):
+            if isinstance(value, str) and value.startswith("="):
+                risky.append((a1(r, c), value))
+                new_row.append("")
+            else:
+                new_row.append(value)
+        out.append(new_row)
+    return out, risky
+
+
 def fetch(sid: str) -> bytes:
     """The spreadsheet as an xlsx file."""
     path = f"/files/{sid}/export?" + urllib.parse.urlencode({"mimeType": XLSX_MIME})
@@ -208,11 +239,25 @@ def push(sid: str, xlsx: bytes, tab: str | None) -> str:
     if not title:
         meta = google(f"/spreadsheets/{sid}", base=SHEETS)
         title = meta["sheets"][0]["properties"]["title"]
+    safe_rows, risky = split_formula_like(rows)
     body = {
         "valueInputOption": "USER_ENTERED",
-        "data": [{"range": f"'{title}'!A1", "values": rows}],
+        "data": [{"range": f"'{title}'!A1", "values": safe_rows}],
     }
     google("/spreadsheets/" + sid + "/values:batchUpdate", method="POST", body=body, base=SHEETS)
+    if risky:
+        # The cells that look like a formula are written as text, so a
+        # workbook that arrived from elsewhere cannot put a formula into the
+        # user's own sheet.
+        google(
+            "/spreadsheets/" + sid + "/values:batchUpdate",
+            method="POST",
+            body={
+                "valueInputOption": "RAW",
+                "data": [{"range": f"'{title}'!{cell}", "values": [[value]]} for cell, value in risky],
+            },
+            base=SHEETS,
+        )
     meta = google(f"/spreadsheets/{sid}", base=SHEETS)
     return meta.get("properties", {}).get("title", title)
 
