@@ -13,3 +13,7 @@ plan/
 # and fetched at package time (see packaging/fetch-google-libs.py), not committed.
 packaging/macos/pylib/
 packaging/windows/pylib/
+
+# Python bytecode caches
+__pycache__/
+*.pyc

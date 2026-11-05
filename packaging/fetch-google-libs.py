@@ -18,6 +18,7 @@ The target directory ends up holding the packages to put on PYTHONPATH.
 
 from __future__ import annotations
 
+import hashlib
 import re
 import shutil
 import sys
@@ -69,18 +70,30 @@ WHEEL_RE = re.compile(
 )
 
 
-def latest_url(name: str) -> tuple[str, str]:
-    """The newest pure-Python wheel for a package."""
+def latest_url(name: str) -> tuple[str, str, str]:
+    """The newest pure-Python wheel for a package.
+
+    Returns the version, the download URL and the sha256 PyPI publishes for
+    that exact file. The hash is not optional: the wheel is unpacked into the
+    signed application bundle, so an unverified download would put whatever
+    the network served straight into a notarized binary.
+    """
     req = urllib.request.Request(SIMPLE.format(name), headers={"User-Agent": "iridium-sheets-build"})
     with urllib.request.urlopen(req, timeout=60) as r:
         html = r.read().decode("utf-8", "replace")
-    best: tuple[str, str] | None = None
+    best: tuple[str, str, str] | None = None
     for href in re.findall(r'href="([^"]+)"', html):
         if href.startswith("./"):
             href = href[2:]
         url = urllib.parse.urljoin(SIMPLE.format(name), href)
         # The href carries a #sha256=... fragment; the filename is before it.
-        fn = url.split("#", 1)[0].rsplit("/", 1)[-1]
+        digest = ""
+        if "#" in url:
+            url, _, frag = url.partition("#")
+            m = re.match(r"sha256=([0-9a-f]{64})\s*$", frag, re.I)
+            if m:
+                digest = m.group(1).lower()
+        fn = url.rsplit("/", 1)[-1]
         m = WHEEL_RE.match(fn)
         if not m:
             continue
@@ -89,9 +102,11 @@ def latest_url(name: str) -> tuple[str, str]:
         if not _is_stable(version):
             continue
         if best is None or _version_key(version) > _version_key(best[0]):
-            best = (version, url)
+            best = (version, url, digest)
     if best is None:
         raise RuntimeError(f"no stable pure-Python wheel found for {name}")
+    if not best[2]:
+        raise RuntimeError(f"PyPI published no sha256 for {name} {best[0]}; refusing to fetch it unverified")
     return best
 
 
@@ -109,11 +124,26 @@ def _version_key(version: str) -> tuple:
 
 
 def fetch_one(name: str, dest: Path) -> None:
-    version, url = latest_url(name)
+    version, url, digest = latest_url(name)
     tmp = dest / f".{name}-{version}.whl"
     print(f"  {name} {version}", flush=True)
     with urllib.request.urlopen(url, timeout=300) as r, open(tmp, "wb") as f:
         shutil.copyfileobj(r, f)
+
+    # Verify before unpacking. A wheel is a zip: unpacking it writes Python
+    # that runs inside the app, so the bytes have to match what PyPI
+    # published for that exact file.
+    h = hashlib.sha256()
+    with open(tmp, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    got = h.hexdigest()
+    if got != digest:
+        tmp.unlink(missing_ok=True)
+        raise RuntimeError(
+            f"{name} {version}: sha256 mismatch\n  expected {digest}\n  got      {got}"
+        )
+
     with zipfile.ZipFile(tmp) as z:
         z.extractall(dest)
     tmp.unlink()
