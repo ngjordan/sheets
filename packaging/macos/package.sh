@@ -140,8 +140,8 @@ fi
 copy_font_licences "$APP/Contents/Resources"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
   -e "s/@BUILD_SHA@/${IRIDIUM_BUILD_SHA:-unknown}/g" \
-  -e "s/@APP_NAME@/$APP_NAME/g" -e "s/@APP_ID@/$APP_ID/g" -e "s/@APP_VENDOR@/$APP_VENDOR/g" \
-  -e "s/@APP_SLUG@/$APP_SLUG/g" -e "s/@APP_HOMEPAGE@/$APP_HOMEPAGE/g" \
+  -e "s|@APP_NAME@|$APP_NAME|g" -e "s|@APP_ID@|$APP_ID|g" -e "s|@APP_VENDOR@|$APP_VENDOR|g" \
+  -e "s|@APP_SLUG@|$APP_SLUG|g" -e "s|@APP_HOMEPAGE@|$APP_HOMEPAGE|g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
 plutil -lint "$APP/Contents/Info.plist"
 printf 'APPL????' >"$APP/Contents/PkgInfo"
