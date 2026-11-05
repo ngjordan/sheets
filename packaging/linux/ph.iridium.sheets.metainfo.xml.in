@@ -2,17 +2,17 @@
 <!-- AppStream metadata (software centres, Flathub). Template: package.sh and the Flatpak
      manifest substitute @VERSION@ and @DATE@ from Cargo.toml and the build date. -->
 <component type="desktop-application">
-  <id>@APP_ID@</id>
+  <id>ph.iridium.sheets</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT OR Apache-2.0</project_license>
-  <name>@APP_NAME@</name>
+  <name>Iridium Sheets</name>
   <summary>Calculate, analyse and chart data in workbooks</summary>
-  <developer id="ai.storyteller">
-    <name>@APP_VENDOR@</name>
+  <developer id="ph.iridium.sheets">
+    <name>Iridium Technologies, Inc.</name>
   </developer>
   <description>
     <p>
-      @APP_NAME@ is an open-source, native spreadsheet. It opens and saves .xlsx workbooks and
+      Iridium Sheets is an open-source, native spreadsheet. It opens and saves .xlsx workbooks and
       CSV/TSV files, evaluates hundreds of worksheet functions, and formats, sorts, filters and
       charts your data.
     </p>
@@ -21,8 +21,8 @@
       can run too, so workbooks can be built and checked without opening a window.
     </p>
   </description>
-  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  <icon type="stock">@APP_ID@</icon>
+  <launchable type="desktop-id">ph.iridium.sheets.desktop</launchable>
+  <icon type="stock">ph.iridium.sheets</icon>
   <!-- Only url types known to appstream 0.15 (Ubuntu 22.04, where CI validates): no vcs-browser. -->
   <url type="homepage">https://iridium-sheets.ph</url>
   <url type="bugtracker">https://github.com/ngjordan/iridium-sheets/issues</url>

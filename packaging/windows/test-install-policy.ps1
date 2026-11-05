@@ -10,6 +10,15 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $policy = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'install-policy.json') | ConvertFrom-Json
+# The brand, from branding/brand.env: the same values the real build passes.
+$Brand = @{}
+Get-Content -LiteralPath (Join-Path $root 'branding\brand.env') | ForEach-Object {
+  $line = $_.Trim()
+  if ($line -and -not $line.StartsWith('#') -and $line.Contains('=')) {
+    $k, $v = $line.Split('=', 2)
+    $Brand[$k.Trim()] = $v.Trim().Trim('"')
+  }
+}
 [void](New-Item -ItemType Directory -Force -Path $OutputDirectory)
 $output = (Resolve-Path -LiteralPath $OutputDirectory).Path
 Add-Type -AssemblyName System.Drawing
@@ -45,7 +54,9 @@ foreach ($arch in $Architectures) {
     -d "AppNoticesDir=$(Join-Path $stage 'notices')" -d 'HasCraftFontLicences=1' -d 'HasCli=1' `
     -d "BannerBmp=$(Join-Path $stage 'banner.bmp')" -d "DialogBmp=$(Join-Path $stage 'dialog.bmp')" `
     -d "UiBannerBmp=$(Join-Path $stage 'banner.bmp')" -d "UiDialogBmp=$(Join-Path $stage 'dialog.bmp')" `
-    -d "LicenseRtf=$(Join-Path $stage 'licence.rtf')" -o $msi @($policy.localization | ForEach-Object { '-loc'; Join-Path $PSScriptRoot $_ })
+    -d "LicenseRtf=$(Join-Path $stage 'licence.rtf')" `
+    -d "AppName=$($Brand['APP_NAME'])" -d "Manufacturer=$($Brand['APP_VENDOR'])" -d "Homepage=$($Brand['APP_HOMEPAGE'])" `
+    -o $msi @($policy.localization | ForEach-Object { '-loc'; Join-Path $PSScriptRoot $_ })
   if ($LASTEXITCODE -ne 0) { throw "WiX validation failed for $arch (exit $LASTEXITCODE)." }
   $shell = (Get-Process -Id $PID).Path
   & $shell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $msi

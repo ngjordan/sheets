@@ -60,13 +60,10 @@ rm -rf "$WORK"
 install -Dm755 "$BIN/iridium-sheets" "$STAGE/usr/bin/iridium-sheets"
 install -Dm755 "$BIN/iridium-sheets-cli" "$STAGE/usr/bin/iridium-sheets-cli"
 "${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/iridium-sheets" "$STAGE/usr/bin/iridium-sheets-cli" 2>/dev/null || true
-brand_subst "$HERE/$APP_ID.desktop" "$WORK/$APP_ID.desktop"
-install -Dm644 "$WORK/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
+install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$IRIDIUM_BUILD_DATE/g" \
-  -e "s/@APP_NAME@/$APP_NAME/g" -e "s/@APP_ID@/$APP_ID/g" -e "s/@APP_VENDOR@/$APP_VENDOR/g" \
-  -e "s/@APP_SLUG@/$APP_SLUG/g" -e "s/@APP_HOMEPAGE@/$APP_HOMEPAGE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
 cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"
@@ -136,7 +133,7 @@ if has appimage; then
   APPDIR="$WORK/Iridium Sheets.AppDir"
   cp -R "$STAGE" "$APPDIR"
   ln -s usr/bin/iridium-sheets "$APPDIR/AppRun"
-  cp "$WORK/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
+  cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
   cp "$ROOT/assets/app-icon/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
   ln -s "$APP_ID.png" "$APPDIR/.DirIcon"
 
