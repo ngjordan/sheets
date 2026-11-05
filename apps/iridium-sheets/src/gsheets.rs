@@ -22,13 +22,6 @@ const EXCEL_SCRIPT: &str = include_str!("../../../tools/m365_backend.py");
 /// The CLI used to read a workbook back when pushing, next to the helper.
 const CLI_NAME: &str = "iridium-sheets-cli";
 
-/// What to tell the user when they ask to sign in to Google.
-///
-/// Google has no in-app sign-in: the token comes from the one-time OAuth
-/// setup, which needs the user's own Google Cloud client. The helper can
-/// only read the token afterwards.
-const GOOGLE_SIGN_IN_HELP: &str = "Sign in to Google with the Google Workspace setup (it asks for your Google Cloud client, and writes ~/.hermes/google_token.json), then reopen Iridium Sheets.";
-
 /// The helper script, by provider.
 fn script_for(provider: Provider) -> &'static str {
     match provider {
@@ -333,15 +326,16 @@ impl Backend for DesktopBackend {
 
     fn sign_in_url(&self) -> Result<String, String> {
         // Microsoft uses the device-code flow: the user visits a page and
-        // types a code, so there is no browser session to hand over.
+        // types a code, so there is no browser session to hand over. The
+        // helper holds the code and exchanges it for a token once the user
+        // has signed in, so the second press of the button finishes it.
         // Google signs in through the Google Workspace setup, which produces
-        // a token the helper reads - the app cannot start that flow itself,
-        // so it says what to do rather than asking the helper for an op it
-        // does not have.
-        if self.provider == Provider::Google {
-            return Err(GOOGLE_SIGN_IN_HELP.into());
-        }
+        // a token the helper reads: the helper says whether it is there.
         let r = self.call(json!({"op": "signIn"}))?;
+        if r.get("signed_in").and_then(Json::as_bool).unwrap_or(false) {
+            // An empty string means "already signed in" - there is no URL.
+            return Ok(String::new());
+        }
         let url = r.get("verification_uri").and_then(Json::as_str).unwrap_or_default().to_string();
         let code = r.get("user_code").and_then(Json::as_str).unwrap_or_default().to_string();
         if url.is_empty() {

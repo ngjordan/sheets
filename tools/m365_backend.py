@@ -43,6 +43,8 @@ from pathlib import Path
 
 HOME = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
 TOKEN = HOME / "microsoft_token.json"
+# The device code waiting for the user to finish signing in.
+PENDING = HOME / "microsoft_signin.json"
 
 GRAPH = "https://graph.microsoft.com/v1.0"
 LOGIN = "https://login.microsoftonline.com/common/oauth2/v2.0"
@@ -286,7 +288,7 @@ def main() -> int:
             title = push(req["id"], data, req.get("tab"))
             respond({"ok": True, "title": title, "note": "; ".join(PUSH_NOTES)})
         elif op == "signIn":
-            respond({"ok": True, **device_code()})
+            respond({"ok": True, **sign_in()})
         else:
             fail(f"unknown op {op!r}")
     except KeyError as e:
@@ -294,6 +296,90 @@ def main() -> int:
     except Exception as e:
         fail(str(e))
     return 0
+
+
+class _Expired(Exception):
+    """The device code expired; the user has to start again."""
+
+
+def _load(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def _save(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2))
+    os.chmod(path, 0o600)
+
+
+def sign_in() -> dict:
+    """Start or finish the device-code sign-in.
+
+    The first call asks Microsoft for a device code and shows it. The second
+    call, after the user signed in, exchanges the code for a token and writes
+    it. So the user signs in in their browser and presses the button again.
+    """
+    pending = _load(PENDING)
+    if not pending.get("device_code"):
+        pending = device_code()
+        _save(PENDING, pending)
+        return {"pending": True, **pending}
+    try:
+        data = _exchange(pending["device_code"])
+    except _Expired:
+        pending = device_code()
+        _save(PENDING, pending)
+        return {"pending": True, **pending}
+    if data is None:
+        # The user has not finished signing in yet; the code is still good.
+        return {"pending": True, **pending}
+    _save(
+        TOKEN,
+        {
+            "access_token": data["access_token"],
+            "refresh_token": data.get("refresh_token"),
+            "expires_at": time.time() + int(data.get("expires_in", 3600)),
+        },
+    )
+    PENDING.unlink(missing_ok=True)
+    return {"signed_in": True}
+
+
+def _exchange(device_code: str):
+    """Trade the device code for a token. None while the user is still signing in."""
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    body = urllib.parse.urlencode(
+        {
+            "client_id": CLIENT_ID,
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+            "device_code": device_code,
+            "scope": " ".join(SCOPES),
+        }
+    ).encode()
+    req = urllib.request.Request(
+        f"{LOGIN}/token",
+        data=body,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        detail = json.loads(e.read() or b"{}")
+        err = detail.get("error")
+        if err in ("authorization_pending", "slow_down"):
+            return None
+        if err == "expired_token":
+            raise _Expired()
+        raise RuntimeError(detail.get("error_description") or err or "the sign-in failed")
 
 
 def device_code() -> dict:

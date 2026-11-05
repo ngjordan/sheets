@@ -96,11 +96,19 @@ pub fn poll(app: &mut SheetApp) {
             }
         }
         Outcome::SignIn { provider, url } => {
-            if let Some(open) = &app.services.open_url {
+            // An empty URL means the sign-in is done; otherwise the code goes
+            // in the notice, because the user has to type it.
+            if !url.is_empty()
+                && let Some(open) = &app.services.open_url
+            {
                 open(&url);
             }
             app.notice = Some(Notice {
-                text: format!("Finish signing in to {} in your browser, then try again.", provider.label()),
+                text: if url.is_empty() {
+                    format!("Signed in to {}.", provider.label())
+                } else {
+                    format!("Finish signing in to {} in your browser, then press Sign in again.\n\n{}", provider.label(), url)
+                },
                 kind: NoticeKind::Info,
                 action: None,
             });

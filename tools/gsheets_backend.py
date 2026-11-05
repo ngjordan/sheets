@@ -302,10 +302,17 @@ def main() -> int:
         elif op == "signIn":
             # Google has no in-app sign-in: the token comes from the one-time
             # OAuth setup, which needs the user's own Google Cloud client.
-            fail(
-                "Sign in to Google with the Google Workspace setup (it asks for your Google Cloud "
-                "client, and writes ~/.hermes/google_token.json), then reopen Iridium Sheets."
-            )
+            try:
+                access_token()
+            except Exception:
+                fail(
+                    "Google needs an OAuth client of your own, once: create a Desktop app client at "
+                    "https://console.cloud.google.com/apis/credentials with the Sheets and Drive APIs "
+                    "enabled, then run Hermes's Google Workspace setup on this Mac (it writes "
+                    "~/.hermes/google_token.json) and press Sign in again."
+                )
+                return 0
+            respond({"ok": True, "signed_in": True})
         else:
             fail(f"unknown op {op!r}")
     except KeyError as e:
