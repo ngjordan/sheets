@@ -138,6 +138,7 @@ else
 fi
 # Licences of the embedded craft-fonts fonts (only when built with CRAFT_FONTS_DIR).
 copy_font_licences "$APP/Contents/Resources"
+# shellcheck disable=SC2153  # APP_ID and the rest come from packaging/brand.sh
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
   -e "s/@BUILD_SHA@/${IRIDIUM_BUILD_SHA:-unknown}/g" \
   -e "s|@APP_NAME@|$APP_NAME|g" -e "s|@APP_ID@|$APP_ID|g" -e "s|@APP_VENDOR@|$APP_VENDOR|g" \
