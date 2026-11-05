@@ -2421,7 +2421,7 @@ checksum = "791930b43c0d5973160d90a8f3894509f2b273430f5c5c73b668636d0287c5c0"
 
 [[package]]
 name = "iridium-calc"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
  "iridium-formula",
@@ -2433,7 +2433,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-chart"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-calc",
  "iridium-core",
@@ -2444,7 +2444,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-core"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "chrono",
  "js-sys",
@@ -2455,7 +2455,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-engine"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "image",
  "iridium-calc",
@@ -2478,7 +2478,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-formula"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
  "serde",
@@ -2487,7 +2487,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-functions"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
  "regex",
@@ -2495,7 +2495,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-math"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "ratex-font",
  "ratex-layout",
@@ -2505,7 +2505,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-mcp"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
  "iridium-engine",
@@ -2515,7 +2515,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-model"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
  "iridium-formula",
@@ -2528,21 +2528,21 @@ dependencies = [
 
 [[package]]
 name = "iridium-numfmt"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
 ]
 
 [[package]]
 name = "iridium-pdf"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-core",
 ]
 
 [[package]]
 name = "iridium-sheets"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "arboard",
  "chrono",
@@ -2570,7 +2570,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-sheets-cli"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-engine",
  "iridium-mcp",
@@ -2582,7 +2582,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-sheets-web"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "eframe",
  "egui",
@@ -2599,7 +2599,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-ui-egui"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "craft-ui",
  "craft-update",
@@ -2625,7 +2625,7 @@ dependencies = [
 
 [[package]]
 name = "iridium-xlsx"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "aes",
  "iridium-core",
@@ -6604,7 +6604,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.18.0"
+version = "0.18.1"
 dependencies = [
  "iridium-engine",
  "serde_json",
