@@ -66,7 +66,7 @@ impl SheetApp {
     /// a floating picture whose top-left corner is the active cell, as Excel does.
     pub fn paste_picture(&mut self, image: image::RgbaImage) {
         match encode_png(&image) {
-            Ok(png) => self.run_or_alert("insert.picture", json!({"base64": gridcraft_engine::io::base64_encode(&png), "mime": "image/png"})),
+            Ok(png) => self.run_or_alert("insert.picture", json!({"base64": iridium_engine::io::base64_encode(&png), "mime": "image/png"})),
             Err(e) => self.alert(e),
         }
     }

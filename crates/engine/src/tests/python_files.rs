@@ -5,8 +5,8 @@
 use std::io::{Read, Write};
 use std::sync::Arc;
 
-use gridcraft_core::{Array, CellError, CellRef, RangeRef, Value};
-use gridcraft_model::{Cell, PyCode, PyOutput, Workbook};
+use iridium_core::{Array, CellError, CellRef, RangeRef, Value};
+use iridium_model::{Cell, PyCode, PyOutput, Workbook};
 use serde_json::json;
 
 use super::{s, v};
@@ -415,7 +415,7 @@ fn deleting_the_data_python_code_reads_drops_its_kept_result() {
 
 #[test]
 fn a_script_is_measured_after_its_escapes_are_decoded() {
-    let max = gridcraft_model::python::MAX_FORMULA_CHARS;
+    let max = iridium_model::python::MAX_FORMULA_CHARS;
     // 2,000 tabs written as `_x0009_`: 14,000 characters in the file, 2,004 as code, which fits.
     let escaped = format!("x = 1{}end", "_x0009_".repeat(2_000));
     assert!(escaped.chars().count() > max);
@@ -451,7 +451,7 @@ fn many_cells_naming_one_long_script_take_from_one_budget() {
 
 /// Plants a cached spill over `range` (anchored at its start) with `value` at `at`, as a file
 /// read leaves it.
-fn cached_spill(sh: &mut gridcraft_model::Sheet, range: RangeRef, spilled: &[(CellRef, Value)]) {
+fn cached_spill(sh: &mut iridium_model::Sheet, range: RangeRef, spilled: &[(CellRef, Value)]) {
     sh.spill_ranges.insert(range.start, range);
     for (c, v) in spilled {
         sh.spill.insert(*c, v.clone());
@@ -460,7 +460,7 @@ fn cached_spill(sh: &mut gridcraft_model::Sheet, range: RangeRef, spilled: &[(Ce
 
 /// The value stored in the cell itself (not a spilled one), with whether it holds code or a
 /// formula.
-fn stored(sh: &gridcraft_model::Sheet, c: CellRef) -> (Value, bool) {
+fn stored(sh: &iridium_model::Sheet, c: CellRef) -> (Value, bool) {
     sh.cell(c).map(|x| (x.value.clone(), x.py.is_some() || x.formula.is_some())).unwrap_or((Value::Empty, false))
 }
 
@@ -469,7 +469,7 @@ fn a_result_cut_by_the_budget_keeps_its_cached_spill_as_values() {
     // Five Python cells each with a cached 1,000 x 1,000 spill: the budget rebuilds four results;
     // the fifth cell keeps only its own value, and the values it spilled stay as plain values.
     let mut wb = Workbook::new();
-    let bold = wb.styles.derive(gridcraft_model::StyleId::DEFAULT, |st| st.font.bold = true);
+    let bold = wb.styles.derive(iridium_model::StyleId::DEFAULT, |st| st.font.bold = true);
     let sh = wb.sheet_mut(0).unwrap();
     for i in 0..5u32 {
         let col = i * 1_000;
@@ -515,7 +515,7 @@ fn a_result_cut_by_the_budget_keeps_its_cached_spill_as_values() {
 
 #[test]
 fn code_too_long_for_a_cell_keeps_its_whole_cached_result_as_values() {
-    let long = PyCode::new(&"x".repeat(gridcraft_model::python::MAX_FORMULA_CHARS));
+    let long = PyCode::new(&"x".repeat(iridium_model::python::MAX_FORMULA_CHARS));
     assert!(!long.fits());
     let mut wb = Workbook::new();
     let sh = wb.sheet_mut(0).unwrap();
@@ -562,7 +562,7 @@ fn a_spill_range_claiming_the_whole_sheet_is_dropped_on_open() {
     // Walking the claimed range would take hours; the test finishing is the check.
     open(&mut s, "evil.xlsx", &evil);
     let sh = s.doc().unwrap().wb.active().unwrap();
-    assert!(sh.spill_ranges.values().all(|r| r.count() <= gridcraft_model::python::MAX_RESULT_CELLS as u64), "{:?}", sh.spill_ranges);
+    assert!(sh.spill_ranges.values().all(|r| r.count() <= iridium_model::python::MAX_RESULT_CELLS as u64), "{:?}", sh.spill_ranges);
     // Edits afterwards don't walk the claimed range either.
     s.execute("cell.set", json!({"cell": "H9", "input": "1"})).unwrap();
     s.execute("formulas.calculateNow", json!({})).unwrap();
@@ -615,9 +615,9 @@ fn hostile_python_content_in_files_is_capped() {
     // PY formulas from other formats become Python cells; non-literal PY calls stay formulas.
     let mut wb = Workbook::new();
     let sh = wb.sheet_mut(0).unwrap();
-    sh.set_cell(CellRef::new(0, 0), Cell::formula(gridcraft_model::Formula::new("=PY(\"1+\"&\"1\",1)")));
-    sh.set_cell(CellRef::new(1, 0), Cell::formula(gridcraft_model::Formula::new("=PY(A1,0)")));
-    sh.set_cell(CellRef::new(2, 0), Cell::formula(gridcraft_model::Formula::new("=_xlfn._xlws.PY(\"2\",0)")));
+    sh.set_cell(CellRef::new(0, 0), Cell::formula(iridium_model::Formula::new("=PY(\"1+\"&\"1\",1)")));
+    sh.set_cell(CellRef::new(1, 0), Cell::formula(iridium_model::Formula::new("=PY(A1,0)")));
+    sh.set_cell(CellRef::new(2, 0), Cell::formula(iridium_model::Formula::new("=_xlfn._xlws.PY(\"2\",0)")));
     crate::io::adopt_python(&mut wb);
     let sh = wb.sheet(0).unwrap();
     let a1 = sh.cell(CellRef::new(0, 0)).unwrap();
@@ -649,10 +649,10 @@ fn py_formulas_over_the_size_limit_keep_only_their_value() {
     };
     let mut wb = Workbook::new();
     let sh = wb.sheet_mut(0).unwrap();
-    let cell = |text: String| Cell { value: Value::text("cached"), ..Cell::formula(gridcraft_model::Formula::new(&text)) };
+    let cell = |text: String| Cell { value: Value::text("cached"), ..Cell::formula(iridium_model::Formula::new(&text)) };
     sh.set_cell(CellRef::new(0, 0), cell(format!("_xlfn._xlws.PY({},0)", lits(8_080))));
     sh.set_cell(CellRef::new(1, 0), cell(format!("_xlfn._xlws.PY({},0)", lits(8_079))));
-    let xlsx = gridcraft_xlsx::write_xlsx(&wb).unwrap();
+    let xlsx = iridium_xlsx::write_xlsx(&wb).unwrap();
     let (wb, warnings) = crate::io::open_bytes("long.xlsx", &xlsx).unwrap();
     let sh = wb.sheet(0).unwrap();
     let over = sh.cell(CellRef::new(0, 0)).unwrap();
@@ -693,7 +693,7 @@ fn a_dropped_python_result_keeps_its_spill_as_values() {
     }
     assert_eq!(sh.value(CellRef::parse("C2").unwrap()), Value::Number(8.0), "a sound result keeps its spill");
     // A save writes the kept values as plain values, and the sound spill as a spill.
-    let xml = sheet_xml(&gridcraft_xlsx::write_xlsx(&wb).unwrap());
+    let xml = sheet_xml(&iridium_xlsx::write_xlsx(&wb).unwrap());
     assert!(xml.contains("<c r=\"A2\"><v>8</v></c>") && xml.contains("<c r=\"B3\"><v>8</v></c>"), "{xml}");
     assert!(xml.contains("r=\"C2\""), "{xml}");
 }
@@ -712,7 +712,7 @@ fn a_formula_entered_in_a_python_spill_takes_the_area_as_a_formula_would() {
     assert_eq!(v(&s, "A1"), Value::Error(CellError::Spill));
     let wb = &s.doc().unwrap().wb;
     let mut fresh = (**wb).clone();
-    gridcraft_calc::Calc::new().recalc_all(&mut fresh);
+    iridium_calc::Calc::new().recalc_all(&mut fresh);
     for c in ["A1", "A2", "A3"] {
         let c = CellRef::parse(c).unwrap();
         assert_eq!(wb.active().unwrap().value(c), fresh.active().unwrap().value(c), "{c}");

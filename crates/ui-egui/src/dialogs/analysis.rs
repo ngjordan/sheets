@@ -226,7 +226,7 @@ const TOOLPAK_CHROME: f32 = 240.0;
 /// Data › Data Analysis: pick a tool, then fill in its form. OK runs `data.analysisToolPak`
 /// (through the dialog's command); a report that would replace data asks first.
 pub(super) fn analysis_toolpak(app: &mut SheetApp, ui: &mut egui::Ui, d: &mut Dialog, confirm: &mut bool, open: &mut bool) {
-    use gridcraft_engine::cmd::analysis::TOOLS;
+    use iridium_engine::cmd::analysis::TOOLS;
     if d.values.get("askOverwrite").and_then(Json::as_bool) == Some(true) {
         ui.label("The output range already holds data. Replace it with the report?");
         ui.horizontal(|ui| {
@@ -426,7 +426,7 @@ fn save_solver_model(app: &mut SheetApp, d: &mut Dialog, range: &str, overwrite:
     d.values.remove("askModelOverwrite");
     let note = match app.run("data.solverSaveModel", json!({"to": range.trim(), "model": build_params(d), "overwrite": overwrite})) {
         Ok(r) => format!("The model was saved to {}.", r.get("range").and_then(Json::as_str).unwrap_or("")),
-        Err(e) if !overwrite && e.contains(gridcraft_engine::cmd::analysis::OVERWRITE_ERROR) => {
+        Err(e) if !overwrite && e.contains(iridium_engine::cmd::analysis::OVERWRITE_ERROR) => {
             d.values.insert("askModelOverwrite".into(), json!(range.trim()));
             crate::clean_error(&e)
         }
@@ -680,8 +680,8 @@ pub(super) fn solver_results(app: &mut SheetApp, ui: &mut egui::Ui, d: &mut Dial
     // Integer models, the Evolutionary method and Value Of goals have no Sensitivity report, and
     // it describes an optimum, so a run that stopped before one (at the evaluation limit) has
     // none either.
-    let model_allows = d.values.get("model").is_none_or(gridcraft_engine::cmd::solver::sensitivity_applies);
-    let optimum = d.values.get("status").and_then(Json::as_str).is_some_and(gridcraft_engine::cmd::solver::sensitivity_status);
+    let model_allows = d.values.get("model").is_none_or(iridium_engine::cmd::solver::sensitivity_applies);
+    let optimum = d.values.get("status").and_then(Json::as_str).is_some_and(iridium_engine::cmd::solver::sensitivity_status);
     let sensitivity = model_allows && optimum;
     let why_not = if model_allows {
         "Needs an optimal or converged solution: Solver stopped before reaching one."

@@ -2,9 +2,9 @@
 
 use egui::accesskit::{Role, Toggled};
 use egui_kittest::kittest::{NodeT, Queryable};
-use gridcraft_engine::Session;
-use gridcraft_engine::model::ChartKind;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_engine::model::ChartKind;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

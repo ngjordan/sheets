@@ -9,8 +9,8 @@ use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use crate::cmd::edit::is_formula_input;
-use gridcraft_formula::lexer::{Tok, tokenize};
-use gridcraft_formula::normalize_function_name;
+use iridium_formula::lexer::{Tok, tokenize};
+use iridium_formula::normalize_function_name;
 use serde::Deserialize;
 use serde_json::Value as Json;
 

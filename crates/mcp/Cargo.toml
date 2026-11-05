@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-mcp"
+name = "iridium-mcp"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,6 +9,7 @@ description = "Iridium Sheets MCP server: JSON-RPC 2.0 over stdio, driving a run
 workspace = true
 
 [dependencies]
-gridcraft-engine = { workspace = true }
+iridium-core = { workspace = true }
+iridium-engine = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }

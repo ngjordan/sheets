@@ -1,7 +1,7 @@
 //! Dynamic-array cell metadata (`cm`) read from a file is written back, so Excel keeps
 //! evaluating those formulas as arrays rather than with implicit intersection.
 
-use gridcraft_core::CellRef;
+use iridium_core::CellRef;
 
 use crate::package::Package;
 use crate::xml::El;

@@ -15,6 +15,8 @@
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
+# shellcheck source=../brand.sh
+. "$ROOT/packaging/brand.sh"
 HERE="$ROOT/packaging/macos"
 
 ARCH=universal
@@ -39,7 +41,7 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/Iridium Sheets.app"
+APP="$WORK/$APP_NAME.app"
 DMG="$DIST/iridium-sheets-$VERSION-macos-$ARCH.dmg"
 CLI_ZIP="$DIST/iridium-sheets-cli-$VERSION-macos-$ARCH.zip"
 
@@ -58,12 +60,12 @@ echo "==> Iridium Sheets $VERSION for macOS ($ARCH), identity: $IDENTITY, notari
 if [[ "$SKIP_BUILD" = 0 ]]; then
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p gridcraft -p gridcraft-cli "${args[@]}")
+  (cd "$ROOT" && cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli "${args[@]}")
 fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in gridcraft gridcraft-cli; do
+for bin in iridium-sheets iridium-sheets-cli; do
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -115,8 +117,8 @@ notarize() {
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/gridcraft" "$APP/Contents/MacOS/Iridium Sheets"
-cp "$ROOT/assets/app-icon/iridium-sheets.icns" "$APP/Contents/Resources/Iridium Sheets.icns"
+cp "$WORK/bin/$APP_SLUG" "$APP/Contents/MacOS/$APP_NAME"
+cp "$ROOT/assets/app-icon/$APP_SLUG.icns" "$APP/Contents/Resources/$APP_NAME.icns"
 # Bundled dependency font notices are installed before the app is signed.
 cp "$ROOT/NOTICE" "$ROOT/ATTRIBUTION.md" "$APP/Contents/Resources/"
 
@@ -130,26 +132,29 @@ if command -v python3 >/dev/null 2>&1; then
   mkdir -p "$APP/Contents/Resources/pylib"
   cp "$ROOT/tools/gsheets_backend.py" "$APP/Contents/Resources/pylib/"
   cp "$ROOT/tools/m365_backend.py" "$APP/Contents/Resources/pylib/"
+  cp "$ROOT/tools/connector_backend.py" "$APP/Contents/Resources/pylib/"
 else
   warn "macOS: no python3 on this build machine; the cloud spreadsheet helpers will be unavailable"
 fi
 # Licences of the embedded craft-fonts fonts (only when built with CRAFT_FONTS_DIR).
 copy_font_licences "$APP/Contents/Resources"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
-  -e "s/@BUILD_SHA@/${GRIDCRAFT_BUILD_SHA:-unknown}/g" \
+  -e "s/@BUILD_SHA@/${IRIDIUM_BUILD_SHA:-unknown}/g" \
+  -e "s/@APP_NAME@/$APP_NAME/g" -e "s/@APP_ID@/$APP_ID/g" -e "s/@APP_VENDOR@/$APP_VENDOR/g" \
+  -e "s/@APP_SLUG@/$APP_SLUG/g" -e "s/@APP_HOMEPAGE@/$APP_HOMEPAGE/g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
 plutil -lint "$APP/Contents/Info.plist"
 printf 'APPL????' >"$APP/Contents/PkgInfo"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Iridium Sheets"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/$APP_NAME"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [[ "$NOTARIZE" = 1 ]]; then
-  ditto -c -k --keepParent "$APP" "$WORK/Iridium Sheets-notarize.zip"
-  notarize "$WORK/Iridium Sheets-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/$APP_NAME-notarize.zip"
+  notarize "$WORK/$APP_NAME-notarize.zip"
   stapler_retry staple "$APP"
   stapler_retry validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -159,7 +164,7 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/Iridium Sheets.app"
+ditto "$APP" "$STAGE/$APP_NAME.app"
 ln -s /Applications "$STAGE/Applications"
 # Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
 mkdir -p "$STAGE/.background"
@@ -169,7 +174,7 @@ rm -f "$DMG" "$WORK/raw.dmg"
 # makehybrid + convert builds the image without attaching a device, unlike `create -srcfolder`,
 # which is flaky on CI runners ("Resource busy") and hangs in sandboxed sessions.
 # The volume name has no version: .DS_Store finds the background through an alias that includes it.
-hdiutil makehybrid -hfs -hfs-volume-name "Iridium Sheets" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
+hdiutil makehybrid -hfs -hfs-volume-name "$APP_NAME" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
 hdiutil convert "$WORK/raw.dmg" -format UDZO -imagekey zlib-level=9 -o "$DMG"
 rm -f "$WORK/raw.dmg"
 sign "$DMG"
@@ -185,15 +190,15 @@ fi
 echo "==> building $CLI_ZIP"
 CLI_DIR="$WORK/iridium-sheets-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
-cp "$WORK/bin/gridcraft-cli" "$CLI_DIR/"
+cp "$WORK/bin/iridium-sheets-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"
-sign --options runtime "$CLI_DIR/gridcraft-cli"
-codesign --verify --strict --verbose=2 "$CLI_DIR/gridcraft-cli"
+sign --options runtime "$CLI_DIR/iridium-sheets-cli"
+codesign --verify --strict --verbose=2 "$CLI_DIR/iridium-sheets-cli"
 rm -f "$CLI_ZIP"
 ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
 # A bare Mach-O can't carry a stapled ticket; Gatekeeper looks the notarization up online.
 if [[ "$NOTARIZE" = 1 ]]; then notarize "$CLI_ZIP"; fi
 
-"$WORK/bin/gridcraft-cli" --version
+"$WORK/bin/iridium-sheets-cli" --version
 echo "==> done"
 ls -lh "$DMG" "$CLI_ZIP"

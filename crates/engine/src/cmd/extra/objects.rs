@@ -1,4 +1,4 @@
-use gridcraft_model::ObjKind;
+use iridium_model::ObjKind;
 
 use super::chart::format_series;
 use super::{

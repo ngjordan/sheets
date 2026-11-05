@@ -735,7 +735,7 @@ pub fn save_image(image: std::sync::Arc<egui::ColorImage>, path: Option<&str>) -
                     )
                 });
             }
-            json!({"ok": true, "result": {"base64": gridcraft_engine::io::base64_encode(&png), "width": w, "height": h}})
+            json!({"ok": true, "result": {"base64": iridium_engine::io::base64_encode(&png), "width": w, "height": h}})
         }
     }
 }

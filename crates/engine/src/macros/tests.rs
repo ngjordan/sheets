@@ -1,4 +1,4 @@
-use gridcraft_model::*;
+use iridium_model::*;
 use serde_json::json;
 
 use super::*;
@@ -115,7 +115,7 @@ fn macros_round_trip_through_xlsx_and_json() {
     }
     // In the xlsx file they are hidden names; the long one spans several.
     let bytes = crate::io::save_bytes(&wb, "book.xlsx").unwrap();
-    let (raw, _) = gridcraft_xlsx::read_xlsx(&bytes).unwrap();
+    let (raw, _) = iridium_xlsx::read_xlsx(&bytes).unwrap();
     let names = names_of(&raw);
     assert!(names.contains(&"_gc_macro_0_0".to_string()), "{names:?}");
     assert!(names.iter().filter(|n| n.starts_with("_gc_macro_1_")).count() >= 2, "{names:?}");
@@ -123,7 +123,7 @@ fn macros_round_trip_through_xlsx_and_json() {
     // Saving without macros writes no macro names, even if stale ones linger.
     let mut empty = raw.clone();
     empty.macros.clear();
-    let (again, _) = gridcraft_xlsx::read_xlsx(&crate::io::save_bytes(&empty, "x.xlsx").unwrap()).unwrap();
+    let (again, _) = iridium_xlsx::read_xlsx(&crate::io::save_bytes(&empty, "x.xlsx").unwrap()).unwrap();
     assert!(again.names.iter().all(|n| !n.name.starts_with("_gc_macro_")));
     // The JSON format keeps the field (and leaves it out when there are no macros).
     let json = String::from_utf8(crate::io::save_bytes(&wb, "book.json").unwrap()).unwrap();
@@ -171,7 +171,7 @@ fn a_hidden_macro_name_this_build_did_not_write_is_kept() {
     let theirs = hidden("_gc_macro_index_0", "{}");
     wb.names.push(theirs.clone());
     wb.macros.push(sample_macro("Totals"));
-    let (raw, _) = gridcraft_xlsx::read_xlsx(&crate::io::save_bytes(&wb, "book.xlsx").unwrap()).unwrap();
+    let (raw, _) = iridium_xlsx::read_xlsx(&crate::io::save_bytes(&wb, "book.xlsx").unwrap()).unwrap();
     let names = names_of(&raw);
     assert!(names.contains(&"_gc_macro_index_0".to_string()) && names.contains(&"_gc_macro_0_0".to_string()), "{names:?}");
     let (back, warnings) = crate::io::open_bytes("book.xlsx", &crate::io::save_bytes(&wb, "book.xlsx").unwrap()).unwrap();
@@ -231,7 +231,7 @@ fn visible(name: &str) -> DefinedName {
 /// Saves `wb` to xlsx and returns the names in the file and the workbook opened from it.
 fn xlsx_round_trip(wb: &Workbook) -> (Vec<String>, Workbook) {
     let bytes = crate::io::save_bytes(wb, "book.xlsx").unwrap();
-    let raw = names_of(&gridcraft_xlsx::read_xlsx(&bytes).unwrap().0);
+    let raw = names_of(&iridium_xlsx::read_xlsx(&bytes).unwrap().0);
     let (back, warnings) = crate::io::open_bytes("book.xlsx", &bytes).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     (raw, back)
@@ -321,7 +321,7 @@ fn damaged_or_oversized_macros_are_dropped_with_a_warning() {
     wb.names.push(hidden("_gc_macro_2_0", &json!({"name": "Huge", "steps": vec![json!({"command": "x"}); MAX_MACRO_STEPS + 1]}).to_string()));
     wb.names.push(hidden("_gc_macro_3_0", &json!({"name": "good"}).to_string()));
     wb.names.push(hidden("_gc_macro_10_0", &json!({"name": "Tenth"}).to_string()));
-    let bytes = gridcraft_xlsx::write_xlsx(&wb).unwrap();
+    let bytes = iridium_xlsx::write_xlsx(&wb).unwrap();
     let (back, warnings) = crate::io::open_bytes("hostile.xlsx", &bytes).unwrap();
     let names: Vec<&str> = back.macros.iter().map(|m| m.name.as_str()).collect();
     // Saved order is by number (10 after 3); a clashing name gets a suffix.
@@ -440,7 +440,7 @@ fn a_damaged_json_macro_drops_alone() {
     // One macro this build can't read (a newer step type, an unknown value, the wrong shape) is
     // dropped with the usual warning; the workbook and its other macros open.
     let mut wb = Workbook::new();
-    wb.sheet_mut(0).unwrap().set_value(gridcraft_core::CellRef::new(0, 0), gridcraft_core::Value::text("kept"));
+    wb.sheet_mut(0).unwrap().set_value(iridium_core::CellRef::new(0, 0), iridium_core::Value::text("kept"));
     let mut v: serde_json::Value = serde_json::from_slice(&crate::io::save_bytes(&wb, "book.json").unwrap()).unwrap();
     v["macros"] = json!([
         {"name": "Good"},
@@ -455,7 +455,7 @@ fn a_damaged_json_macro_drops_alone() {
     assert!(matches!(&back.macros[1].steps[0].kind, StepKind::Command { id, .. } if id == "cell.set"));
     assert!(back.macros_read.is_empty());
     assert!(warnings.len() == 1 && warnings[0].starts_with("3 macros"), "{warnings:?}");
-    assert_eq!(back.sheet(0).unwrap().value(gridcraft_core::CellRef::new(0, 0)), gridcraft_core::Value::text("kept"));
+    assert_eq!(back.sheet(0).unwrap().value(iridium_core::CellRef::new(0, 0)), iridium_core::Value::text("kept"));
 }
 
 #[test]
@@ -499,7 +499,7 @@ fn a_macro_in_a_newer_format_is_kept_unread_and_saved_back_unchanged() {
     for (i, m) in [&future, &current, &missing].into_iter().enumerate() {
         wb.names.push(hidden(&format!("_gc_macro_{i}_0"), &m.to_string()));
     }
-    let bytes = gridcraft_xlsx::write_xlsx(&wb).unwrap();
+    let bytes = iridium_xlsx::write_xlsx(&wb).unwrap();
     let (back, warnings) = crate::io::open_bytes("book.xlsx", &bytes).unwrap();
     assert!(back.names.is_empty(), "{:?}", names_of(&back));
     check("book.xlsx", &back, &warnings);
@@ -522,7 +522,7 @@ fn kept_macros_share_the_save_limits_and_the_numbering() {
     wb.names.push(visible("_gc_macro_1_0"));
     let (raw, back) = {
         let bytes = crate::io::save_bytes(&wb, "book.xlsx").unwrap();
-        let raw = names_of(&gridcraft_xlsx::read_xlsx(&bytes).unwrap().0);
+        let raw = names_of(&iridium_xlsx::read_xlsx(&bytes).unwrap().0);
         (raw, crate::io::open_bytes("book.xlsx", &bytes).unwrap().0)
     };
     assert_eq!(raw, ["_gc_macro_1_0", "_gc_macro_0_0", "_gc_macro_2_0"]);
@@ -736,5 +736,5 @@ fn the_storage_rules_hold_together_through_both_formats() {
         }
     }
     let bytes = crate::io::save_bytes(&wb, "book.xlsx").unwrap();
-    assert_eq!(names_of(&gridcraft_xlsx::read_xlsx(&bytes).unwrap().0), ["_gc_macro_0_0", "_gc_macro_1_0", "_gc_macro_2_0"]);
+    assert_eq!(names_of(&iridium_xlsx::read_xlsx(&bytes).unwrap().0), ["_gc_macro_0_0", "_gc_macro_1_0", "_gc_macro_2_0"]);
 }

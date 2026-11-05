@@ -1,9 +1,9 @@
 //! Pulls chart data (names, categories, values, formats, colours) out of a workbook.
 
-use gridcraft_calc::evaluate;
-use gridcraft_core::{CellRef, RangeRef, Value, category_levels, number_to_text};
-use gridcraft_model::{Chart, ChartKind, Theme, Workbook, style::apply_tint};
-use gridcraft_numfmt::{NumberFormat, format_value};
+use iridium_calc::evaluate;
+use iridium_core::{CellRef, RangeRef, Value, category_levels, number_to_text};
+use iridium_model::{Chart, ChartKind, Theme, Workbook, style::apply_tint};
+use iridium_numfmt::{NumberFormat, format_value};
 
 use crate::{ChartData, Rgba, SeriesData, TrendlineData};
 
@@ -41,7 +41,7 @@ fn parse_ref(wb: &Workbook, sheet: usize, formula: &str) -> Option<(usize, Range
     let (sh, addr) = match f.rfind('!') {
         Some(i) => {
             let name = f.get(..i)?.trim();
-            let name = gridcraft_core::unquote_sheet(name);
+            let name = iridium_core::unquote_sheet(name);
             (wb.sheet_index(&name)?, f.get(i + 1..)?)
         }
         None => (sheet, f),
@@ -180,7 +180,7 @@ fn category_table(wb: &Workbook, sheet: usize, formula: &str, values: &str) -> (
 /// that sheet), the way the evaluator looks names up.
 fn is_defined_name(wb: &Workbook, sheet: usize, t: &str) -> bool {
     // `'Bob''s'!Name`: the sheet is unquoted as everywhere else (#2012).
-    match gridcraft_core::split_sheet(t) {
+    match iridium_core::split_sheet(t) {
         (Some(s), bare) => wb.sheet_index(&s).is_some_and(|i| wb.name(bare, i).is_some()),
         (None, _) => wb.name(t, sheet).is_some(),
     }

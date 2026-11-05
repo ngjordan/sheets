@@ -2,9 +2,9 @@
 //! even with the pointer up for a frame between the two clicks.
 
 use egui::{Event, Modifiers, PointerButton, Pos2, vec2};
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_ui_egui::{SheetApp, grid::Geo};
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_ui_egui::{SheetApp, grid::Geo};
 use serde_json::json;
 
 fn harness() -> egui_kittest::Harness<'static, SheetApp> {

@@ -4,7 +4,7 @@ use super::{
 };
 
 /// Whether `c` has checkbox formatting.
-pub(crate) fn is_checkbox_cell(wb: &gridcraft_model::Workbook, sh: &gridcraft_model::Sheet, c: CellRef) -> bool {
+pub(crate) fn is_checkbox_cell(wb: &iridium_model::Workbook, sh: &iridium_model::Sheet, c: CellRef) -> bool {
     wb.styles.get(sh.style_id(c)).num_fmt.as_str() == "checkbox"
 }
 

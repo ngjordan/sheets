@@ -60,7 +60,7 @@ fn check_options_spill(sheet: &Sheet, anchor: CellRef, width: u32, ours: &[CellR
     if width <= 1 {
         return Ok(());
     }
-    let end = anchor.col.checked_add(width - 1).filter(|c| *c < gridcraft_core::MAX_COLS).ok_or_else(|| {
+    let end = anchor.col.checked_add(width - 1).filter(|c| *c < iridium_core::MAX_COLS).ok_or_else(|| {
         EngineError::Other(format!(
             "The saved model's options need {width} cells to the right from {}; choose another place to save it.",
             anchor.a1()
@@ -141,7 +141,7 @@ pub(super) fn save_model_cells(s: &mut Session, p: &Json) -> Result<Json> {
     let last = to
         .row
         .checked_add(count.saturating_sub(1))
-        .filter(|r| *r < gridcraft_core::MAX_ROWS)
+        .filter(|r| *r < iridium_core::MAX_ROWS)
         .ok_or_else(|| EngineError::Other("The saved model doesn't fit below that cell.".into()))?;
     let range = RangeRef::new(to, CellRef::new(last, to.col));
     // The model's own cells are never overwritten.
@@ -170,7 +170,7 @@ pub(super) fn save_model_cells(s: &mut Session, p: &Json) -> Result<Json> {
         let sh = cx.sheet_mut(sheet)?;
         let cells: Vec<CellRef> = range.iter().collect();
         for (c, f) in cells.iter().zip(&rows) {
-            let mut cell = Cell::formula(gridcraft_model::Formula::new(f));
+            let mut cell = Cell::formula(iridium_model::Formula::new(f));
             cell.style = sh.style_id(*c);
             sh.set_cell(*c, cell);
         }

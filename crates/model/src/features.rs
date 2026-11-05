@@ -1,7 +1,7 @@
 //! Sheet features beyond cells: tables, conditional formatting, data validation, comments,
 //! hyperlinks, charts, images, autofilter, print settings.
 
-use gridcraft_core::{CellRef, RangeRef};
+use iridium_core::{CellRef, RangeRef};
 use serde::{Deserialize, Serialize};
 
 use crate::style::{Color, Style};
@@ -659,8 +659,8 @@ pub struct Shape {
 ///
 /// An entry answers only for the source it was built from, compared in full: a hash match alone
 /// is not enough, so two sources whose hashes collide never share a layout. A source over
-/// [`gridcraft_math::MAX_SOURCE_BYTES`] never lays out, so [`EquationCache::get`] answers for it
-/// by its length alone, with [`gridcraft_math::SOURCE_TOO_LONG`], and an entry built from one holds
+/// [`iridium_math::MAX_SOURCE_BYTES`] never lays out, so [`EquationCache::get`] answers for it
+/// by its length alone, with [`iridium_math::SOURCE_TOO_LONG`], and an entry built from one holds
 /// neither the source nor its hash: a painter asking every frame about a source of megabytes read
 /// from a file does no work on it.
 #[derive(Clone, Debug, Default)]
@@ -671,7 +671,7 @@ pub struct EquationCache {
     len: usize,
     /// The source itself, when it is within the length cap.
     source: Option<std::sync::Arc<str>>,
-    layout: Option<Result<std::sync::Arc<gridcraft_math::MathList>, gridcraft_math::MathError>>,
+    layout: Option<Result<std::sync::Arc<iridium_math::MathList>, iridium_math::MathError>>,
 }
 
 impl PartialEq for EquationCache {
@@ -696,7 +696,7 @@ impl EquationCache {
         if self.layout.is_none() || self.len != src.len() {
             return false;
         }
-        if src.len() > gridcraft_math::MAX_SOURCE_BYTES {
+        if src.len() > iridium_math::MAX_SOURCE_BYTES {
             return self.source.is_none();
         }
         self.key == source_key(src) && self.source.as_deref() == Some(src)
@@ -704,8 +704,8 @@ impl EquationCache {
 
     /// Makes this the entry for `src`, with `layout`. A source over the cap is neither copied nor
     /// hashed.
-    fn store(&mut self, src: &str, layout: Result<std::sync::Arc<gridcraft_math::MathList>, gridcraft_math::MathError>) {
-        let within = src.len() <= gridcraft_math::MAX_SOURCE_BYTES;
+    fn store(&mut self, src: &str, layout: Result<std::sync::Arc<iridium_math::MathList>, iridium_math::MathError>) {
+        let within = src.len() <= iridium_math::MAX_SOURCE_BYTES;
         self.key = if within { source_key(src) } else { 0 };
         self.len = src.len();
         self.source = within.then(|| std::sync::Arc::from(src));
@@ -713,11 +713,11 @@ impl EquationCache {
     }
 
     /// The layout of `src`, or why it has none; `None` until [`EquationCache::refresh`] has run
-    /// for this source. A source over [`gridcraft_math::MAX_SOURCE_BYTES`] is answered at once,
+    /// for this source. A source over [`iridium_math::MAX_SOURCE_BYTES`] is answered at once,
     /// whatever the entry holds, by its length alone.
-    pub fn get(&self, src: &str) -> Option<Result<&gridcraft_math::MathList, &gridcraft_math::MathError>> {
-        if src.len() > gridcraft_math::MAX_SOURCE_BYTES {
-            return Some(Err(&*gridcraft_math::SOURCE_TOO_LONG));
+    pub fn get(&self, src: &str) -> Option<Result<&iridium_math::MathList, &iridium_math::MathError>> {
+        if src.len() > iridium_math::MAX_SOURCE_BYTES {
+            return Some(Err(&*iridium_math::SOURCE_TOO_LONG));
         }
         if !self.holds(src) {
             return None;
@@ -730,13 +730,13 @@ impl EquationCache {
         if self.holds(src) {
             return false;
         }
-        self.store(src, gridcraft_math::layout(src).map(std::sync::Arc::new));
+        self.store(src, iridium_math::layout(src).map(std::sync::Arc::new));
         true
     }
 
     /// Records that `src` was not laid out, and why, without running the layout engine.
     pub fn refuse(&mut self, src: &str, message: &str) {
-        self.store(src, Err(gridcraft_math::MathError { span: None, message: message.to_string() }));
+        self.store(src, Err(iridium_math::MathError { span: None, message: message.to_string() }));
     }
 }
 
@@ -932,7 +932,7 @@ mod equation_cache_tests {
 
     fn glyphs(c: &EquationCache, src: &str) -> Option<String> {
         let list = c.get(src)?.ok()?;
-        Some(list.items.iter().filter_map(|i| if let gridcraft_math::Item::Glyph(g) = i { Some(g.ch) } else { None }).collect())
+        Some(list.items.iter().filter_map(|i| if let iridium_math::Item::Glyph(g) = i { Some(g.ch) } else { None }).collect())
     }
 
     #[test]
@@ -956,7 +956,7 @@ mod equation_cache_tests {
 
     #[test]
     fn sources_over_the_cap_are_not_copied_hashed_or_laid_out() {
-        let long = "x".repeat(gridcraft_math::MAX_SOURCE_BYTES + 1);
+        let long = "x".repeat(iridium_math::MAX_SOURCE_BYTES + 1);
         let mut c = EquationCache::default();
         HASHES.with(|h| h.set(0));
         assert!(matches!(c.get(&long), Some(Err(e)) if e.message.contains("4096")), "answered before any refresh");
@@ -965,7 +965,7 @@ mod equation_cache_tests {
         assert_eq!(c.key, 0, "nor hashed");
         assert!(matches!(c.get(&long), Some(Err(_))));
         assert!(!c.refresh(&long), "still cached");
-        let other = "y".repeat(gridcraft_math::MAX_SOURCE_BYTES + 1);
+        let other = "y".repeat(iridium_math::MAX_SOURCE_BYTES + 1);
         assert!(matches!(c.get(&other), Some(Err(_))), "another over-cap source gets the same answer");
         assert_eq!(HASHES.with(|h| h.get()), 0, "nothing over the cap is hashed");
         // Within the cap the lookup is unchanged: a hash, then the source compared in full.

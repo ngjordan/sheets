@@ -1,21 +1,21 @@
 //! Equations in drawings: Office Math Markup (ECMA-376 Part 1 §22.1) read back into LaTeX for the
-//! common subset, the inverse of `gridcraft_math::to_omml`. A construct outside the subset makes
+//! common subset, the inverse of `iridium_math::to_omml`. A construct outside the subset makes
 //! the whole equation unreadable as maths (`None`), and the caller keeps it as a text box.
 
 use crate::xml::El;
 
 /// Deepest OMML nesting converted.
 const MAX_DEPTH: usize = 64;
-/// Longest LaTeX the conversion produces before it gives up. `gridcraft_math::check` refuses a
+/// Longest LaTeX the conversion produces before it gives up. `iridium_math::check` refuses a
 /// longer source anyway, so converting the rest of a wide or long equation would only spend time
 /// and memory on a hostile file.
-const MAX_OUT_BYTES: usize = gridcraft_math::MAX_SOURCE_BYTES;
+const MAX_OUT_BYTES: usize = iridium_math::MAX_SOURCE_BYTES;
 
 /// The LaTeX for an `m:oMath` (or `m:oMathPara`) element, if every part is in the subset and the
 /// result lays out.
 pub fn to_latex(e: &El) -> Option<String> {
     let out = convert(e)?;
-    (!out.is_empty() && gridcraft_math::check(&out).is_ok()).then_some(out)
+    (!out.is_empty() && iridium_math::check(&out).is_ok()).then_some(out)
 }
 
 /// The conversion itself, before the final check: `None` for a construct outside the subset, an
@@ -636,7 +636,7 @@ fn limit(e: &El, out: &mut String, depth: usize) -> Option<()> {
         let t: String = b.kids("r").map(run_text).collect();
         b.children.iter().all(|c| c.name == "r") && FUNCTIONS.contains(&t.trim())
     });
-    // A brace alone under the limit is a labelled brace, as `gridcraft_math::to_omml` writes
+    // A brace alone under the limit is a labelled brace, as `iridium_math::to_omml` writes
     // `\underbrace{x}_{n}` and `\overbrace{x}^{n}`: the label is the brace's own script, below
     // for an underbrace and above for an overbrace. An opposite-side limit keeps its placement.
     let brace = base
@@ -715,7 +715,7 @@ mod tests {
     #[allow(clippy::disallowed_methods)] // tests run only off wasm, where the clock exists
     fn latex_past_the_source_cap_stops_converting_and_falls_back() {
         // 100,000 sibling runs: the conversion stops once its LaTeX exceeds the cap that
-        // `gridcraft_math::check` enforces, instead of building the whole string and then
+        // `iridium_math::check` enforces, instead of building the whole string and then
         // refusing it, so the caller falls back to the writer's text in bounded time.
         let wide = el(&"<m:r><m:t>x</m:t></m:r>".repeat(100_000));
         let start = std::time::Instant::now();
@@ -742,7 +742,7 @@ mod tests {
         // The writer keeps an author's blank row and drops only the empty row a trailing `\\`
         // leaves; the reader joins rows with `\\`, so the count of `\\` is the row count less one.
         let back = |src: &str| {
-            let omml = gridcraft_math::to_omml(src, 11.0, None).unwrap();
+            let omml = iridium_math::to_omml(src, 11.0, None).unwrap();
             to_latex(&crate::xml::parse(format!("<x xmlns:m=\"m\" xmlns:a=\"a\">{omml}</x>").as_bytes()).unwrap().children[0].clone()).unwrap()
         };
         let cases = back("\\begin{cases} x \\\\ \\\\ y \\end{cases}");
@@ -753,12 +753,12 @@ mod tests {
 
     #[test]
     fn a_space_in_text_mode_survives_the_round_trip() {
-        let omml = gridcraft_math::to_omml("\\text{if } x", 11.0, None).unwrap();
+        let omml = iridium_math::to_omml("\\text{if } x", 11.0, None).unwrap();
         let back =
             to_latex(&crate::xml::parse(format!("<x xmlns:m=\"m\" xmlns:a=\"a\">{omml}</x>").as_bytes()).unwrap().children[0].clone()).unwrap();
         assert!(back.contains("\\text{ }") || back.contains("if }"), "the space after `if` is still there: {back}");
-        let spaces = |l: &gridcraft_math::MathList| l.items.iter().filter(|i| matches!(i, gridcraft_math::Item::Glyph(g) if g.ch == ' ')).count();
-        let (a, b) = (gridcraft_math::layout("\\text{if } x").unwrap(), gridcraft_math::layout(&back).unwrap());
+        let spaces = |l: &iridium_math::MathList| l.items.iter().filter(|i| matches!(i, iridium_math::Item::Glyph(g) if g.ch == ' ')).count();
+        let (a, b) = (iridium_math::layout("\\text{if } x").unwrap(), iridium_math::layout(&back).unwrap());
         assert_eq!(spaces(&a), spaces(&b), "{back}");
     }
 
@@ -810,15 +810,15 @@ mod tests {
         );
         // Written by Iridium Sheets and read back, both scripts are there and the glyphs are the same.
         let back = |src: &str| {
-            let omml = gridcraft_math::to_omml(src, 11.0, None).unwrap();
+            let omml = iridium_math::to_omml(src, 11.0, None).unwrap();
             to_latex(&crate::xml::parse(format!("<x xmlns:m=\"m\" xmlns:a=\"a\">{omml}</x>").as_bytes()).unwrap().children[0].clone()).unwrap()
         };
         let glyphs = |l: &str| -> Vec<char> {
-            let mut g: Vec<char> = gridcraft_math::layout(l)
+            let mut g: Vec<char> = iridium_math::layout(l)
                 .unwrap()
                 .items
                 .iter()
-                .filter_map(|i| if let gridcraft_math::Item::Glyph(g) = i { Some(g.ch) } else { None })
+                .filter_map(|i| if let iridium_math::Item::Glyph(g) = i { Some(g.ch) } else { None })
                 .filter(|c| !c.is_whitespace())
                 .collect();
             g.sort_unstable();
@@ -914,15 +914,15 @@ mod tests {
 
     #[test]
     fn writing_then_reading_keeps_the_maths() {
-        for (_, src) in gridcraft_math::GALLERY {
-            let omml = gridcraft_math::to_omml(src, 11.0, None).unwrap();
+        for (_, src) in iridium_math::GALLERY {
+            let omml = iridium_math::to_omml(src, 11.0, None).unwrap();
             let back =
                 to_latex(&crate::xml::parse(format!("<x xmlns:m=\"m\" xmlns:a=\"a\">{omml}</x>").as_bytes()).unwrap().children[0].clone()).unwrap();
-            let (a, b) = (gridcraft_math::layout(src).unwrap(), gridcraft_math::layout(&back).unwrap());
-            let glyphs = |l: &gridcraft_math::MathList| -> String {
+            let (a, b) = (iridium_math::layout(src).unwrap(), iridium_math::layout(&back).unwrap());
+            let glyphs = |l: &iridium_math::MathList| -> String {
                 l.items
                     .iter()
-                    .filter_map(|i| if let gridcraft_math::Item::Glyph(g) = i { Some(g.ch) } else { None })
+                    .filter_map(|i| if let iridium_math::Item::Glyph(g) = i { Some(g.ch) } else { None })
                     .filter(|c| !c.is_whitespace())
                     .collect()
             };

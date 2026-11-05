@@ -14,9 +14,9 @@ There is no server-side code. Upload the folder's contents anywhere that serves 
 
 ## Any path works
 
-All URLs in `index.html` are relative (`public_url = "./"` in `apps/gridcraft-web/Trunk.toml`),
+All URLs in `index.html` are relative (`public_url = "./"` in `apps/iridium-sheets-web/Trunk.toml`),
 so the site works at a domain root (`https://example.com/`), under a prefix
-(`https://iridium.ph/`) and from a CDN bucket. The asset names carry a content
+(`https://iridium-sheets.ph/`) and from a CDN bucket. The asset names carry a content
 hash, so they can be cached forever. Only `index.html` needs revalidation.
 
 ## Required server settings
@@ -39,7 +39,7 @@ hash, so they can be cached forever. Only `index.html` needs revalidation.
 nginx example:
 
 ```nginx
-location /gridcraft/ {
+location /iridium-sheets/ {
     types { application/wasm wasm; text/javascript js; text/html html; }
     gzip on;
     gzip_types application/wasm text/javascript text/html;
@@ -54,7 +54,7 @@ Local test: `python3 -m http.server 8765` inside the folder, then open http://lo
 
 ```html
 <iframe
-  src="https://iridium.ph/"
+  src="https://iridium-sheets.ph/"
   title="Iridium Sheets spreadsheet"
   style="width: 100%; height: 720px; border: 0;"
   allow="fullscreen; clipboard-read; clipboard-write"
@@ -80,7 +80,7 @@ Local test: `python3 -m http.server 8765` inside the folder, then open http://lo
 ## Renderer selection
 
 Iridium Sheets's web build is the same egui app as the desktop one, compiled to wasm
-(`apps/gridcraft-web`). It renders with the backend `apps/gridcraft-web` selects (WebGPU
+(`apps/iridium-sheets-web`). It renders with the backend `apps/iridium-sheets-web` selects (WebGPU
 where available, otherwise WebGL2). If the web app adds URL flags to force a backend (as the
 sibling Craft apps do with `?webgl` / `?cpu`), document them here; they also work on the
 iframe `src`.

@@ -351,7 +351,7 @@ fn new_tiles(app: &mut SheetApp, ui: &mut Ui, out: &mut Outcome) {
             app.run_or_alert("file.new", json!({}));
             out.close = true;
         }
-        for (i, (name, title)) in gridcraft_engine::sample::SAMPLES.iter().enumerate() {
+        for (i, (name, title)) in iridium_engine::sample::SAMPLES.iter().enumerate() {
             if tile(ui, title, Some(i)).clicked() {
                 app.run_or_alert("file.new", json!({"sample": name}));
                 out.close = true;
@@ -476,7 +476,7 @@ fn ask(ctx: egui::Context, paths: Vec<String>, found: Arc<Mutex<HashMap<String, 
             ASKING.store(false, Ordering::SeqCst);
         }
     }
-    let asking = std::thread::Builder::new().name("gridcraft-recent-files".into()).spawn(move || {
+    let asking = std::thread::Builder::new().name("iridium-recent-files".into()).spawn(move || {
         let _done = Done;
         for path in paths {
             let changed = std::fs::metadata(&path).and_then(|m| m.modified()).ok().and_then(|at| at.duration_since(std::time::UNIX_EPOCH).ok());
@@ -851,13 +851,13 @@ pub fn export_as(app: &mut SheetApp, fmt: &str) -> bool {
         return match app.run(id, json!({"path": path})) {
             Ok(_) => true,
             Err(e) => {
-                app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+                app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
                 false
             }
         };
     }
     if app.services.download.is_none() {
-        app.message = Some(("Iridium Sheets".into(), "Exporting needs a file picker, which this window doesn't have.".into()));
+        app.message = Some((iridium_core::brand::NAME.into(), "Exporting needs a file picker, which this window doesn't have.".into()));
         return false;
     }
     if fmt == "pdf" {
@@ -865,7 +865,7 @@ pub fn export_as(app: &mut SheetApp, fmt: &str) -> bool {
         return match app.run(id, json!({})) {
             Ok(_) => true,
             Err(e) => {
-                app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+                app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
                 false
             }
         };
@@ -873,7 +873,7 @@ pub fn export_as(app: &mut SheetApp, fmt: &str) -> bool {
     app.store_view_state();
     match app.session.run("file.saveBytes", json!({"format": fmt})) {
         Ok(r) => {
-            let bytes = r.get("base64").and_then(Json::as_str).and_then(gridcraft_engine::io::base64_decode);
+            let bytes = r.get("base64").and_then(Json::as_str).and_then(iridium_engine::io::base64_decode);
             let name = r.get("name").and_then(Json::as_str).map_or_else(|| format!("{stem}.{fmt}"), str::to_string);
             match (bytes, &app.services.download) {
                 (Some(b), Some(dl)) => {
@@ -884,7 +884,7 @@ pub fn export_as(app: &mut SheetApp, fmt: &str) -> bool {
             }
         }
         Err(e) => {
-            app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+            app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
             false
         }
     }
@@ -895,7 +895,7 @@ fn account(app: &mut SheetApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     let lang = app.ui.language;
     section(ui, lang, "Product Information");
-    ui.label(RichText::new("Iridium Sheets").font(theme::ui_bold(16.0)).color(t.text));
+    ui.label(RichText::new(iridium_core::brand::NAME).font(theme::ui_bold(16.0)).color(t.text));
     ui.add_space(8.0);
     egui::Grid::new("backstage_account").num_columns(2).spacing(vec2(18.0, 8.0)).show(ui, |ui| {
         for (label, value) in
@@ -966,7 +966,7 @@ mod tests {
 
     #[test]
     fn the_recent_list_learns_when_its_files_were_last_changed() {
-        let dir = std::env::temp_dir().join(format!("gridcraft-recent-files-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("iridium-recent-files-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let there = dir.join("There.xlsx").to_string_lossy().into_owned();

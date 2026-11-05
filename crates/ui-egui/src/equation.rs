@@ -9,8 +9,8 @@ use std::sync::Arc;
 use egui::epaint::{Mesh, PathShape, PathStroke};
 use egui::text::{CCursor, CCursorRange};
 use egui::{Color32, FontFamily, FontId, Key, Painter, Pos2, Rect, Stroke, StrokeKind, TextEdit, pos2, vec2};
-use gridcraft_engine::math::{Face, Item, MathError, MathList, PathCmd};
-use gridcraft_engine::model::{Shape, ShapeKind, Workbook};
+use iridium_engine::math::{Face, Item, MathError, MathList, PathCmd};
+use iridium_engine::model::{Shape, ShapeKind, Workbook};
 use serde_json::{Value as Json, json};
 
 use crate::SheetApp;
@@ -104,7 +104,7 @@ fn preview(ctx: &egui::Context, id: egui::Id, source: &str) -> Preview {
     if let Some(p) = ctx.data(|d| d.get_temp::<Preview>(id)).filter(|p| p.source == source) {
         return p;
     }
-    let p = Preview { source: source.to_string(), result: gridcraft_engine::math::layout(source).map(Arc::new) };
+    let p = Preview { source: source.to_string(), result: iridium_engine::math::layout(source).map(Arc::new) };
     ctx.data_mut(|d| d.insert_temp(id, p.clone()));
     p
 }
@@ -209,7 +209,7 @@ pub fn editor(app: &mut SheetApp, ui: &mut egui::Ui, d: &mut Dialog, confirm: &m
 /// The gallery's layouts, made once (guarded, like every layout) the first time the menu opens.
 fn gallery_layouts() -> &'static [(&'static str, &'static str, Option<MathList>)] {
     static G: std::sync::OnceLock<Vec<(&'static str, &'static str, Option<MathList>)>> = std::sync::OnceLock::new();
-    G.get_or_init(|| gridcraft_engine::math::GALLERY.iter().map(|(name, src)| (*name, *src, gridcraft_engine::math::layout(src).ok())).collect())
+    G.get_or_init(|| iridium_engine::math::GALLERY.iter().map(|(name, src)| (*name, *src, iridium_engine::math::layout(src).ok())).collect())
 }
 
 /// The gallery as menu rows: a name over a preview on a sheet-coloured card. Returns the source
@@ -243,13 +243,13 @@ pub fn paint_shape(p: &Painter, r: Rect, sp: &Shape, wb: &Workbook, z: f32) {
     let p = p.with_clip_rect(r.intersect(p.clip_rect()));
     match sp.math.get(&sp.text) {
         Some(Ok(list)) => {
-            paint_list(&p, r, list, ink, gridcraft_engine::cmd::equation::PADDING * z);
+            paint_list(&p, r, list, ink, iridium_engine::cmd::equation::PADDING * z);
         }
         // No layout (a source that doesn't parse, from a file): show the source in a dashed
         // frame so it can be found and fixed.
         other => {
             let font = FontId::new(13.0 * z, FontFamily::Name(theme::MONO.into()));
-            let source = gridcraft_engine::cmd::equation::source_excerpt(&sp.text).to_owned();
+            let source = iridium_engine::cmd::equation::source_excerpt(&sp.text).to_owned();
             let g = p.layout(source, font, t.cell_text, (r.width() - 8.0 * z).max(1.0));
             p.galley(r.min + vec2(4.0, 4.0) * z, g, t.cell_text);
             if matches!(other, Some(Err(_))) {

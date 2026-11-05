@@ -1,7 +1,7 @@
 //! In-cell / formula-bar editing state: point mode, reference colouring, function
 //! autocomplete and argument hints.
 
-use gridcraft_engine::core::{CellRef, RangeRef};
+use iridium_engine::core::{CellRef, RangeRef};
 
 /// How many distinct reference colours a formula cycles through (`Tokens::ref_colors`).
 pub const REF_COLOR_COUNT: usize = 8;
@@ -27,7 +27,7 @@ pub struct EditState {
     /// `point_anchor`, which holds a sheet index.
     pub sheet_order: u64,
     /// Syntax of this edit, captured when it starts (prevents a language switch reinterpreting it).
-    pub locale: gridcraft_engine::formula::FormulaLocale,
+    pub locale: iridium_engine::formula::FormulaLocale,
     pub cell: CellRef,
     pub text: String,
     /// Started by typing (Enter mode: arrows commit) rather than F2 (Edit mode: arrows move the caret).
@@ -66,7 +66,7 @@ pub struct EditState {
 
 /// A digest of the order of `wb`'s sheets by identity: it changes when a sheet is inserted,
 /// deleted or moved, not when one is renamed or edited.
-pub fn sheet_order(wb: &gridcraft_engine::model::Workbook) -> u64 {
+pub fn sheet_order(wb: &iridium_engine::model::Workbook) -> u64 {
     wb.sheets.iter().fold(0xcbf2_9ce4_8422_2325_u64, |h, sh| (h ^ sh.uid.get()).wrapping_mul(0x0000_0100_0000_01b3))
 }
 
@@ -111,7 +111,7 @@ impl EditState {
     }
 
     /// Records the identity of the draft's sheet, from the workbook it is typed in.
-    pub fn on_sheet(mut self, wb: &gridcraft_engine::model::Workbook) -> EditState {
+    pub fn on_sheet(mut self, wb: &iridium_engine::model::Workbook) -> EditState {
         self.sheet_uid = wb.sheet(self.sheet).map_or(0, |sh| sh.uid.get());
         self.sheet_order = sheet_order(wb);
         self
@@ -119,7 +119,7 @@ impl EditState {
 
     /// The draft's sheet's index now, found by its identity, since commands insert, delete and
     /// move sheets under an open draft; `None` once the sheet is gone (or none was recorded).
-    pub fn sheet_in(&self, wb: &gridcraft_engine::model::Workbook) -> Option<usize> {
+    pub fn sheet_in(&self, wb: &iridium_engine::model::Workbook) -> Option<usize> {
         if self.sheet_uid == 0 {
             return None;
         }
@@ -373,12 +373,12 @@ impl EditState {
 pub fn formula_refs(text: &str) -> Vec<(usize, usize, RangeRef, Option<String>, usize)> {
     let body = text.strip_prefix('=').or_else(|| text.strip_prefix('+')).unwrap_or(text);
     let offset = text.len() - body.len();
-    let Ok(toks) = gridcraft_engine::formula::lexer::tokenize(body) else { return vec![] };
+    let Ok(toks) = iridium_engine::formula::lexer::tokenize(body) else { return vec![] };
     let mut out: Vec<(usize, usize, RangeRef, Option<String>, usize)> = Vec::new();
     let mut seen: Vec<String> = Vec::new();
     let mut i = 0;
     while i < toks.len() {
-        use gridcraft_engine::formula::lexer::Tok;
+        use iridium_engine::formula::lexer::Tok;
         let (sheet, start, j) = match &toks[i].tok {
             Tok::Sheet(a, _) => (Some(a.clone()), toks[i].start, i + 1),
             _ => (None, toks[i].start, i),
@@ -431,7 +431,7 @@ pub fn ref_is_on_sheet(ref_sheet: Option<&str>, origin: &str, shown: &str) -> bo
 
 /// Excel-style AutoComplete: the one distinct text entry in the same column (contiguous data
 /// above and below) that starts with `typed` (case-insensitive). `None` when ambiguous.
-pub fn column_completion(sheet: &gridcraft_engine::model::Sheet, at: CellRef, typed: &str) -> Option<String> {
+pub fn column_completion(sheet: &iridium_engine::model::Sheet, at: CellRef, typed: &str) -> Option<String> {
     if typed.is_empty() || typed.starts_with('=') || typed.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-') {
         return None;
     }
@@ -440,8 +440,8 @@ pub fn column_completion(sheet: &gridcraft_engine::model::Sheet, at: CellRef, ty
     let mut ambiguous = false;
     let mut scan = |row: u32| -> bool {
         match sheet.value(CellRef::new(row, at.col)) {
-            gridcraft_engine::core::Value::Empty => false,
-            gridcraft_engine::core::Value::Text(t) => {
+            iridium_engine::core::Value::Empty => false,
+            iridium_engine::core::Value::Text(t) => {
                 let folded = t.to_lowercase();
                 if folded.starts_with(&lower) && folded.len() > lower.len() {
                     match &found {

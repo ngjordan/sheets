@@ -4,9 +4,9 @@
 
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, os::OperatingSystem, vec2};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_engine::model::{ObjKind, ObjRef, Shape, ShapeKind};
-use gridcraft_ui_egui::{SheetApp, chartview, grid::Geo};
+use iridium_engine::Session;
+use iridium_engine::model::{ObjKind, ObjRef, Shape, ShapeKind};
+use iridium_ui_egui::{SheetApp, chartview, grid::Geo};
 use serde_json::{Value as Json, json};
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -178,7 +178,7 @@ fn the_gallery_inserts_its_examples() {
     h.run_steps(3);
     let eqs = equations(&h);
     assert_eq!(eqs.len(), 1, "one gallery example inserted");
-    assert_eq!(eqs[0].text, gridcraft_engine::math::GALLERY[0].1);
+    assert_eq!(eqs[0].text, iridium_engine::math::GALLERY[0].1);
 }
 
 #[test]

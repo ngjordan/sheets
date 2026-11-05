@@ -5,8 +5,8 @@
 
 use std::collections::HashMap;
 
-use gridcraft_model::style::Protection;
-use gridcraft_model::{
+use iridium_model::style::Protection;
+use iridium_model::{
     Alignment, BorderLine, BorderStyle, Borders, Color, Fill, Font, HAlign, NumFmt, PatternType, Style, StyleId, StyleTable, Underline, VAlign,
     VertAlign, Workbook,
 };

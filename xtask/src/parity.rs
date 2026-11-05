@@ -1,6 +1,6 @@
 //! `cargo xtask parity [--check] [--out PATH]`: write `docs/parity-checklist.md` from the engine's command
-//! catalog (`gridcraft_engine::catalog::CATALOG`, Excel's ribbon and menu tree). A catalog id is
-//! implemented when a command with that id is registered (`gridcraft_engine::find_command`).
+//! catalog (`iridium_engine::catalog::CATALOG`, Excel's ribbon and menu tree). A catalog id is
+//! implemented when a command with that id is registered (`iridium_engine::find_command`).
 //!
 //! `--check` fails if `docs/parity-checklist.md` is out of date instead of writing it; `--out` writes
 //! somewhere else. The rendering is pure (`render`) so it is unit-tested without the engine.
@@ -72,7 +72,7 @@ pub fn render(entries: &[Entry]) -> String {
 
 #[cfg(feature = "engine")]
 fn entries() -> Vec<Entry> {
-    use gridcraft_engine::catalog::CATALOG;
+    use iridium_engine::catalog::CATALOG;
     CATALOG
         .iter()
         .map(|(id, tab, group, label)| Entry {
@@ -80,14 +80,14 @@ fn entries() -> Vec<Entry> {
             tab: (*tab).to_string(),
             group: (*group).to_string(),
             label: (*label).to_string(),
-            done: gridcraft_engine::find_command(id).is_some(),
+            done: iridium_engine::find_command(id).is_some(),
         })
         .collect()
 }
 
 #[cfg(feature = "engine")]
 fn summary_line() -> String {
-    let (done, total) = gridcraft_engine::catalog::parity();
+    let (done, total) = iridium_engine::catalog::parity();
     format!("parity: {done} / {total} catalog commands implemented ({:.1}%)", pct(done, total))
 }
 

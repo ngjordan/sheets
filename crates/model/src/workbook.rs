@@ -3,8 +3,8 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use gridcraft_core::DateSystem;
-use gridcraft_formula::Expr;
+use iridium_core::DateSystem;
+use iridium_formula::Expr;
 use serde::{Deserialize, Serialize};
 
 use crate::cell::Formula;
@@ -46,7 +46,7 @@ pub enum ShowObjects {
 /// The values are modelled so an open + save keeps them — a workbook Excel saved with the
 /// tabs hidden must not come back with them shown and the settings gone. The app does not
 /// act on them yet and there is no Options control for them; that is the other half of
-/// storytold/gridcraft#3057.
+/// ngjordan/iridium-sheets#3057.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WorkbookView {
     #[serde(default = "yes")]
@@ -460,10 +460,10 @@ impl Workbook {
             }
         }
         for n in self.names.iter_mut() {
-            if let Ok(e) = gridcraft_formula::parse_name(&n.formula) {
+            if let Ok(e) = iridium_formula::parse_name(&n.formula) {
                 let ne = spell_calls(e.clone(), &lambdas);
                 if ne != e {
-                    n.formula = gridcraft_formula::print(&ne);
+                    n.formula = iridium_formula::print(&ne);
                 }
             }
         }

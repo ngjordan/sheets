@@ -3,7 +3,7 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use gridcraft_core::CellRef;
+use iridium_core::CellRef;
 use serde_json::{Value as Json, json};
 
 use super::{s, v};
@@ -52,7 +52,7 @@ fn totals() -> Json {
 fn bold(s: &Session, a: &str) -> bool {
     let d = s.doc().unwrap();
     let sh = d.wb.active().unwrap();
-    d.wb.styles.get(sh.style_id(gridcraft_core::CellRef::parse(a).unwrap())).font.bold
+    d.wb.styles.get(sh.style_id(iridium_core::CellRef::parse(a).unwrap())).font.bold
 }
 
 #[test]
@@ -66,7 +66,7 @@ fn a_run_resolves_tokens_and_is_one_undo_step() {
     assert_eq!(r["inputs"], json!({"Input": "B2:C5"}));
     assert_eq!(v(&s, "E2").display(), "Total");
     assert_eq!(v(&s, "E3").display(), "400");
-    assert_eq!(s.doc().unwrap().wb.active().unwrap().input_text(gridcraft_core::CellRef::parse("E3").unwrap()), "=SUM(C3:C5)");
+    assert_eq!(s.doc().unwrap().wb.active().unwrap().input_text(iridium_core::CellRef::parse("E3").unwrap()), "=SUM(C3:C5)");
     assert!(bold(&s, "B2") && bold(&s, "C2"));
     let after = undo_labels(&s);
     assert_eq!(after.len(), before.len() + 1);
@@ -576,7 +576,7 @@ fn the_debugger_lists_deleted_and_renamed_sheets_and_caps_the_list() {
     for sh in wb.sheets.iter_mut() {
         let sh = Arc::make_mut(sh);
         for r in 0..600u32 {
-            sh.set_value(CellRef::new(r + 10, r % 2), gridcraft_core::Value::Number(1.0));
+            sh.set_value(CellRef::new(r + 10, r % 2), iridium_core::Value::Number(1.0));
         }
     }
     d.wb = Arc::new(wb);
@@ -1240,7 +1240,7 @@ fn the_policy_keeps_macros_away_from_files_and_the_app() {
 #[test]
 fn macros_from_a_file_ask_before_running() {
     let mut s = s();
-    let mut wb = gridcraft_model::Workbook::new();
+    let mut wb = iridium_model::Workbook::new();
     wb.macros.push(crate::macros::parse_macro(&json!({"name": "Theirs", "output": {"onConflict": "overwrite"}, "steps": [{"command": "cell.set", "params": {"cell": "A1", "input": "ran"}}]})).unwrap());
     let bytes = serde_json::to_vec(&wb).unwrap();
     s.execute("file.open", json!({"name": "theirs.json", "base64": crate::io::base64_encode(&bytes)})).unwrap();
@@ -1604,12 +1604,12 @@ fn a_relative_recording_plays_back_on_another_block() {
     assert_eq!(m.description, "made by recording");
     let input = &m.inputs[0];
     assert!(input.header);
-    assert_eq!((input.cols, input.col_types.clone()), ([2, 2], vec![gridcraft_model::ColType::Text, gridcraft_model::ColType::Number]));
+    assert_eq!((input.cols, input.col_types.clone()), ([2, 2], vec![iridium_model::ColType::Text, iridium_model::ColType::Number]));
     let steps: Vec<(String, Json)> = m
         .steps
         .iter()
         .map(|st| match &st.kind {
-            gridcraft_model::StepKind::Command { id, params } => (id.clone(), params.clone()),
+            iridium_model::StepKind::Command { id, params } => (id.clone(), params.clone()),
             other => panic!("{other:?}"),
         })
         .collect();
@@ -1649,7 +1649,7 @@ fn a_relative_recording_plays_back_on_another_block() {
     s.execute("macro.run", json!({"name": "Sum it", "inputs": "G10:H14", "onConflict": "overwrite"})).unwrap();
     assert!(bold(&s, "G10") && bold(&s, "H10"));
     let d = s.doc().unwrap();
-    assert!(d.wb.styles.get(d.wb.active().unwrap().style_id(gridcraft_core::CellRef::parse("H12").unwrap())).font.italic);
+    assert!(d.wb.styles.get(d.wb.active().unwrap().style_id(iridium_core::CellRef::parse("H12").unwrap())).font.italic);
     // The input is checked like any other: text in the amounts is refused.
     set(&mut s, "H12", "two");
     let err = s.execute("macro.run", json!({"name": "Sum it", "inputs": "G10:H14"})).unwrap_err().to_string();
@@ -1742,7 +1742,7 @@ fn a_recording_is_kept_when_saving_it_fails() {
     let d = s.doc_mut().unwrap();
     let mut wb = (*d.wb).clone();
     let filler = wb.macros[0].clone();
-    while wb.macros.len() < gridcraft_model::MAX_MACROS {
+    while wb.macros.len() < iridium_model::MAX_MACROS {
         let mut m = filler.clone();
         m.name = format!("Filler{}", wb.macros.len());
         wb.macros.push(m);
@@ -1868,7 +1868,7 @@ fn a_selection_of_several_areas_keeps_its_active_cell_as_it_is() {
     s.execute("macro.record", json!({})).unwrap();
     // Several areas picked with the mouse: no command, so the recording adds a selection.set
     // with the active cell before the next step.
-    let (a, b) = (gridcraft_core::RangeRef::parse("B2:C5").unwrap(), gridcraft_core::RangeRef::parse("E2:E5").unwrap());
+    let (a, b) = (iridium_core::RangeRef::parse("B2:C5").unwrap(), iridium_core::RangeRef::parse("E2:E5").unwrap());
     s.doc_mut().unwrap().selection = crate::Selection { active: b.start, anchor: b.start, ranges: vec![a, b] };
     s.execute("home.bold", json!({})).unwrap();
     s.execute("macro.record", json!({"stop": true, "name": "Areas"})).unwrap();
@@ -2017,7 +2017,7 @@ fn steps_past_the_macro_limit_are_counted_as_dropped() {
     s.execute("macro.record", json!({"relative": false})).unwrap();
     let (doc, selection) = (s.doc().unwrap().uid, s.doc().unwrap().selection.clone());
     let rec = s.recorder.as_mut().unwrap();
-    for i in 0..gridcraft_model::MAX_MACRO_STEPS + 5 {
+    for i in 0..iridium_model::MAX_MACRO_STEPS + 5 {
         rec.push(crate::record::RecordedStep {
             doc,
             sheet: 0,
@@ -2029,7 +2029,7 @@ fn steps_past_the_macro_limit_are_counted_as_dropped() {
     }
     rec.dropped = 3;
     let r = s.execute("macro.record", json!({"stop": true, "name": "Long"})).unwrap();
-    assert_eq!(r["steps"], gridcraft_model::MAX_MACRO_STEPS);
+    assert_eq!(r["steps"], iridium_model::MAX_MACRO_STEPS);
     assert_eq!(r["dropped"], 8, "{r}");
 }
 
@@ -2054,7 +2054,7 @@ fn a_recording_waits_while_a_macro_in_its_workbook_is_debugged() {
 
 /// Opens a JSON workbook whose `macros` field holds `macros`, as a file the person opened.
 fn open_with_macros(s: &mut Session, macros: Vec<Json>) -> Vec<String> {
-    let mut file = serde_json::to_value(gridcraft_model::Workbook::new()).unwrap();
+    let mut file = serde_json::to_value(iridium_model::Workbook::new()).unwrap();
     file["macros"] = json!(macros);
     let r = s.execute("file.open", json!({"name": "kept.json", "base64": crate::io::base64_encode(file.to_string().as_bytes())})).unwrap();
     r["warnings"].as_array().map(|w| w.iter().map(|x| x.as_str().unwrap_or_default().to_string()).collect()).unwrap_or_default()
@@ -2065,11 +2065,11 @@ fn kept_macros_count_toward_the_limit_and_keep_their_names() {
     // Macros in a newer format count toward the limit when the file opens again, so they count
     // when one is added; their names are taken.
     let mut s = s();
-    let newer = |name: &str| json!({"name": name, "v": gridcraft_model::MACRO_VERSION + 1});
-    let mut list: Vec<Json> = (0..gridcraft_model::MAX_MACROS - 2).map(|i| json!({"name": format!("M{i}")})).collect();
+    let newer = |name: &str| json!({"name": name, "v": iridium_model::MACRO_VERSION + 1});
+    let mut list: Vec<Json> = (0..iridium_model::MAX_MACROS - 2).map(|i| json!({"name": format!("M{i}")})).collect();
     list.extend([newer("Future"), newer("Macro1")]);
     open_with_macros(&mut s, list);
-    assert_eq!((s.doc().unwrap().wb.macros.len(), s.doc().unwrap().wb.macros_unread.len()), (gridcraft_model::MAX_MACROS - 2, 2));
+    assert_eq!((s.doc().unwrap().wb.macros.len(), s.doc().unwrap().wb.macros_unread.len()), (iridium_model::MAX_MACROS - 2, 2));
     let err = s.execute("macro.save", json!({"name": "New"})).unwrap_err().to_string();
     assert!(err.contains("at most 1000 macros") && err.contains("2 of the 1000"), "{err}");
     s.execute("macro.delete", json!({"name": "M0"})).unwrap();
@@ -2095,7 +2095,7 @@ fn kept_macros_count_toward_the_limit_and_keep_their_names() {
         let b64 = s.execute("file.saveBytes", json!({"format": format})).unwrap()["base64"].as_str().unwrap().to_string();
         s.execute("file.open", json!({"name": format!("again.{format}"), "base64": b64})).unwrap();
         let wb = &s.doc().unwrap().wb;
-        assert_eq!((wb.macros.len(), wb.macros_unread.len()), (gridcraft_model::MAX_MACROS - 2, 2), "{format}");
+        assert_eq!((wb.macros.len(), wb.macros_unread.len()), (iridium_model::MAX_MACROS - 2, 2), "{format}");
         assert_eq!(*wb.macros_unread, [newer("Future"), newer("Macro1")], "{format}");
     }
 }
@@ -2132,13 +2132,13 @@ fn the_recorded_input_is_inferred_as_it_was_when_recording_started() {
     set(&mut s, "C4", "80");
     s.execute("macro.record", json!({"stop": true, "name": "Numbers"})).unwrap();
     let m = crate::macros::parse_macro(&s.execute("macro.get", json!({"name": "Numbers"})).unwrap()).unwrap();
-    assert!(!m.inputs[0].col_types.contains(&gridcraft_model::ColType::Number), "{:?}", m.inputs[0]);
+    assert!(!m.inputs[0].col_types.contains(&iridium_model::ColType::Number), "{:?}", m.inputs[0]);
     // Played back on data like the original, text numbers and all.
     for (cell, input) in [("G10", "Who"), ("H10", "Paid"), ("G11", "A"), ("H11", "'1"), ("G12", "B"), ("H12", "'2")] {
         set(&mut s, cell, input);
     }
     s.execute("macro.run", json!({"name": "Numbers", "inputs": "G10:H12", "onConflict": "overwrite"})).unwrap();
-    assert_eq!(v(&s, "H11"), gridcraft_core::Value::Number(120.0));
+    assert_eq!(v(&s, "H11"), iridium_core::Value::Number(120.0));
 }
 
 #[test]
@@ -2406,9 +2406,9 @@ fn shortcuts_parse_to_one_letter_and_avoid_reserved_and_taken_ones() {
         assert_eq!(parse_shortcut(bad), None, "{bad}");
     }
     assert_eq!(shortcut_text('m'), "Ctrl+Shift+M");
-    let mut wb = gridcraft_model::Workbook::default();
-    wb.macros.push(gridcraft_model::Macro { name: "A".into(), shortcut: Some("Ctrl+Shift+M".into()), ..Default::default() });
-    wb.macros.push(gridcraft_model::Macro { name: "B".into(), ..Default::default() });
+    let mut wb = iridium_model::Workbook::default();
+    wb.macros.push(iridium_model::Macro { name: "A".into(), shortcut: Some("Ctrl+Shift+M".into()), ..Default::default() });
+    wb.macros.push(iridium_model::Macro { name: "B".into(), ..Default::default() });
     assert!(shortcut_conflict(&wb, "B", 's').is_some_and(|m| m.contains("Save As")));
     assert!(shortcut_conflict(&wb, "B", 'm').is_some_and(|m| m.contains("“A”")));
     // A macro keeps its own letter.

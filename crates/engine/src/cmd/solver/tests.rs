@@ -1,4 +1,4 @@
-use gridcraft_core::{CellRef, Value};
+use iridium_core::{CellRef, Value};
 use serde_json::json;
 
 use crate::Session;
@@ -1319,7 +1319,7 @@ fn reset_all_masks_a_workbook_level_model_and_keeps_other_sheets_models() {
             ("solver_eng", "2"),
             ("solver_ssz", "500"),
         ] {
-            wb.names.push(gridcraft_model::DefinedName {
+            wb.names.push(iridium_model::DefinedName {
                 name: name.into(),
                 scope: None,
                 formula: formula.into(),
@@ -1413,7 +1413,7 @@ fn save_model_asks_before_it_replaces_data_and_is_one_undo_step() {
 fn saving_and_resetting_a_model_keep_the_users_own_solver_names() {
     let mut s = s();
     set(&mut s, &[("A1", "0"), ("B1", "=ABS(A1-3)"), ("C1", "100")]);
-    let name = |name: &str, scope: Option<usize>, formula: &str, hidden: bool| gridcraft_model::DefinedName {
+    let name = |name: &str, scope: Option<usize>, formula: &str, hidden: bool| iridium_model::DefinedName {
         name: name.into(),
         scope,
         formula: formula.into(),
@@ -1592,7 +1592,7 @@ fn load_model_reads_a_bounded_column_and_refuses_malformed_cells() {
         let d = s.doc_mut().unwrap();
         let sh = std::sync::Arc::make_mut(&mut std::sync::Arc::make_mut(&mut d.wb).sheets[0]);
         for r in rows {
-            sh.set_cell(CellRef::new(r, col), gridcraft_model::Cell::formula(gridcraft_model::Formula::new(&f(r))));
+            sh.set_cell(CellRef::new(r, col), iridium_model::Cell::formula(iridium_model::Formula::new(&f(r))));
         }
     };
     // A column of formulas far longer than any model: read from its first cell, the read stops
@@ -1664,7 +1664,7 @@ fn solver_options_are_saved_with_the_model() {
 }
 
 #[test]
-fn excel_iteration_and_time_limits_are_not_read_as_gridcraft_options() {
+fn excel_iteration_and_time_limits_are_not_read_as_iridium_options() {
     let mut s = s();
     set(&mut s, &[("A1", "0"), ("B1", "=ABS(A1-3)")]);
     let model = json!({"objective": "B1", "goal": "min", "variables": "A1", "constraints": ["A1 <= 4"], "method": "evolutionary"});
@@ -1676,14 +1676,14 @@ fn excel_iteration_and_time_limits_are_not_read_as_gridcraft_options() {
     // Iridium Sheets's evaluation limit and generations go under its own names, not Excel's.
     let saved = names(&s);
     assert!(saved.iter().all(|n| n != "solver_itr" && n != "solver_mni"), "{saved:?}");
-    assert!(saved.iter().any(|n| n == "gridcraft_solver_evals") && saved.iter().any(|n| n == "gridcraft_solver_stall"), "{saved:?}");
+    assert!(saved.iter().any(|n| n == "iridium_solver_evals") && saved.iter().any(|n| n == "iridium_solver_stall"), "{saved:?}");
     // Excel's own limits, as a workbook from Excel holds them: 100 iterations, 30 seconds.
     {
         let d = s.doc_mut().unwrap();
         let wb = std::sync::Arc::make_mut(&mut d.wb);
-        wb.names.retain(|n| !n.name.starts_with("gridcraft_"));
+        wb.names.retain(|n| !n.name.starts_with("iridium_"));
         for (name, formula) in [("solver_itr", "100"), ("solver_mni", "30")] {
-            wb.names.push(gridcraft_model::DefinedName {
+            wb.names.push(iridium_model::DefinedName {
                 name: name.into(),
                 scope: Some(0),
                 formula: formula.into(),
@@ -1707,11 +1707,7 @@ fn excel_iteration_and_time_limits_are_not_read_as_gridcraft_options() {
     let m = super::saved_model(&s.doc().unwrap().wb, 0).unwrap();
     assert_eq!((m["method"].as_str(), m["maxEvaluations"].as_f64()), (Some("simplex"), Some(700.0)), "{m} {r:?}");
     let saved = names(&s);
-    assert_eq!(
-        saved.iter().filter(|n| n.starts_with("gridcraft_")).collect::<Vec<_>>(),
-        ["gridcraft_solver_evals", "gridcraft_solver_stall"],
-        "{saved:?}"
-    );
+    assert_eq!(saved.iter().filter(|n| n.starts_with("iridium_")).collect::<Vec<_>>(), ["iridium_solver_evals", "iridium_solver_stall"], "{saved:?}");
     s.execute("data.solver", model).unwrap();
     s.execute("data.solverReset", json!({})).unwrap();
     assert!(names(&s).is_empty(), "{:?}", names(&s));

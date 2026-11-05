@@ -1,8 +1,8 @@
 //! More ribbon commands: Chart Design and Format, object arrangement, workbook views, table
 //! tools, Get Data, scripts (Automate), cell checkboxes, theme colours and fonts.
 
-use gridcraft_core::{CellRef, RangeRef, Value};
-use gridcraft_model::{
+use iridium_core::{CellRef, RangeRef, Value};
+use iridium_model::{
     Anchor, Chart, Color, DefinedName, HAlign, LegendPos, NumFmt, Shape, ShapeKind, Sheet, SheetViewMode, TableColumn, TotalsFn, Trendline,
     TrendlineKind, Workbook,
 };
@@ -309,7 +309,7 @@ pub fn specs() -> Vec<CommandSpec> {
             has_doc,
             new_cell_style
         ),
-        cmd!(query "home.addIns", "Add-ins", ["Home", "Add-ins"], None, "{} → Iridium Sheets extends through MCP and scripts instead of add-ins", always, |_, _| Ok(json!({"addIns": [], "hint": "Use gridcraft-cli mcp or Automate › scripts"}))),
+        cmd!(query "home.addIns", "Add-ins", ["Home", "Add-ins"], None, "{} → Iridium Sheets extends through MCP and scripts instead of add-ins", always, |_, _| Ok(json!({"addIns": [], "hint": "Use iridium-sheets-cli mcp or Automate › scripts"}))),
         cmd!(query "formulas.recentlyUsed", "Recently Used", ["Formulas", "Function Library"], None, "{} → the functions most recently entered in formulas, newest first", has_doc, recently_used),
         cmd!(query "formulas.financial", "Financial", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Financial"}))),
         cmd!(query "formulas.logical", "Logical", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Logical"}))),

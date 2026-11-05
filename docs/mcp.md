@@ -1,6 +1,6 @@
 # Iridium Sheets MCP server
 
-`gridcraft-cli mcp` exposes Iridium Sheets to AI agents over the [Model Context Protocol](https://modelcontextprotocol.io):
+`iridium-sheets-cli mcp` exposes Iridium Sheets to AI agents over the [Model Context Protocol](https://modelcontextprotocol.io):
 newline-delimited JSON-RPC 2.0 on stdin/stdout (protocol `2025-06-18`; `2025-03-26` and `2024-11-05` clients are
 answered in their own version). Logs go to stderr.
 
@@ -8,15 +8,15 @@ Two backends:
 
 | Mode | Command | What it drives |
 |---|---|---|
-| Headless (default) | `gridcraft-cli mcp [--in book.xlsx \| --sample budget]` | An in-process engine session — no window. |
-| Remote | `gridcraft-cli mcp --connect 7979` | A running app started with `gridcraft --control 7979` (TCP JSON lines on `127.0.0.1`, authenticated with the app's token: it is read from the app's token file or `GRIDCRAFT_CONTROL_TOKEN`, see [`control-protocol.md`](control-protocol.md)). |
+| Headless (default) | `iridium-sheets-cli mcp [--in book.xlsx \| --sample budget]` | An in-process engine session — no window. |
+| Remote | `iridium-sheets-cli mcp --connect 7979` | A running app started with `iridium-sheets --control 7979` (TCP JSON lines on `127.0.0.1`, authenticated with the app's token: it is read from the app's token file or `IRIDIUM_CONTROL_TOKEN`, see [`control-protocol.md`](control-protocol.md)). |
 
 ## Claude Code
 
 ```sh
-claude mcp add gridcraft -- gridcraft-cli mcp
+claude mcp add iridium-sheets -- iridium-sheets-cli mcp
 # or drive the desktop app you are looking at:
-claude mcp add gridcraft-app -- gridcraft-cli mcp --connect 7979
+claude mcp add iridium-app -- iridium-sheets-cli mcp --connect 7979
 ```
 
 JSON config (`.mcp.json`, Claude Desktop, other clients):
@@ -24,8 +24,8 @@ JSON config (`.mcp.json`, Claude Desktop, other clients):
 ```json
 {
   "mcpServers": {
-    "gridcraft": {
-      "command": "gridcraft-cli",
+    "iridium-sheets": {
+      "command": "iridium-sheets-cli",
       "args": ["mcp"]
     }
   }
@@ -68,9 +68,9 @@ methods `-32601`.
 
 ## Resources
 
-- `gridcraft://workbook` — `document.inspect` of the active workbook.
-- `gridcraft://commands` — every command with its parameter docs.
-- `gridcraft://functions` — every worksheet function.
+- `iridium://workbook` — `document.inspect` of the active workbook.
+- `iridium://commands` — every command with its parameter docs.
+- `iridium://functions` — every worksheet function.
 
 `prompts/list` returns an empty list.
 
@@ -86,7 +86,7 @@ methods `-32601`.
 
 ## Embedding
 
-`gridcraft-mcp` is a library: `Server::new(Box::new(Headless::new()))` or
+`iridium-mcp` is a library: `Server::new(Box::new(Headless::new()))` or
 `Server::new(Box::new(Remote::connect(&control_addr("7979"))?))`, then `Server::serve(stdin, stdout)` or
 `Server::handle_line(line) -> Option<String>`. Implement the `Backend` trait (`call(method, params)`) to drive another
 host.

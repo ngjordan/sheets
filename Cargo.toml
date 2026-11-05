@@ -1,30 +1,30 @@
 [workspace]
 resolver = "3"
 members = ["crates/*", "apps/*", "xtask"]
-default-members = ["crates/*", "apps/gridcraft", "apps/gridcraft-cli", "xtask"]
+default-members = ["crates/*", "apps/iridium-sheets", "apps/iridium-sheets-cli", "xtask"]
 
 [workspace.package]
-version = "0.17.0"
+version = "0.18.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
-repository = "https://github.com/storytold/gridcraft"
+repository = "https://github.com/ngjordan/iridium-sheets"
 
 [workspace.dependencies]
 # internal
-gridcraft-core = { path = "crates/core" }
-gridcraft-numfmt = { path = "crates/numfmt" }
-gridcraft-formula = { path = "crates/formula" }
-gridcraft-functions = { path = "crates/functions" }
-gridcraft-model = { path = "crates/model" }
-gridcraft-calc = { path = "crates/calc" }
-gridcraft-xlsx = { path = "crates/xlsx" }
-gridcraft-chart = { path = "crates/chart" }
-gridcraft-engine = { path = "crates/engine" }
-gridcraft-ui-egui = { path = "crates/ui-egui" }
-gridcraft-mcp = { path = "crates/mcp" }
-gridcraft-pdf = { path = "crates/pdf" }
-gridcraft-math = { path = "crates/math" }
+iridium-core = { path = "crates/core" }
+iridium-numfmt = { path = "crates/numfmt" }
+iridium-formula = { path = "crates/formula" }
+iridium-functions = { path = "crates/functions" }
+iridium-model = { path = "crates/model" }
+iridium-calc = { path = "crates/calc" }
+iridium-xlsx = { path = "crates/xlsx" }
+iridium-chart = { path = "crates/chart" }
+iridium-engine = { path = "crates/engine" }
+iridium-ui-egui = { path = "crates/ui-egui" }
+iridium-mcp = { path = "crates/mcp" }
+iridium-pdf = { path = "crates/pdf" }
+iridium-math = { path = "crates/math" }
 # Every craft-libs crate (craft-update and craft-window here, craft-ui in ui-egui, craft-print in
 # the app) comes from one storytold/craft-libs revision.
 # craft-update: app-specific pretend versions apply to startup and manual checks.

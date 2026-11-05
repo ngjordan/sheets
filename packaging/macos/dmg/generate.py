@@ -23,13 +23,27 @@ from PIL import Image, ImageCms
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Keep in sync with package.sh (volume name) and README.md (layout).
-VOLUME = "Iridium Sheets"
+# The app's branding, from branding/brand.env (the same source package.sh reads).
+def _brand():
+    path = os.path.join(HERE, "..", "..", "..", "branding", "brand.env")
+    values = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            values[key.strip()] = value.strip().strip('"')
+    return values
+
+
+_BRAND = _brand()
+VOLUME = _BRAND["APP_NAME"]
 WIDTH, HEIGHT = 660, 400  # window content, pt; the background's 1x size
 TITLE_BAR = 32
 ICON_SIZE = 128
 PALETTE = 16  # colours in background.tiff
-ICONS = {"Iridium Sheets.app": (326, 205), "Applications": (574, 205)}
+ICONS = {f"{VOLUME}.app": (326, 205), "Applications": (574, 205)}
 # A fixed date for the alias and the colour profile. Finder never matches it against the image
 # (each build is a new volume): it finds the background by volume name and path.
 FIXED_DATE = datetime.datetime(2026, 10, 8, tzinfo=datetime.timezone.utc)

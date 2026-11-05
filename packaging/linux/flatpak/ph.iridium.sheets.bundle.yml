@@ -15,7 +15,7 @@ id: ph.iridium.sheets
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-command: gridcraft
+command: iridium-sheets
 finish-args:
   - --filesystem=xdg-data/Iridium Sheets/versions:ro
   # Display: Wayland first; X11 only when no Wayland compositor is running.
@@ -91,17 +91,17 @@ modules:
           - '  esac'
           - 'fi'
           - 'exec "/app/libexec/cups/${0##*/}" "$@"'
-  - name: gridcraft
+  - name: iridium-sheets
     buildsystem: simple
     build-commands:
-      - install -Dm755 bin/gridcraft /app/bin/gridcraft
-      # Headless CLI and MCP server: `flatpak run --command=gridcraft-cli ph.iridium.sheets`.
-      - install -Dm755 bin/gridcraft-cli /app/bin/gridcraft-cli
+      - install -Dm755 bin/iridium-sheets /app/bin/iridium-sheets
+      # Headless CLI and MCP server: `flatpak run --command=iridium-sheets-cli ph.iridium.sheets`.
+      - install -Dm755 bin/iridium-sheets-cli /app/bin/iridium-sheets-cli
       - install -Dm644 share/applications/ph.iridium.sheets.desktop /app/share/applications/ph.iridium.sheets.desktop
       - install -Dm644 share/mime/packages/ph.iridium.sheets.xml /app/share/mime/packages/ph.iridium.sheets.xml
       # Already has the release's version and date substituted by package.sh.
       - install -Dm644 share/metainfo/ph.iridium.sheets.metainfo.xml /app/share/metainfo/ph.iridium.sheets.metainfo.xml
-      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/gridcraft /app/share/doc/
+      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/iridium-sheets /app/share/doc/
     sources:
       - type: dir
         path: stage

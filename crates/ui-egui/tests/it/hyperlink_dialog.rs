@@ -1,10 +1,10 @@
 //! #2876: editing a stored hyperlink starts from its address, display text and ScreenTip.
 
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::core::CellRef;
-use gridcraft_engine::model::{Cell, Hyperlink};
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::control::{Outcome, handle};
+use iridium_engine::core::CellRef;
+use iridium_engine::model::{Cell, Hyperlink};
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::control::{Outcome, handle};
 use serde_json::{Value as Json, json};
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -110,7 +110,7 @@ fn unchanged_display_text_preserves_number_and_formula_cells() {
         h.state_mut().run("home.numberFormat", json!({"code": format})).unwrap();
         let (before, _) = linked_cell(&h);
         let doc = h.state().session.active().unwrap();
-        let display = gridcraft_engine::display::cell_text(&doc.wb, doc.wb.active().unwrap(), CellRef::parse("B2").unwrap());
+        let display = iridium_engine::display::cell_text(&doc.wb, doc.wb.active().unwrap(), CellRef::parse("B2").unwrap());
         assert_eq!(display, expected, "formatted input {input}");
         control(&mut h, "ui.dialog", json!({"name": "insertLink"}));
         h.run_steps(3);

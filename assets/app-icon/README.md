@@ -36,9 +36,9 @@ body with a transparent margin.
 |---|---|
 | `iridium-sheets.svg` | Canonical artwork; also `hicolor/scalable` |
 | `iridium-sheets-1024.png` | 1024 px render of the full tile |
-| `iridium-sheets-macos-512.png` | Runtime Dock icon on macOS (for `apps/gridcraft` to embed) |
+| `iridium-sheets-macos-512.png` | Runtime Dock icon on macOS (for `apps/iridium-sheets` to embed) |
 | `iridium-sheets.icns` | macOS bundle icon (`CFBundleIconFile`) |
-| `iridium-sheets.ico` | Windows exe icon, 16–256 px (embedded by `apps/gridcraft/build.rs`) |
+| `iridium-sheets.ico` | Windows exe icon, 16–256 px (embedded by `apps/iridium-sheets/build.rs`) |
 | `hicolor/<size>/apps/ph.iridium.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
 | `hicolor/scalable/apps/ph.iridium.sheets.svg` | Linux scalable icon |
 | `LICENSE.txt` | MIT OR Apache-2.0 |

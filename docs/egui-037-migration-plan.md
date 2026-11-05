@@ -23,7 +23,7 @@ source anchors, baseline inventories and proposed steps below are historical rec
 this status governs current pins and acceptance. Final commit/source/CI bindings are in
 `final-landing/grid-publication0865` in the migration task evidence.
 
-Scope: `storytold/gridcraft` only. The shared `storytold/craft-libs`, egui fork and winit fork are
+Scope: `ngjordan/iridium-sheets` only. The shared `storytold/craft-libs`, egui fork and winit fork are
 dependencies of this plan, not files this plan changes. Application document models, commands, undo
 semantics, XLSX persistence and UI policy remain owned by Iridium Sheets.
 
@@ -33,14 +33,14 @@ semantics, XLSX persistence and UI policy remain owned by Iridium Sheets.
 
 | Item | Revision / value |
 | --- | --- |
-| Iridium Sheets checkout | `/home/codex/work/CraftApps/egui037-migration-20261022/gridcraft-implementation` |
+| Iridium Sheets checkout | `/home/codex/work/CraftApps/egui037-migration-20261022/iridium-implementation` |
 | Iridium Sheets baseline SHA | `b8771d51fb4da60bd48c13cf313d6d6014dc5e66` (current `main` merge base for this migration; the earlier `ac8da7d4` release baseline is retained as historical evidence below) |
 | Workspace version / edition / MSRV | `0.11.1`, edition 2024, declared `rust-version = "1.95"` |
 | Lockfile | `Cargo.lock`, format version 4 |
 | Current egui family | selected packages at 0.37.0 from canonical6d518fc7; `egui_extras` declared at 0.37 but unused |
 | Current winit / wgpu | winit 0.30.13 at canonical a517b384; wgpu 30.0.1 |
 | Current accesskit / kittest | accesskit 0.25.1, accesskit_consumer 0.39.1, kittest 0.5.0, accesskit_winit 0.34.1 |
-| Current skrifa | 0.44.0, shared by `epaint` and `gridcraft-ui-egui` |
+| Current skrifa | 0.44.0, shared by `epaint` and `iridium-ui-egui` |
 | Shared UI dependency | craft-ui and craft-print both pin canonical 25da1314; the complete 0.37 UI/capture tree is included |
 | Shared capture helper | `craft-ui` CL-2 provisional capture slot; Iridium Sheets/DesignCraft adapters are the pilot and precede CL-2F. CL-1 and CL-2F are the shared gate for the eleven craft-ui consumers |
 | Target upstream release | egui annotated tag `0.37.0`, peeled commit `841a328ba2dd8f6996beb7189ebb7fc00e668a2a` (2026-10-15) |
@@ -49,7 +49,7 @@ semantics, XLSX persistence and UI policy remain owned by Iridium Sheets.
 | Current implementation egui/winit pins |173cc7375d35dc5fbc5b5d0994fdf787f547c5d1 / ae48c756a3b81125eb796c0cc6dccf60990d1181; full P8/E21b and platform/performance acceptance remain separate, explicitly unqualified gates |
 | Stock comparison | egui 0.36.2 `49682f8baa058bf49e011035cfbd6e825f88a5ef`, 0.37.0 `841a328b…`; stock 0.37 is a measurement control only, never a production stage or pin |
 | Existing shared update | `storytold/craft-libs` PR 199, branch head `b68de8c5f4f1c060904d211a7b1320aa0f7bce78`; open and conflicting at inspection |
-| Historical diagnostics | `/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/{fork,stock}/gridcraft.errors` |
+| Historical diagnostics | `/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/{fork,stock}/iridium-sheets.errors` |
 
 The existing audit merge `ec8840af8c5fda695cf195cdd05e5ae078415c07` is not a base: its
 `Cargo.lock` still resolves egui 0.36.2 while the source expects 0.37. The PR-199 branch itself has a
@@ -64,12 +64,12 @@ because 0.37.0's egui/epaint/eframe manifests declare 1.95.
 
 | Target | Package | UI path | Notes |
 | --- | --- | --- | --- |
-| Desktop native | `gridcraft` (`apps/gridcraft`) | `App::logic` / `App::ui` wrapping `SheetApp` | eframe trait: `fn logic(&mut self, ctx: &Context, frame: &mut Frame)` and `fn ui(&mut self, ui: &mut Ui, frame: &mut Frame)` (plus `raw_input_hook`); `SheetApp::logic(&Context)`/`ui(&mut Ui)` take no `Frame`. The split exists on 0.36.2 and is **not** 0.37-only |
-| Web | `gridcraft-web` (`apps/gridcraft-web`) | `WebShell::logic` / `WebShell::ui` wrapping `SheetApp` | wasm32, eframe web runner, WebGPU with WebGL2 fallback, rfd async picker, no TCP control channel |
-| UI library/tests | `gridcraft-ui-egui` | `SheetApp::logic`, `SheetApp::ui`, `examples/snapshot.rs` | 85 integration test files (750 `#[test]` in `tests/`) plus 153 in-crate unit tests: 903 `#[test]` attributes in the crate by static count |
-| CLI/headless | `gridcraft-cli` | none | no egui dependency; must keep building/tests |
+| Desktop native | `iridium-sheets` (`apps/iridium-sheets`) | `App::logic` / `App::ui` wrapping `SheetApp` | eframe trait: `fn logic(&mut self, ctx: &Context, frame: &mut Frame)` and `fn ui(&mut self, ui: &mut Ui, frame: &mut Frame)` (plus `raw_input_hook`); `SheetApp::logic(&Context)`/`ui(&mut Ui)` take no `Frame`. The split exists on 0.36.2 and is **not** 0.37-only |
+| Web | `iridium-sheets-web` (`apps/iridium-sheets-web`) | `WebShell::logic` / `WebShell::ui` wrapping `SheetApp` | wasm32, eframe web runner, WebGPU with WebGL2 fallback, rfd async picker, no TCP control channel |
+| UI library/tests | `iridium-ui-egui` | `SheetApp::logic`, `SheetApp::ui`, `examples/snapshot.rs` | 85 integration test files (750 `#[test]` in `tests/`) plus 153 in-crate unit tests: 903 `#[test]` attributes in the crate by static count |
+| CLI/headless | `iridium-sheets-cli` | none | no egui dependency; must keep building/tests |
 | Shared controls | `craft-ui` (`printing` only) | `printing::State::show` inside dialogs | Iridium Sheets does not use craft-ui docking/tabs/buttons |
-| macOS native menu test | `apps/gridcraft/tests/mac_menu_appkit.rs` | AppKit/muda, no egui | must still run on macOS |
+| macOS native menu test | `apps/iridium-sheets/tests/mac_menu_appkit.rs` | AppKit/muda, no egui | must still run on macOS |
 | Tooling | `xtask` | `ci`, `layers`, `wasm`, `assets`, `parity`, `keytips` | `cargo xtask ci` is the repository gate |
 
 There are no child `ViewportId`s, deferred viewports, docking areas, audio/playback queues, or
@@ -87,16 +87,16 @@ and the current lock/pins are recorded above. Baseline absence of patches is not
   `epaint_default_fonts` pins; `skrifa = 0.44`; no `[patch]` section anywhere in the repository.
 - `crates/ui-egui/Cargo.toml`: `egui` (workspace, default features), `craft-ui` git revision,
   `skrifa`, Linux-only `zbus = "=5.19.0"`, dev `egui_kittest` with `wgpu` + `snapshot`, dev
-  `epaint_default_fonts`, `gridcraft-xlsx` test support, wasm `web-sys`.
-- `apps/gridcraft/Cargo.toml`: eframe `default-features = false` plus `default_fonts`, `wgpu`,
+  `epaint_default_fonts`, `iridium-xlsx` test support, wasm `web-sys`.
+- `apps/iridium-sheets/Cargo.toml`: eframe `default-features = false` plus `default_fonts`, `wgpu`,
   `accesskit`, `wayland`, `x11` at baseline; G1 adds native `clipboard` to preserve the
   0.36 integration-forced OS clipboard. `craft-print` git revision; desktop `rfd`, `arboard`
   (`wayland-data-control` on Linux/FreeBSD), Windows `pollster`, macOS `muda` and
   `fmv-macos-events`, macOS AppKit dev-dependencies.
-- `apps/gridcraft-web/Cargo.toml`: `egui` workspace; wasm-only eframe `default_fonts`, `wgpu`,
+- `apps/iridium-sheets-web/Cargo.toml`: `egui` workspace; wasm-only eframe `default_fonts`, `wgpu`,
   `accesskit`; rfd, wasm-bindgen, js-sys, web-sys feature list.
 - All other crates: no egui dependency. `xtask/src/layers.rs` already classifies
-  `gridcraft-ui-egui` as the only crate allowed `egui`/`wgpu`.
+  `iridium-ui-egui` as the only crate allowed `egui`/`wgpu`.
 - `.cargo/config.toml` only aliases `xtask`; no rustflags, target overrides or patches.
 - No `vendor/` directory, no `[patch]` entries, no nested workspace, no examples or benches with
   egui except `crates/ui-egui/examples/snapshot.rs`.
@@ -107,12 +107,12 @@ and the current lock/pins are recorded above. Baseline absence of patches is not
 The 0.37 graph also changes the egui feature contract:
 
 - `egui` and `epaint` no longer enable `default_fonts` by default (`#8583`).
-  `gridcraft-ui-egui` must explicitly request `egui/default_fonts` (and update
+  `iridium-ui-egui` must explicitly request `egui/default_fonts` (and update
   `epaint_default_fonts` to 0.37) to make its production fallback policy explicit.
   `egui_kittest`'s normal `egui` dependency inherits `default-features = false`. Only
   kittest's own dev-dependencies enable `default_fonts`/`monochrome_emoji_fonts`, and
   dev-dependencies do not propagate to consumers. Package-scoped kittest/snapshot builds are
-  therefore font-empty unless `gridcraft-ui-egui` itself enables `egui/default_fonts` or the
+  therefore font-empty unless `iridium-ui-egui` itself enables `egui/default_fonts` or the
   harness installs pinned fonts. Inspect the resolved feature graph for each production and
   test root; do not infer fonts from kittest's dev-dependencies.
 - `egui_kittest` must move to 0.37/`kittest` 0.5; its `wgpu` and `snapshot` features remain.
@@ -144,8 +144,8 @@ Iridium Sheets already uses the correct 0.36/0.37 shape:
   deadline/slot drain moves here in 3.5.
 - `crates/ui-egui/src/lib.rs:1270` `SheetApp::ui(&mut Ui)` lays out the title bar, ribbon,
   backstage, formula bar, status bar, tabs, panes and central grid.
-- `apps/gridcraft/src/main.rs` `impl eframe::App for App` calls `self.0.logic(ctx)` in `logic` and
-  `self.0.ui(ui)` in `ui`; `apps/gridcraft-web/src/web.rs` does the same for `WebShell`.
+- `apps/iridium-sheets/src/main.rs` `impl eframe::App for App` calls `self.0.logic(ctx)` in `logic` and
+  `self.0.ui(ui)` in `ui`; `apps/iridium-sheets-web/src/web.rs` does the same for `WebShell`.
 - `egui_kittest` harnesses call `app.logic(ui.ctx()); app.ui(ui)` through
   `Harness::build_ui_state` (for example `tests/interaction.rs:10`). `examples/snapshot.rs` uses the
   same closure and `harness.render()`.
@@ -180,7 +180,7 @@ Two lifecycle defects must be fixed while the graph changes:
    so a forced hidden UI pass (logic called again) cannot save twice. Preserve the existing guards:
    no cell editor, no text-box editor, `.xlsx` path, `last_autosave > 2000 ms`.
 2. **Printing feedback is polled twice per frame, and neither path is `SheetApp::logic`.**
-   `apps/gridcraft/src/main.rs:43` calls `self.0.poll_printing(ctx)` immediately after
+   `apps/iridium-sheets/src/main.rs:43` calls `self.0.poll_printing(ctx)` immediately after
    `self.0.logic(ctx)`, and `SheetApp::ui` calls `poll_printing` again at `lib.rs:1272`. Move the one
    poll into `SheetApp::logic`, delete the `ui` call and delete the desktop app's extra call. The web
    shell has no extra poll. `printing::State::poll` and `print_feedback_seen` remain idempotent; the
@@ -509,7 +509,7 @@ Test anchors: `tests/interaction.rs` (harness shape), `tests/interface_scale.rs`
 For suite validation, Iridium Sheets must resolve one copy of each egui-family crate and one winit:
 
 ```text
-gridcraft (eframe + egui + egui-wgpu + egui-winit + epaint)
+iridium-sheets (eframe + egui + egui-wgpu + egui-winit + epaint)
   -> eframe 0.37 (approved storytold rev)
   -> egui 0.37 (approved storytold rev)
   -> egui-wgpu 0.37 (approved storytold rev, E2+E3)
@@ -525,7 +525,7 @@ G1 explicitly enables native `eframe/clipboard`; verify `egui-winit/clipboard` a
 copy/paste must work in the grid, formula bar and in-cell TextEdit, including text from
 an independent process and copy back to it; an in-process clipboard is not acceptance.
 
-Add a root `[patch.crates-io]` in `gridcraft/Cargo.toml` for every egui-family package Iridium Sheets
+Add a root `[patch.crates-io]` in `iridium-sheets/Cargo.toml` for every egui-family package Iridium Sheets
 actually resolves: `egui`, `epaint`, `ecolor`, `emath`, `eframe`, `egui-wgpu`, `egui-winit`,
 `egui_kittest`, `epaint_default_fonts`, plus `winit`. Use full revision SHAs, never branches. A
 dependency's patch section does not propagate; this root patch is required. `egui_extras` can be
@@ -572,7 +572,7 @@ Iridium Sheets's source. Integration decisions:
   formatting roadmap. Iridium Sheets keeps its own `i18n` table and formula locale; only consume the
   fork APIs the suite actually selects (for example `Context::set_language` on the fork, E17).
 - If craft-libs' `printing::State` API changes in CL-1, update
-  `crates/ui-egui/src/printing.rs` and `apps/gridcraft/src/print.rs`; the current wrapper already
+  `crates/ui-egui/src/printing.rs` and `apps/iridium-sheets/src/print.rs`; the current wrapper already
   isolates Iridium Sheets from most of craft-ui.
 
 ### 5.3 Vendored fixes and provenance
@@ -582,11 +582,11 @@ those dependency selections do not replace these app-local workarounds, which mu
 
 | Fix | Provenance | Decision |
 | --- | --- | --- |
-| `graphics.rs` backend selection, no Vulkan by default, FXC for DX12, GL fallback | Iridium Sheets #120, #339, #354 | Keep in `apps/gridcraft/src/graphics.rs`; E2/E3 fork errors make the existing fallback path effective |
+| `graphics.rs` backend selection, no Vulkan by default, FXC for DX12, GL fallback | Iridium Sheets #120, #339, #354 | Keep in `apps/iridium-sheets/src/graphics.rs`; E2/E3 fork errors make the existing fallback path effective |
 | `theme.rs` font parse guard and `drop_unparseable_fonts` | Iridium Sheets #226 | Keep and adapt to `Blob`; add a corrupt-font regression |
 | Custom `text_box.rs` wrapper and selection glide | Iridium Sheets UI | Keep the wrapper, its state sync and selection glide; its inner field is built-in `TextEdit` and inherits E21b. Do not replace the wrapper with a bare `TextEdit` |
 | `cell_pictures` 64 MiB/4096-entry texture cache, `floating_pictures` size cap | Iridium Sheets image work | Keep; verify texture IDs/uploads under 0.37 |
-| macOS AppKit exit workaround in `apps/gridcraft/src/main.rs` `on_exit` | Iridium Sheets #117 | Keep; re-test on macOS; the 0.37 AccessKit adapter may change the teardown |
+| macOS AppKit exit workaround in `apps/iridium-sheets/src/main.rs` `on_exit` | Iridium Sheets #117 | Keep; re-test on macOS; the 0.37 AccessKit adapter may change the teardown |
 | `fmv-macos-events`, `muda` pins | macOS file-open/menu | Keep; winit remains 0.30.13 |
 
 Relevant fork patches by provenance:
@@ -798,7 +798,7 @@ Accessibility acceptance:
 ### 6.4 Clipboard, PRIMARY and files
 
 - **One routing design for two clipboard owners.** Iridium Sheets's `Services` owns an arboard handle
-  for HTML and plain text (`apps/gridcraft/src/main.rs:150-163`; `wayland-data-control` on
+  for HTML and plain text (`apps/iridium-sheets/src/main.rs:150-163`; `wayland-data-control` on
   Linux/FreeBSD), while egui/egui-winit owns the text
   clipboard used by `TextEdit` copy/paste. After E4/W15P both must not compete for the same Wayland
   selection:
@@ -909,7 +909,7 @@ predeclared budget says so. Required gate:
   (3) interactive workflow with real input. No `DISPLAY`/`WAYLAND_DISPLAY` is inherited on this
   server, and the host's i915/`/dev/dri/renderD128` access is availability evidence only, not a
   qualified display or GPU backend. Record the chosen backend and driver per row.
-- In the provisioned session run `gridcraft --sample sales --control 7979`, drive the control
+- In the provisioned session run `iridium-sheets --sample sales --control 7979`, drive the control
   channel, take native screenshots, exercise wheel/trackpad, Ctrl+wheel zoom, clipboard/PRIMARY,
   IME (if installed), file picker cancel and window resize. Record compositor and scale factor.
 - FreeBSD: run the existing FreeBSD workflow/row; verify the Linux/FreeBSD `arboard`
@@ -953,7 +953,7 @@ predeclared budget says so. Required gate:
   pinned Chromium/Firefox is provisioned, (3) interactive WebGPU/WebGL2 with recorded browser and
   adapter identity. No host browser is inherited at planning time; an unavailable runtime is an
   explicit blocker, not a compile-only pass.
-- `cd apps/gridcraft-web && trunk build --release` and `trunk serve --release`; test in at least
+- `cd apps/iridium-sheets-web && trunk build --release` and `trunk serve --release`; test in at least
   Chromium and Firefox with WebGPU where available and `?webgl` forcing WebGL2.
 - Workflows: `?sample=sales`, edit/save/download/reopen, browser file picker cancel/retry, dropped
   file, paste HTML/plain text, language switch (including CJK tofu behavior), interface scale,
@@ -969,9 +969,9 @@ Baseline and candidate commands (all new jobs use `maintenance/task.py run/statu
 
 ```sh
 python3 /home/codex/work/maintenance/task.py run \
-  --job-id gridcraft-egui037-ci-01 --kind build --task gridcraft-egui037 \
-  --source /home/codex/work/CraftApps/egui037-migration-20261022/gridcraft \
-  --evidence /home/codex/work/ssd2/task-evidence/egui037-migration-20261022/gridcraft \
+  --job-id iridium-egui037-ci-01 --kind build --task iridium-egui037 \
+  --source /home/codex/work/CraftApps/egui037-migration-20261022/iridium-sheets \
+  --evidence /home/codex/work/ssd2/task-evidence/egui037-migration-20261022/iridium-sheets \
   -- bash -c 'cargo xtask ci'
 ```
 
@@ -980,9 +980,9 @@ Inside that managed job (never as a direct host command), the candidate checks a
 ```sh
 cargo xtask ci
 cargo test --workspace --locked
-cargo test -p gridcraft-ui-egui --all-targets
-cargo check -p gridcraft-web --target wasm32-unknown-unknown --locked
-cargo run -p gridcraft-ui-egui --example snapshot -- --sample sales out.png
+cargo test -p iridium-ui-egui --all-targets
+cargo check -p iridium-sheets-web --target wasm32-unknown-unknown --locked
+cargo run -p iridium-ui-egui --example snapshot -- --sample sales out.png
 cargo tree -i egui
 cargo tree -i winit --target all
 cargo metadata --format-version 1 --locked
@@ -1017,7 +1017,7 @@ Fixtures are built in code and never committed as large binaries:
   `crates/engine/examples/perf.rs`.
 - A two-sheet workbook with a formula being pointed across sheets, a right-to-left sheet, frozen
   panes, merged cells, a table, a chart, comments/notes, validation and a cell picture.
-- Password-protected and corrupt-font fixtures through `gridcraft-xlsx`'s `test-support` feature
+- Password-protected and corrupt-font fixtures through `iridium-xlsx`'s `test-support` feature
   and a temporary file; no password is written to logs or evidence.
 - 128 small generated PNGs for the picture cache, plus one image larger than `max_texture_side`.
 - Pinned UI text in en/es/ja/zh (and Greek/Cyrillic/Hebrew where a face exists) so snapshots and
@@ -1028,8 +1028,8 @@ Record the fixture builder's source hash and the exact parameters in every evide
 ### 8.3 Screenshots and pixel probes
 
 - Produce before/after PNGs with `examples/snapshot` at 1440×900, scale 1 and 2, light/dark,
-  Home/Insert/View, `sales`/`budget`/`grades`, formula autocomplete (`GRIDCRAFT_LOCALE_SCREENSHOT`),
-  table headings (`GRIDCRAFT_TABLE_HEADINGS_SCREENSHOT`) and representative dialogs.
+  Home/Insert/View, `sales`/`budget`/`grades`, formula autocomplete (`IRIDIUM_LOCALE_SCREENSHOT`),
+  table headings (`IRIDIUM_TABLE_HEADINGS_SCREENSHOT`) and representative dialogs.
 - Store them in durable evidence, not as unreviewed repo assets. Record font files/hashes, OS,
   renderer, DPI and viewport.
 - Add a small kittest render test with fixed harness size/ppp/theme that probes known pixels:
@@ -1126,7 +1126,7 @@ A benchmark harness should be added before the migration, not after:
 - `crates/ui-egui/examples/frame_bench.rs`: build a deterministic `SheetApp` with a synthetic
   workbook, call `logic`/`ui` in `ctx.run_ui`, then time `ctx.tessellate` separately; emit JSON
   samples and vertex/index counts. No GPU required.
-- `apps/gridcraft` opt-in `GRIDCRAFT_FRAME_LOG=<path>`: a small logger called from both
+- `apps/iridium-sheets` opt-in `IRIDIUM_FRAME_LOG=<path>`: a small logger called from both
   `SheetApp::logic` and `SheetApp::ui` appends one JSON line per invocation with an explicit
   `phase` (`"logic"` or `"ui"`), timestamp, `perf.frame_ms`/`grid_ms` where available, viewport
   size, scale and `visible()` as data (never as a phase inference); the app adds
@@ -1298,8 +1298,8 @@ print and capture measurements, and no unresolved blocking unknown above.
 
 The user clarified that reviewed plans remain local and implementation proceeds before publication. The earlier requirement to publish/land this plan first is superseded; pushes and PR publication still require explicit approval.
 
-Canonical `storytold/gridcraft` `main` for this migration is `b8771d51fb4da60bd48c13cf313d6d6014dc5e66` (the checkout in
-`/home/codex/work/CraftApps/egui037-migration-20261022/gridcraft-implementation`). The earlier
+Canonical `ngjordan/iridium-sheets` `main` for this migration is `b8771d51fb4da60bd48c13cf313d6d6014dc5e66` (the checkout in
+`/home/codex/work/CraftApps/egui037-migration-20261022/iridium-implementation`). The earlier
 `bdf8b8cc…` and `ac8da7d4…` SHAs and line anchors above are retained as historical review
 evidence; use `b8771d51fb4da60bd48c13cf313d6d6014dc5e66` and its exact lockfile for current-main integration and paired
 measurements. Shared `craft-libs` integration now pins canonical 25da1314; 3832c47 is its

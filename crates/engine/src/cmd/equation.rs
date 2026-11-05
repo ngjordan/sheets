@@ -1,12 +1,12 @@
 //! Equations (Insert › Symbols › Equation): floating shapes holding LaTeX source, laid out by
-//! `gridcraft-math` and drawn from the cached layout.
+//! `iridium-math` and drawn from the cached layout.
 //!
 //! An equation is drawn to fit its frame, so resizing the frame scales it. Inserting sizes the
 //! frame for the requested font size; editing keeps the current scale and resizes the frame to
 //! the new content.
 
-use gridcraft_math::{MathError, MathList};
-use gridcraft_model::{Anchor, AnchorMode, Color, EquationCache, Shape, ShapeKind};
+use iridium_math::{MathError, MathList};
+use iridium_model::{Anchor, AnchorMode, Color, EquationCache, Shape, ShapeKind};
 use serde_json::{Value as Json, json};
 
 use super::{CommandSpec, EngineError, PROTECTED, Result, Session, bad, cell_param, cmd, edit, f64_param, has_doc, ok, str_param, u32_param};
@@ -49,7 +49,7 @@ fn frame_for(list: &MathList, scale: f32) -> (f32, f32) {
 
 /// `latex` laid out, or a readable error with the position of the problem.
 fn lay_out(cmd: &str, latex: &str) -> Result<MathList> {
-    gridcraft_math::layout(latex).map_err(|e| bad(cmd, describe(latex, &e)))
+    iridium_math::layout(latex).map_err(|e| bad(cmd, describe(latex, &e)))
 }
 
 /// "Error at character 5: Undefined control sequence: \foo".
@@ -144,12 +144,12 @@ fn edit_equation(s: &mut Session, p: &Json) -> Result<Json> {
 
 // ---------------------------------------------------------------- PDF
 
-/// The first [`gridcraft_math::MAX_SOURCE_BYTES`] bytes of an equation's source, cut at a char
+/// The first [`iridium_math::MAX_SOURCE_BYTES`] bytes of an equation's source, cut at a char
 /// boundary. A longer source never lays out (the editor refuses it, and a file can carry one of
 /// megabytes), so what shows it as text, the sheet painter and the PDF fallback, shows this much
 /// and does no work on the rest.
 pub fn source_excerpt(text: &str) -> &str {
-    let cap = gridcraft_math::MAX_SOURCE_BYTES;
+    let cap = iridium_math::MAX_SOURCE_BYTES;
     if text.len() <= cap {
         return text;
     }
@@ -162,9 +162,9 @@ pub fn source_excerpt(text: &str) -> &str {
 
 /// The PDF face for a glyph: Symbol for Greek letters and operators, else the Times (or
 /// Helvetica, Courier) face for its style. `None` when no standard font can show `c`.
-fn pdf_font(c: char, face: gridcraft_math::Face) -> Option<gridcraft_pdf::Font> {
-    use gridcraft_math::Face;
-    use gridcraft_pdf::Font;
+fn pdf_font(c: char, face: iridium_math::Face) -> Option<iridium_pdf::Font> {
+    use iridium_math::Face;
+    use iridium_pdf::Font;
     let text = match face {
         Face::Italic => Font::TimesItalic,
         Face::Bold => Font::TimesBold,
@@ -188,8 +188,8 @@ fn pdf_font(c: char, face: gridcraft_math::Face) -> Option<gridcraft_pdf::Font> 
 
 /// Draws an equation's layout into the box `(x, y, w, h)` (page points) of a PDF page, with
 /// `pad` points of padding. Glyphs no standard font has are drawn as `[?]` boxes.
-pub(crate) fn draw_pdf(pg: &mut gridcraft_pdf::Page, list: &MathList, rect: (f32, f32, f32, f32), pad: f32, ink: gridcraft_pdf::Rgb) {
-    use gridcraft_math::{Face, Item, PathCmd};
+pub(crate) fn draw_pdf(pg: &mut iridium_pdf::Page, list: &MathList, rect: (f32, f32, f32, f32), pad: f32, ink: iridium_pdf::Rgb) {
+    use iridium_math::{Face, Item, PathCmd};
     let (x, y, w, h) = rect;
     let (cw, ch) = (list.width.max(0.01), list.total_height().max(0.01));
     let s = ((w - 2.0 * pad) / cw).min((h - 2.0 * pad) / ch);
@@ -199,7 +199,7 @@ pub(crate) fn draw_pdf(pg: &mut gridcraft_pdf::Page, list: &MathList, rect: (f32
     let s = s.min(4000.0);
     let (ox, oy) = (x + (w - cw * s) / 2.0, y + (h - ch * s) / 2.0);
     let col = |c: Option<[u8; 3]>| c.unwrap_or(ink);
-    for item in list.items.iter().take(gridcraft_math::MAX_ITEMS) {
+    for item in list.items.iter().take(iridium_math::MAX_ITEMS) {
         match item {
             Item::Glyph(g) => {
                 let color = col(g.color);
@@ -210,7 +210,7 @@ pub(crate) fn draw_pdf(pg: &mut gridcraft_pdf::Page, list: &MathList, rect: (f32
                     let size = (g.height + g.depth) * s / 1.064;
                     if size.is_finite() && size >= 0.5 {
                         let top = base - g.height * s;
-                        pg.text(gx + g.width * s - 0.558 * size, top + 0.917 * size, size, gridcraft_pdf::Font::Symbol, color, "\u{221A}");
+                        pg.text(gx + g.width * s - 0.558 * size, top + 0.917 * size, size, iridium_pdf::Font::Symbol, color, "\u{221A}");
                     }
                     continue;
                 }
@@ -226,7 +226,7 @@ pub(crate) fn draw_pdf(pg: &mut gridcraft_pdf::Page, list: &MathList, rect: (f32
                         if large {
                             // Centred on the glyph's box, like the screen.
                             let mid = oy + (g.y - (g.height - g.depth) / 2.0) * s;
-                            let tw = gridcraft_pdf::text_width(font, size, &text);
+                            let tw = iridium_pdf::text_width(font, size, &text);
                             pg.text(gx + (g.width * s - tw) / 2.0, mid + 0.25 * size, size, font, color, &text);
                         } else {
                             pg.text(gx, base, size, font, color, &text);
@@ -237,8 +237,8 @@ pub(crate) fn draw_pdf(pg: &mut gridcraft_pdf::Page, list: &MathList, rect: (f32
                         let (bw, bh) = ((g.width.max(0.3)) * s, (g.height + g.depth) * s);
                         pg.rect_stroke(gx, base - g.height * s, bw, bh, (0.05 * s).clamp(0.2, 1.0), color);
                         let qs = (bh * 0.6).min(bw * 1.2).max(1.0);
-                        let qw = gridcraft_pdf::text_width(gridcraft_pdf::Font::Helvetica, qs, "?");
-                        pg.text(gx + (bw - qw) / 2.0, base - g.height * s + (bh + qs * 0.7) / 2.0, qs, gridcraft_pdf::Font::Helvetica, color, "?");
+                        let qw = iridium_pdf::text_width(iridium_pdf::Font::Helvetica, qs, "?");
+                        pg.text(gx + (bw - qw) / 2.0, base - g.height * s + (bh + qs * 0.7) / 2.0, qs, iridium_pdf::Font::Helvetica, color, "?");
                     }
                 }
             }

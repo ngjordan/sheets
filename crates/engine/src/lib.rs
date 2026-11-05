@@ -29,19 +29,19 @@ pub mod windows;
 
 use std::sync::Arc;
 
-use gridcraft_calc::Calc;
-use gridcraft_core::{CellRef, RangeRef};
-use gridcraft_model::Workbook;
+use iridium_calc::Calc;
+use iridium_core::{CellRef, RangeRef};
+use iridium_model::Workbook;
 use serde::Serialize;
 use serde_json::Value as Json;
 
 pub use cmd::{CommandInfo, CommandSpec, command_specs, find_command, register_test_command};
-pub use gridcraft_calc as calc;
-pub use gridcraft_core as core;
-pub use gridcraft_formula as formula;
-pub use gridcraft_math as math;
-pub use gridcraft_model as model;
-pub use gridcraft_numfmt as numfmt;
+pub use iridium_calc as calc;
+pub use iridium_core as core;
+pub use iridium_formula as formula;
+pub use iridium_math as math;
+pub use iridium_model as model;
+pub use iridium_numfmt as numfmt;
 pub use selection::Selection;
 pub use windows::{Target, TargetGuard, WindowState, WindowView};
 
@@ -220,7 +220,7 @@ pub struct DocState {
     pub touched: Option<Vec<(String, CellRef)>>,
     /// While a macro step runs: the structural edits its command made (the sheet's name, the
     /// edit), so the macro's inputs, output and Repeat ranges follow their cells as formulas do.
-    pub edits: Option<Vec<(String, gridcraft_formula::adjust::Edit)>>,
+    pub edits: Option<Vec<(String, iridium_formula::adjust::Edit)>>,
     /// The references `edit.goTo` with `record: true` went to in this document, newest first,
     /// without names, each area written with its sheet (`Sheet1!B14:C22,Sheet1!F19:G30`).
     pub go_to_recent: Vec<String>,
@@ -244,8 +244,8 @@ fn history_retained_bytes(older: &Workbook, newer: &Workbook) -> usize {
         if newer.sheets.iter().any(|next| Arc::ptr_eq(sheet, next)) {
             continue;
         }
-        bytes = bytes.saturating_add(std::mem::size_of::<gridcraft_model::Sheet>());
-        let empty = gridcraft_model::CellStore::new();
+        bytes = bytes.saturating_add(std::mem::size_of::<iridium_model::Sheet>());
+        let empty = iridium_model::CellStore::new();
         let next = newer.sheets.get(index).map_or(&empty, |next| &next.cells);
         bytes = bytes.saturating_add(sheet.cells.retained_bytes_against(next));
     }
@@ -425,8 +425,8 @@ impl Default for Prefs {
             enter_direction: "down".into(),
             autocomplete: true,
             user_name: "Iridium Sheets User".into(),
-            default_font: gridcraft_model::DEFAULT_FONT.into(),
-            default_font_size: gridcraft_model::DEFAULT_FONT_SIZE,
+            default_font: iridium_model::DEFAULT_FONT.into(),
+            default_font_size: iridium_model::DEFAULT_FONT_SIZE,
             sheets_in_new_workbook: 1,
             r1c1: false,
             user_dictionary: vec![],
@@ -610,7 +610,7 @@ impl Session {
         wb.props.author = self.prefs.user_name.clone();
         for _ in 1..self.prefs.sheets_in_new_workbook.clamp(1, 255) {
             let name = wb.next_sheet_name();
-            wb.sheets.push(Arc::new(gridcraft_model::Sheet::new(name)));
+            wb.sheets.push(Arc::new(iridium_model::Sheet::new(name)));
         }
         self.add_document(DocState::new(wb, None, format!("Book{n}"), Trust::Local))
     }
@@ -1121,7 +1121,7 @@ impl Session {
 }
 
 /// Convenience: the active workbook's active sheet.
-pub fn active_sheet(s: &Session) -> Option<&gridcraft_model::Sheet> {
+pub fn active_sheet(s: &Session) -> Option<&iridium_model::Sheet> {
     s.active().and_then(|d| d.wb.active())
 }
 

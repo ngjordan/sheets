@@ -1,10 +1,10 @@
 //! Ctrl+6 hides and shows every object (Options › Advanced › "For objects, show"), through real input.
 
 use egui::{Color32, Event, Key, Modifiers, PointerButton, epaint::Shape, vec2};
-use gridcraft_engine::Session;
-use gridcraft_engine::core::CellRef;
-use gridcraft_engine::model::ShowObjects;
-use gridcraft_ui_egui::{SheetApp, grid::Geo};
+use iridium_engine::Session;
+use iridium_engine::core::CellRef;
+use iridium_engine::model::ShowObjects;
+use iridium_ui_egui::{SheetApp, grid::Geo};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

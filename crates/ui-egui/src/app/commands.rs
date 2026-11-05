@@ -89,7 +89,7 @@ impl SheetApp {
             && let Ok(r) = &r
             && let Some(chart) = r.get("chart").and_then(Json::as_u64).and_then(|id| u32::try_from(id).ok())
         {
-            self.selected_object = Some(gridcraft_engine::model::ObjRef::new(gridcraft_engine::model::ObjKind::Chart, chart));
+            self.selected_object = Some(iridium_engine::model::ObjRef::new(iridium_engine::model::ObjKind::Chart, chart));
         }
         if id == "file.exportPdf"
             && let Ok(r) = &r
@@ -141,7 +141,7 @@ impl SheetApp {
         if e.contains("is not available right now") {
             self.toast = Some((e, now_ms()));
         } else {
-            self.message = Some(("Iridium Sheets".into(), clean_error(&e)));
+            self.message = Some((iridium_core::brand::NAME.into(), clean_error(&e)));
         }
     }
 
@@ -377,7 +377,7 @@ impl SheetApp {
         for req in self.session.take_ui_requests() {
             match req {
                 UiRequest::Dialog(name, params) => self.open_dialog(&name, params),
-                UiRequest::Message(m) => self.message = Some(("Iridium Sheets".into(), m)),
+                UiRequest::Message(m) => self.message = Some((iridium_core::brand::NAME.into(), m)),
                 UiRequest::EditCell(text) => {
                     let text = text.map(|text| {
                         self.session
@@ -461,7 +461,7 @@ impl SheetApp {
                 } else if self.services.download.is_some()
                     && let Ok(r) = self.run("file.saveBytes", json!({"format": "xlsx"}))
                     && let Some(dl) = &self.services.download
-                    && let Some(b) = r.get("base64").and_then(Json::as_str).and_then(gridcraft_engine::io::base64_decode)
+                    && let Some(b) = r.get("base64").and_then(Json::as_str).and_then(iridium_engine::io::base64_decode)
                 {
                     let name = r.get("name").and_then(Json::as_str).unwrap_or("Book.xlsx").to_string();
                     dl(&name, &b);

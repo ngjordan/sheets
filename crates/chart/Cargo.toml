@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-chart"
+name = "iridium-chart"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,8 +9,8 @@ description = "Iridium Sheets charts: data resolution, layout into toolkit-free 
 workspace = true
 
 [dependencies]
-gridcraft-core = { workspace = true }
-gridcraft-model = { workspace = true }
-gridcraft-calc = { workspace = true }
-gridcraft-numfmt = { workspace = true }
+iridium-core = { workspace = true }
+iridium-model = { workspace = true }
+iridium-calc = { workspace = true }
+iridium-numfmt = { workspace = true }
 serde = { workspace = true }

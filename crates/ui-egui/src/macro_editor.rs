@@ -19,10 +19,10 @@
 use std::collections::BTreeMap;
 
 use egui::{Color32, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use gridcraft_engine::core::RangeRef;
-use gridcraft_engine::macros::policy::{Policy, macro_policy};
-use gridcraft_engine::macros::resolve::{self, Env, Place};
-use gridcraft_engine::model::{ColType, CompareOp, InputKind, Macro, NamedInput, OnConflict, RepeatOf, Step, StepKind, Workbook};
+use iridium_engine::core::RangeRef;
+use iridium_engine::macros::policy::{Policy, macro_policy};
+use iridium_engine::macros::resolve::{self, Env, Place};
+use iridium_engine::model::{ColType, CompareOp, InputKind, Macro, NamedInput, OnConflict, RepeatOf, Step, StepKind, Workbook};
 use serde_json::{Map, Value as Json, json};
 
 use crate::dialogs::Dialog;
@@ -286,7 +286,7 @@ fn short(v: &Json) -> String {
 
 /// The label of command `id` (`Set Cell`), or the id when it isn't a command.
 pub fn command_label(id: &str) -> String {
-    gridcraft_engine::find_command(id).map(|c| c.label.to_string()).unwrap_or_else(|| id.to_string())
+    iridium_engine::find_command(id).map(|c| c.label.to_string()).unwrap_or_else(|| id.to_string())
 }
 
 /// A step in one line: "Set D2 to =B2*C2", "Repeat for each row of Input.data".
@@ -359,10 +359,10 @@ pub fn category(st: &Step) -> (Icon, Cat) {
 pub fn static_error(m: &Macro, st: &Step) -> Option<String> {
     match &st.kind {
         StepKind::Command { id, params } => {
-            if gridcraft_engine::find_command(id).is_none() {
+            if iridium_engine::find_command(id).is_none() {
                 return Some(format!("There is no command “{id}”."));
             }
-            match macro_policy(id, params, gridcraft_engine::Trust::Local) {
+            match macro_policy(id, params, iridium_engine::Trust::Local) {
                 Policy::Deny(why) => Some(format!("{id} can't run in a macro: {why}.")),
                 Policy::NeedsPermission(what) if !m.permissions.iter().any(|p| p == id) => {
                     Some(format!("{id} {what}: the macro must list it in its permissions."))
@@ -459,7 +459,7 @@ pub fn parse_refs(text: &str) -> Vec<(Option<String>, RangeRef)> {
     text.split(',')
         .filter_map(|part| {
             let part = part.trim();
-            let (sheet, body) = gridcraft_engine::core::split_sheet(part);
+            let (sheet, body) = iridium_engine::core::split_sheet(part);
             RangeRef::parse(&body.replace('$', "")).map(|r| (sheet, r))
         })
         .take(500)
@@ -517,7 +517,7 @@ pub fn open(app: &mut SheetApp, params: &Json) -> Option<Dialog> {
     let doc = app.session.active()?;
     let wb = &doc.wb;
     let selection = doc.selection.current().a1();
-    let found = params["macro"].as_str().and_then(|n| gridcraft_engine::macros::find(wb, n)).and_then(|i| wb.macros.get(i)).cloned();
+    let found = params["macro"].as_str().and_then(|n| iridium_engine::macros::find(wb, n)).and_then(|i| wb.macros.get(i)).cloned();
     let (draft, saved_as) = match found {
         Some(m) => {
             let name = m.name.clone();
@@ -528,8 +528,8 @@ pub fn open(app: &mut SheetApp, params: &Json) -> Option<Dialog> {
                 .as_str()
                 .map(str::trim)
                 .filter(|n| !n.is_empty())
-                .map(|n| gridcraft_engine::macros::unique_name(wb, n))
-                .unwrap_or_else(|| gridcraft_engine::macros::next_name(wb));
+                .map(|n| iridium_engine::macros::unique_name(wb, n))
+                .unwrap_or_else(|| iridium_engine::macros::next_name(wb));
             (Macro { name, inputs: vec![NamedInput::default()], ..Default::default() }, None)
         }
     };
@@ -609,12 +609,12 @@ pub fn save(app: &mut SheetApp, ed: &mut Editor) -> bool {
     let replace = ed.saved_as.is_some();
     if !replace
         && let Some(doc) = app.session.active()
-        && let Err(e) = gridcraft_engine::macros::check_new_name(&doc.wb, &ed.draft.name)
+        && let Err(e) = iridium_engine::macros::check_new_name(&doc.wb, &ed.draft.name)
     {
         app.message = Some(("Save Macro".into(), e));
         return false;
     }
-    match app.run("macro.save", json!({"macro": gridcraft_engine::macros::macro_json(&ed.draft), "replace": replace})) {
+    match app.run("macro.save", json!({"macro": iridium_engine::macros::macro_json(&ed.draft), "replace": replace})) {
         Ok(_) => {
             ed.saved_as = Some(ed.draft.name.clone());
             ed.dirty = false;
@@ -662,7 +662,7 @@ pub fn ask_before_closing(app: &mut SheetApp, id: &str, params: &Json) -> Option
     let doc = app.macros.editor.as_ref().filter(|ed| ed.has_unsaved_changes()).map(|ed| ed.doc)?;
     let window = match id {
         "file.close" => app.session.active_window(),
-        "window.close" => gridcraft_engine::Target::from_json(params).ok().and_then(|t| app.session.target_window(t).ok()),
+        "window.close" => iridium_engine::Target::from_json(params).ok().and_then(|t| app.session.target_window(t).ok()),
         _ => None,
     };
     let owner = window.and_then(|w| app.session.window(w)).map(|w| w.doc_uid)?;
@@ -920,7 +920,7 @@ pub fn window(app: &mut SheetApp, ctx: &egui::Context, d: &mut Dialog, open: &mu
     let mut win_open = true;
     ed.refs.drawn = false;
     egui::Window::new(format!("Macro: {}{dirty_mark}", ed.draft.name))
-        .id(Id::unique("gridcraft.macro_editor"))
+        .id(Id::unique("iridium-sheets.macro_editor"))
         .collapsible(false)
         .resizable(true)
         // Never larger than the app's window, so a narrow one keeps every control on screen.
@@ -1029,7 +1029,7 @@ pub fn close_now(app: &mut SheetApp) -> Result<(), String> {
 
 /// A range as an absolute reference: `$B$2:$D$9`.
 fn abs(r: &RangeRef) -> String {
-    let a = |c: gridcraft_engine::core::CellRef| format!("${}${}", gridcraft_engine::core::col_to_letters(c.col), c.row + 1);
+    let a = |c: iridium_engine::core::CellRef| format!("${}${}", iridium_engine::core::col_to_letters(c.col), c.row + 1);
     if r.is_single() { a(r.start) } else { format!("{}:{}", a(r.start), a(r.end)) }
 }
 
@@ -1040,7 +1040,7 @@ fn selection_ref(app: &SheetApp, home_sheet: Option<usize>) -> String {
     let areas: Vec<String> = doc.selection.ranges.iter().map(abs).collect();
     match (home_sheet, doc.wb.active()) {
         (Some(h), Some(sh)) if h != doc.wb.active_sheet() => {
-            let q = gridcraft_engine::formula::quote_sheet(&sh.name);
+            let q = iridium_engine::formula::quote_sheet(&sh.name);
             areas.iter().map(|a| format!("{q}!{a}")).collect::<Vec<_>>().join(",")
         }
         _ => areas.join(","),
@@ -1104,7 +1104,7 @@ fn ref_edit(app: &SheetApp, ui: &mut Ui, d: &mut Dialog, refs: &mut RefPick, key
 fn prompts(app: &mut SheetApp, ctx: &egui::Context, ed: &mut Editor, open: &mut bool) {
     if ed.ask_stop {
         let mut answer: Option<Option<bool>> = None;
-        egui::Modal::new(Id::unique("gridcraft.macro_editor.stop")).show(ctx, |ui| {
+        egui::Modal::new(Id::unique("iridium-sheets.macro_editor.stop")).show(ctx, |ui| {
             ui.set_width(360.0);
             ui.label(egui::RichText::new("Stop debugging").strong());
             ui.label("Keep the changes the macro has made so far? They are one undo step either way.");
@@ -1142,7 +1142,7 @@ fn prompts(app: &mut SheetApp, ctx: &egui::Context, ed: &mut Editor, open: &mut 
     }
     if ed.ask_close {
         let mut answer: Option<Option<bool>> = None;
-        egui::Modal::new(Id::unique("gridcraft.macro_editor.close")).show(ctx, |ui| {
+        egui::Modal::new(Id::unique("iridium-sheets.macro_editor.close")).show(ctx, |ui| {
             ui.set_width(360.0);
             ui.label(egui::RichText::new(format!("Save changes to macro “{}”?", ed.draft.name)).strong());
             ui.add_space(8.0);
@@ -1547,8 +1547,8 @@ pub fn picker_items(query: &str) -> Vec<(String, String, String)> {
     .filter(|(_, l, _)| q.is_empty() || l.to_ascii_lowercase().contains(&q))
     .map(|(a, b, c)| (a.to_string(), b.to_string(), c.to_string()))
     .collect();
-    for c in gridcraft_engine::command_specs() {
-        if matches!(macro_policy(c.id, &json!({}), gridcraft_engine::Trust::Local), Policy::Deny(_)) || c.id.starts_with("ui.") {
+    for c in iridium_engine::command_specs() {
+        if matches!(macro_policy(c.id, &json!({}), iridium_engine::Trust::Local), Policy::Deny(_)) || c.id.starts_with("ui.") {
             continue;
         }
         if q.is_empty() || c.label.to_ascii_lowercase().contains(&q) || c.id.to_ascii_lowercase().contains(&q) {
@@ -1570,7 +1570,7 @@ pub fn new_step(item: &str) -> Step {
         }
         "@stop" => Step::new(StepKind::Stop { message: String::new(), rollback: false }),
         id => {
-            let doc = gridcraft_engine::find_command(id).map(|c| c.params).unwrap_or("");
+            let doc = iridium_engine::find_command(id).map(|c| c.params).unwrap_or("");
             let params: Map<String, Json> = required_keys(doc).into_iter().map(|k| (k, json!(""))).collect();
             Step::command(id, Json::Object(params))
         }
@@ -2032,7 +2032,7 @@ fn command_fields(app: &mut SheetApp, ui: &mut Ui, d: &mut Dialog, ed: &mut Edit
             ed.new_param = Default::default();
         }
     });
-    if let Some(spec) = gridcraft_engine::find_command(id)
+    if let Some(spec) = iridium_engine::find_command(id)
         && !spec.params.is_empty()
     {
         ui.add_space(4.0);
@@ -2182,7 +2182,7 @@ fn example_headers(app: &SheetApp, example: &str, header: bool) -> Vec<String> {
     let si = sheet.and_then(|s| wb.sheet_index(&s)).unwrap_or(wb.active_sheet());
     let Some(sh) = wb.sheet(si) else { return vec![] };
     (r.start.col..=r.end.col.min(r.start.col.saturating_add(15)))
-        .map(|c| gridcraft_engine::display::cell_text(wb, sh, gridcraft_engine::core::CellRef::new(r.start.row, c)))
+        .map(|c| iridium_engine::display::cell_text(wb, sh, iridium_engine::core::CellRef::new(r.start.row, c)))
         .collect()
 }
 
@@ -2234,8 +2234,8 @@ pub fn use_selection_as_example(app: &SheetApp, ed: &mut Editor) {
 
 /// Whether the first row of `r` looks like a header (all text over a row that isn't), and what
 /// each column holds below it.
-pub fn infer_input(sh: &gridcraft_engine::model::Sheet, r: RangeRef) -> (bool, Vec<ColType>) {
-    use gridcraft_engine::core::{CellRef, Value};
+pub fn infer_input(sh: &iridium_engine::model::Sheet, r: RangeRef) -> (bool, Vec<ColType>) {
+    use iridium_engine::core::{CellRef, Value};
     let kind = |v: &Value| match v {
         Value::Number(_) => Some(ColType::Number),
         Value::Text(_) => Some(ColType::Text),
@@ -2364,7 +2364,7 @@ pub fn overlay(app: &SheetApp, ed: &Editor) -> Option<MacroOverlay> {
 type OverlayLayer<'a> = (&'a Vec<(String, RangeRef)>, Color32, u8, f32);
 
 /// Paints the overlay's ranges on `sh` (called from the grid's overlay pass).
-pub fn paint_overlay(p: &egui::Painter, geo: &crate::grid::Geo, sh: &gridcraft_engine::model::Sheet, o: &MacroOverlay) {
+pub fn paint_overlay(p: &egui::Painter, geo: &crate::grid::Geo, sh: &iridium_engine::model::Sheet, o: &MacroOverlay) {
     let t = Tokens::get(p.ctx());
     let wash = |c: Color32, a: u8| Color32::from_rgba_unmultiplied(c.r(), c.g(), c.b(), a);
     let layers: [OverlayLayer; 3] = [
@@ -2545,7 +2545,7 @@ mod tests {
     #[test]
     fn tokens_for_ranges_resolve_back_to_them() {
         let wb = Workbook::default();
-        let input = RangeRef::parse("B2:D9").unwrap_or(RangeRef::cell(gridcraft_engine::core::CellRef::new(0, 0)));
+        let input = RangeRef::parse("B2:D9").unwrap_or(RangeRef::cell(iridium_engine::core::CellRef::new(0, 0)));
         let inputs = vec![("Input".to_string(), Place { sheet: 0, range: input }, false)];
         let env = Env { wb: &wb, active_sheet: 0, inputs: &inputs, output: None, item: None };
         for (target, want) in [
@@ -2579,8 +2579,8 @@ mod tests {
 
     #[test]
     fn inputs_are_inferred_from_an_example() {
-        use gridcraft_engine::core::{CellRef, Value};
-        let mut sh = gridcraft_engine::model::Sheet::new("S");
+        use iridium_engine::core::{CellRef, Value};
+        let mut sh = iridium_engine::model::Sheet::new("S");
         for (c, h) in ["Item", "Qty"].iter().enumerate() {
             sh.set_value(CellRef::new(0, c as u32), Value::Text((*h).into()));
         }

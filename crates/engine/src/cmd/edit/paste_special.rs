@@ -18,7 +18,7 @@ fn apply_operation(op: &str, old: &Cell, new: &mut Cell) {
             "add" => Value::number(x + y),
             "subtract" => Value::number(x - y),
             "multiply" => Value::number(x * y),
-            "divide" if y == 0.0 => Value::Error(gridcraft_core::CellError::Div0),
+            "divide" if y == 0.0 => Value::Error(iridium_core::CellError::Div0),
             "divide" => Value::number(x / y),
             _ => operand.clone(),
         };
@@ -30,7 +30,7 @@ fn apply_operation(op: &str, old: &Cell, new: &mut Cell) {
         && (operand.is_number() || operand.is_empty())
         && let Some(symbol) = operation_symbol(op)
     {
-        let text = format!("=({}){symbol}{}", formula.text, gridcraft_core::number_to_text(y));
+        let text = format!("=({}){symbol}{}", formula.text, iridium_core::number_to_text(y));
         new.formula = Some(std::sync::Arc::new(Formula::new(&text)));
         new.value = Value::Empty;
     }
@@ -49,7 +49,7 @@ fn operation_symbol(op: &str) -> Option<char> {
 fn copy_merges(
     cx: &mut crate::cmd::Ctx,
     dest_sheet: usize,
-    src_sheet: &gridcraft_model::Sheet,
+    src_sheet: &iridium_model::Sheet,
     src: RangeRef,
     at: CellRef,
     what: What,
@@ -120,7 +120,7 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
     edit(s, |cx| {
         // Styles from another workbook must be re-interned.
         let mut style_map = std::collections::HashMap::new();
-        let mut map_style = |id: StyleId, wb: &mut gridcraft_model::Workbook| -> StyleId {
+        let mut map_style = |id: StyleId, wb: &mut iridium_model::Workbook| -> StyleId {
             if same_doc {
                 return id;
             }
@@ -168,9 +168,9 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
                     // those references before the workbook-wide move adjustment below.
                     let e = if dest_sheet != clip.sheet {
                         e.map(&mut |x| match x {
-                            gridcraft_formula::Expr::Ref(mut r) if r.sheet == gridcraft_formula::SheetSel::Current => {
-                                r.sheet = gridcraft_formula::SheetSel::Named(src_sheet_name.clone());
-                                gridcraft_formula::Expr::Ref(r)
+                            iridium_formula::Expr::Ref(mut r) if r.sheet == iridium_formula::SheetSel::Current => {
+                                r.sheet = iridium_formula::SheetSel::Named(src_sheet_name.clone());
+                                iridium_formula::Expr::Ref(r)
                             }
                             other => other,
                         })
@@ -184,30 +184,30 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
                     moved.dynamic = f.dynamic;
                     return Some(std::sync::Arc::new(moved));
                 }
-                let moved = gridcraft_formula::adjust::shift_relative(e, dest.row as i64 - sc.row as i64, dest.col as i64 - sc.col as i64);
+                let moved = iridium_formula::adjust::shift_relative(e, dest.row as i64 - sc.row as i64, dest.col as i64 - sc.col as i64);
                 Some(std::sync::Arc::new(Formula { dynamic: f.dynamic, ..Formula::from_expr(moved) }))
             };
             // A Python cell's code travels with it. Cut to another sheet, it keeps reading the
             // cells its `xl()` references named on its original sheet, as a moved formula does:
             // they are qualified with that sheet before the workbook-wide move adjustment below.
-            let moved_py = |cell: &Cell| -> Result<Option<std::sync::Arc<gridcraft_model::PyCode>>> {
+            let moved_py = |cell: &Cell| -> Result<Option<std::sync::Arc<iridium_model::PyCode>>> {
                 let Some(py) = cell.py.clone() else { return Ok(None) };
                 if !cut_move || dest_sheet == clip.sheet {
                     return Ok(Some(py));
                 }
-                let qualified = gridcraft_model::python::rewrite_xl(&py.code, |reference| {
-                    let e = gridcraft_formula::parse(reference).ok()?.map(&mut |x| match x {
-                        gridcraft_formula::Expr::Ref(mut r) if r.sheet == gridcraft_formula::SheetSel::Current => {
-                            r.sheet = gridcraft_formula::SheetSel::Named(src_sheet_name.clone());
-                            gridcraft_formula::Expr::Ref(r)
+                let qualified = iridium_model::python::rewrite_xl(&py.code, |reference| {
+                    let e = iridium_formula::parse(reference).ok()?.map(&mut |x| match x {
+                        iridium_formula::Expr::Ref(mut r) if r.sheet == iridium_formula::SheetSel::Current => {
+                            r.sheet = iridium_formula::SheetSel::Named(src_sheet_name.clone());
+                            iridium_formula::Expr::Ref(r)
                         }
                         other => other,
                     });
-                    Some(gridcraft_formula::print(&e))
+                    Some(iridium_formula::print(&e))
                 });
                 Ok(Some(match qualified {
                     Some(code) => {
-                        let moved = gridcraft_model::PyCode { code, ..(*py).clone() };
+                        let moved = iridium_model::PyCode { code, ..(*py).clone() };
                         check_python_fits(&moved, &dest_name, dest)?;
                         std::sync::Arc::new(moved)
                     }
@@ -215,11 +215,8 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
                 }))
             };
             if link {
-                let sheet_prefix = if dest_sheet == clip.sheet && same_doc {
-                    String::new()
-                } else {
-                    format!("{}!", gridcraft_formula::quote_sheet(&src_sheet_name))
-                };
+                let sheet_prefix =
+                    if dest_sheet == clip.sheet && same_doc { String::new() } else { format!("{}!", iridium_formula::quote_sheet(&src_sheet_name)) };
                 new.formula = Some(std::sync::Arc::new(Formula::new(&format!("={sheet_prefix}{}", sc.a1()))));
                 new.value = Value::Empty;
                 new.py = None;
@@ -271,7 +268,7 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
                 {
                     if old_picture.is_some() || new_picture.is_some() {
                         new_picture = None;
-                        new.value = Value::Error(gridcraft_core::CellError::Value);
+                        new.value = Value::Error(iridium_core::CellError::Value);
                     }
                     // Numbers stored as text participate; other text and errors stay as they are.
                     apply_operation(&op, &old, &mut new);
@@ -324,9 +321,9 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
             // References elsewhere to the moved block now point to its new place.
             let dest_name = cx.wb.sheet(dest_sheet).map(|s| s.name.clone()).unwrap_or_default();
             let e = if dest_sheet == clip.sheet {
-                gridcraft_formula::adjust::Edit::Move { from: src, to_row: at.row, to_col: at.col }
+                iridium_formula::adjust::Edit::Move { from: src, to_row: at.row, to_col: at.col }
             } else {
-                gridcraft_formula::adjust::Edit::MoveToSheet { from: src, to_sheet: dest_name, to_row: at.row, to_col: at.col }
+                iridium_formula::adjust::Edit::MoveToSheet { from: src, to_sheet: dest_name, to_row: at.row, to_col: at.col }
             };
             rewrite_all_formulas(&mut cx.wb, &src_sheet_name, &e)?;
             cx.structural = true;
@@ -352,8 +349,8 @@ pub(super) fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
 }
 
 /// Applies a reference adjustment to every cell formula and defined name in the workbook.
-pub(crate) fn rewrite_all_formulas(wb: &mut gridcraft_model::Workbook, target: &str, e: &gridcraft_formula::adjust::Edit) -> Result<()> {
-    use gridcraft_formula::adjust::Edit;
+pub(crate) fn rewrite_all_formulas(wb: &mut iridium_model::Workbook, target: &str, e: &iridium_formula::adjust::Edit) -> Result<()> {
+    use iridium_formula::adjust::Edit;
     // Rows and columns inserted or deleted on the target sheet move its legacy array ranges too
     // (a cut moves its arrays itself).
     let moves_arrays = matches!(e, Edit::Insert { .. } | Edit::Delete { .. } | Edit::InsertCells { .. } | Edit::DeleteCells { .. });
@@ -368,8 +365,8 @@ pub(crate) fn rewrite_all_formulas(wb: &mut gridcraft_model::Workbook, target: &
         let Some(sheet) = wb.sheet_mut(si) else { continue };
         for (c, f) in keys {
             let Some(expr) = f.expr() else { continue };
-            let new = gridcraft_formula::adjust::adjust(expr, &host, target, e);
-            let text = gridcraft_formula::print(&new);
+            let new = iridium_formula::adjust::adjust(expr, &host, target, e);
+            let text = iridium_formula::print(&new);
             let array = match f.array {
                 Some(a) if on_target => crate::cmd::sheet::map_range(a, e),
                 a => a,
@@ -385,14 +382,14 @@ pub(crate) fn rewrite_all_formulas(wb: &mut gridcraft_model::Workbook, target: &
         }
     }
     for n in wb.names.iter_mut() {
-        if let Ok(expr) = gridcraft_formula::parse_name(&n.formula) {
+        if let Ok(expr) = iridium_formula::parse_name(&n.formula) {
             // Names are workbook-level: unqualified refs don't occur; qualified ones adjust.
-            let new = gridcraft_formula::adjust::adjust(expr, "\u{0}", target, e);
-            n.formula = gridcraft_formula::print(&new);
+            let new = iridium_formula::adjust::adjust(expr, "\u{0}", target, e);
+            n.formula = iridium_formula::print(&new);
         }
     }
-    rewrite_cell_links(wb, |host, expr| gridcraft_formula::adjust::adjust(expr, host, target, e));
-    rewrite_python_refs(wb, &|host, expr| gridcraft_formula::adjust::adjust(expr, host, target, e))
+    rewrite_cell_links(wb, |host, expr| iridium_formula::adjust::adjust(expr, host, target, e));
+    rewrite_python_refs(wb, &|host, expr| iridium_formula::adjust::adjust(expr, host, target, e))
 }
 
 /// Runs `f` over every reference a floating object holds (a chart's series values, categories,
@@ -401,13 +398,13 @@ pub(crate) fn rewrite_all_formulas(wb: &mut gridcraft_model::Workbook, target: &
 /// [`rewrite_all_formulas`]), and renaming and deleting sheets. `f` maps a reference held by an
 /// object on the sheet named `host` to its new form; text that does not parse is kept. A source
 /// block that no longer exists is dropped.
-pub(crate) fn rewrite_cell_links(wb: &mut gridcraft_model::Workbook, f: impl Fn(&str, gridcraft_formula::Expr) -> gridcraft_formula::Expr) {
+pub(crate) fn rewrite_cell_links(wb: &mut iridium_model::Workbook, f: impl Fn(&str, iridium_formula::Expr) -> iridium_formula::Expr) {
     for si in 0..wb.sheets.len() {
         let Some(host) = wb.sheets.get(si).filter(|s| !s.charts.is_empty()).map(|s| s.name.clone()) else { continue };
         let Some(sh) = wb.sheet_mut(si) else { continue };
         let fix = |text: &str| -> String {
-            match gridcraft_formula::parse(text) {
-                Ok(expr) => gridcraft_formula::print(&f(&host, expr)),
+            match iridium_formula::parse(text) {
+                Ok(expr) => iridium_formula::print(&f(&host, expr)),
                 Err(_) => text.to_string(),
             }
         };
@@ -433,10 +430,7 @@ pub(crate) fn rewrite_cell_links(wb: &mut gridcraft_model::Workbook, f: impl Fn(
 /// recalculation removes its spill. A rewrite that would
 /// make a cell's code longer than one cell holds (a longer sheet name, `Z1` becoming `AA1`) refuses
 /// the whole edit, which then changes nothing: see [`check_python_fits`].
-pub(crate) fn rewrite_python_refs(
-    wb: &mut gridcraft_model::Workbook,
-    f: &impl Fn(&str, gridcraft_formula::Expr) -> gridcraft_formula::Expr,
-) -> Result<()> {
+pub(crate) fn rewrite_python_refs(wb: &mut iridium_model::Workbook, f: &impl Fn(&str, iridium_formula::Expr) -> iridium_formula::Expr) -> Result<()> {
     for si in 0..wb.sheets.len() {
         let Some(sh) = wb.sheets.get(si) else { continue };
         let host = sh.name.clone();
@@ -444,15 +438,15 @@ pub(crate) fn rewrite_python_refs(
         for (c, cell) in sh.cells.iter() {
             let Some(py) = &cell.py else { continue };
             let mut lost = false;
-            let changed = gridcraft_model::python::rewrite_xl(&py.code, |reference| {
-                let expr = gridcraft_formula::parse(reference).ok()?;
-                let before = gridcraft_formula::print(&expr);
-                let after = gridcraft_formula::print(&f(&host, expr));
+            let changed = iridium_model::python::rewrite_xl(&py.code, |reference| {
+                let expr = iridium_formula::parse(reference).ok()?;
+                let before = iridium_formula::print(&expr);
+                let after = iridium_formula::print(&f(&host, expr));
                 lost |= (after.contains("#REF!") && !before.contains("#REF!")) || area_shape(&before) != area_shape(&after);
                 (after != before).then_some(after)
             });
             if let Some(code) = changed {
-                check_python_fits(&gridcraft_model::PyCode { code: code.clone(), object: py.object, ..Default::default() }, &host, c)?;
+                check_python_fits(&iridium_model::PyCode { code: code.clone(), object: py.object, ..Default::default() }, &host, c)?;
                 new_code.push((c, code, lost));
             }
         }
@@ -468,7 +462,7 @@ pub(crate) fn rewrite_python_refs(
                 py.code = code;
                 if lost {
                     py.output = None;
-                    cell.value = Value::Error(gridcraft_core::CellError::Blocked);
+                    cell.value = Value::Error(iridium_core::CellError::Blocked);
                 }
             }
         }
@@ -486,14 +480,14 @@ fn area_shape(reference: &str) -> Option<(u32, u32)> {
 /// Refuses Python code an edit has made longer than one cell holds: the limit `python.set`
 /// enforces and opening a file applies (code over it is dropped to its value on open). The edit
 /// is refused rather than made, so no code is lost and none keeps a reference the edit moved.
-pub(crate) fn check_python_fits(py: &gridcraft_model::PyCode, sheet: &str, at: CellRef) -> Result<()> {
+pub(crate) fn check_python_fits(py: &iridium_model::PyCode, sheet: &str, at: CellRef) -> Result<()> {
     if py.fits() {
         return Ok(());
     }
     Err(EngineError::Other(format!(
         "The edit would make the Python code in {}!{} longer than Excel's {}-character formula limit, so nothing was changed. Shorten the code first.",
-        gridcraft_formula::quote_sheet(sheet),
+        iridium_formula::quote_sheet(sheet),
         at.a1(),
-        gridcraft_model::python::MAX_FORMULA_CHARS
+        iridium_model::python::MAX_FORMULA_CHARS
     )))
 }

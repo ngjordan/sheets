@@ -5,10 +5,10 @@
 
 use egui::{Event, Shape, pos2, vec2};
 use egui_kittest::kittest::{NodeT as _, Queryable as _};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::i18n::Language;
-use gridcraft_ui_egui::theme::Tokens;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::i18n::Language;
+use iridium_ui_egui::theme::Tokens;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

@@ -2,7 +2,7 @@
 
 Status: local implementation on Iridium Sheets `b8771d51fb4da60bd48c13cf313d6d6014dc5e66` with canonical
 immutable dependency pins. Final managed full CI
-`egui037-gridcraft-candidate-20261024-full-ci-queue-07` succeeded at 2026-10-24 05:21 UTC after both
+`egui037-iridium-candidate-20261024-full-ci-queue-07` succeeded at 2026-10-24 05:21 UTC after both
 accessibility repairs: all ten stages passed, with 2,249 tests passed, none failed and one existing
 release timing experiment ignored. The representative explicit accessibility/capture checks
 passed. The required local precommit CI gate is complete for the formatted runtime source;
@@ -30,7 +30,7 @@ push or PR publication is authorized; each requires fresh human approval of cont
 
 ## Capture lifecycle repair (2026-10-23)
 
-The previous managed run of this checkout (`egui037-gridcraft-candidate-20261023-tests-01`)
+The previous managed run of this checkout (`egui037-iridium-candidate-20261023-tests-01`)
 finished with 154 passed and 8 failed: five screenshot/lifecycle tests dropped an unapplied
 `TexturesDelta`, two more lifecycle tests failed on the same atlas delta, and
 `formula_bar::spill_tests::formula_bar_click_and_theme_presentation` reported the Name Box
@@ -134,7 +134,7 @@ checks above are needed to execute that policy on `run_steps` fixtures. No test 
 or disables the accessibility check, and production still renders Tofu for a character no face
 has.
 
-- `gridcraft-ui-egui` enables `egui/default_fonts` and `egui/monochrome_emoji_fonts`. egui 0.37
+- `iridium-ui-egui` enables `egui/default_fonts` and `egui/monochrome_emoji_fonts`. egui 0.37
   moved Noto Emoji and emoji-icon-font behind the monochrome feature, and with `default_fonts`
   alone no installed face has `✕` or `📋` (Hack, which the theme adds as a fallback, has the
   arrows and triangles but neither of those).
@@ -220,7 +220,7 @@ platform/performance acceptance remain open. Full CI07 uses the canonical lock, 
 input, command-scoped exact-source mirrors and the private Vulkan loader; it is not host-loader or
 clean public-fetch qualification. Exact job/log hashes, review union, complete final source inventory
 and documentation-only delta are preserved in local task evidence under
-`egui037-migration-20261022/final-landing/gridcraft-final-qualification`.
+`egui037-migration-20261022/final-landing/iridium-final-qualification`.
 
 Revision: 2026-10-24 — replaced pending accessibility/CI statements with actual full CI07 results,
 corrected the shared outgoing IME inventory, and retained native/performance/publication gates.

@@ -2,8 +2,8 @@
 
 use std::io::Read;
 
-use gridcraft_core::CellRef;
-use gridcraft_model::{Comment, NoteBox, NoteCorner, Workbook};
+use iridium_core::CellRef;
+use iridium_model::{Comment, NoteBox, NoteCorner, Workbook};
 
 use super::minimal;
 use crate::{read_xlsx, write_xlsx};

@@ -3,9 +3,9 @@
 //! the cell for editing.
 
 use egui::{Event, Modifiers, PointerButton, Pos2};
-use gridcraft_engine::Session;
-use gridcraft_engine::core::CellRef;
-use gridcraft_ui_egui::{SheetApp, grid::Geo};
+use iridium_engine::Session;
+use iridium_engine::core::CellRef;
+use iridium_ui_egui::{SheetApp, grid::Geo};
 use serde_json::json;
 
 fn harness() -> egui_kittest::Harness<'static, SheetApp> {

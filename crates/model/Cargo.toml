@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-model"
+name = "iridium-model"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,10 +9,10 @@ description = "Iridium Sheets document model: workbooks, sheets, cells, styles, 
 workspace = true
 
 [dependencies]
-gridcraft-core = { workspace = true }
+iridium-core = { workspace = true }
 sha2 = { workspace = true }
-gridcraft-formula = { workspace = true }
-gridcraft-math = { workspace = true }
+iridium-formula = { workspace = true }
+iridium-math = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

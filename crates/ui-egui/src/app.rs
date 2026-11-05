@@ -300,7 +300,7 @@ impl SheetApp {
             for n in &d.wb.names {
                 let target = n.formula.replace('$', "");
                 let (sheet, body) = match target.rsplit_once('!') {
-                    Some((s, b)) => (Some(gridcraft_engine::core::unquote_sheet(s)), b.to_string()),
+                    Some((s, b)) => (Some(iridium_engine::core::unquote_sheet(s)), b.to_string()),
                     None => (None, target.clone()),
                 };
                 if sheet.as_deref().is_none_or(|s| s.eq_ignore_ascii_case(&sh.name)) && RangeRef::parse(&body) == Some(cur) {
@@ -480,7 +480,7 @@ mod lifecycle_tests {
     fn a_logic_only_tick_autosaves_a_dirty_workbook_once() {
         let ctx = egui::Context::default();
         let mut app = app();
-        let dir = std::env::temp_dir().join(format!("gridcraft-logic-autosave-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("iridium-logic-autosave-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("autosave.xlsx");

@@ -16,7 +16,7 @@ fn circular_references(app: &SheetApp) -> Vec<(usize, String, String)> {
         .circular
         .iter()
         .filter(|k| seen.insert(**k))
-        .filter_map(|(si, c)| d.wb.sheet(*si).map(|sh| (*si, c.a1(), format!("{}!{}", gridcraft_engine::formula::quote_sheet(&sh.name), c.a1()))))
+        .filter_map(|(si, c)| d.wb.sheet(*si).map(|sh| (*si, c.a1(), format!("{}!{}", iridium_engine::formula::quote_sheet(&sh.name), c.a1()))))
         .take(CIRCULAR_MENU_LIMIT)
         .collect()
 }
@@ -114,7 +114,7 @@ pub(super) fn formulas(app: &mut SheetApp, ui: &mut Ui) {
         egui::Popup::menu(&use_in).show(|ui| {
             // The menu lists the names Paste Names lists; clicking one runs `formulas.useInFormula`, which puts it at the caret.
             // Listed when the menu opens, and again only after the workbook changes.
-            let cache = egui::Id::unique("gridcraft.use_in_formula_names");
+            let cache = egui::Id::unique("iridium-sheets.use_in_formula_names");
             let key = app.session.active().map(|d| (d.uid, d.revision, d.wb.active_sheet()));
             let cached = ui.ctx().data(|m| m.get_temp::<(Option<(u64, u64, usize)>, std::sync::Arc<Vec<String>>)>(cache)).filter(|(k, _)| *k == key);
             let names = match cached {
@@ -123,7 +123,7 @@ pub(super) fn formulas(app: &mut SheetApp, ui: &mut Ui) {
                     let names: std::sync::Arc<Vec<String>> = std::sync::Arc::new(
                         app.session
                             .active()
-                            .map(|d| gridcraft_engine::cmd::formulas::pasteable_names(&d.wb).into_iter().map(|(n, _)| n).collect())
+                            .map(|d| iridium_engine::cmd::formulas::pasteable_names(&d.wb).into_iter().map(|(n, _)| n).collect())
                             .unwrap_or_default(),
                     );
                     ui.ctx().data_mut(|m| m.insert_temp(cache, (key, names.clone())));

@@ -1,8 +1,8 @@
 //! The handle between the sheet tabs and the horizontal scrollbar: dragging it gives the tabs more
 //! or less of the tab bar, as in Excel.
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, Shape, pos2, vec2};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -18,7 +18,7 @@ fn harness(width: f32, sheets: usize) -> Harness {
     let mut h = crate::common::builder().with_step_dt(1.0 / 60.0).with_size(vec2(width, 120.0)).build_ui_state(
         move |ui, app: &mut SheetApp| {
             app.grid.cells_rect = Some(Rect::from_min_size(pos2(0.0, 0.0), vec2(ui.max_rect().width(), 80.0)));
-            gridcraft_ui_egui::tabs::sheet_tabs(app, ui);
+            iridium_ui_egui::tabs::sheet_tabs(app, ui);
         },
         crate::common::app(s),
     );
@@ -161,7 +161,7 @@ fn harness_without(command: &str) -> Harness {
     let mut h = crate::common::builder().with_step_dt(1.0 / 60.0).with_size(vec2(900.0, 120.0)).build_ui_state(
         move |ui, app: &mut SheetApp| {
             app.grid.cells_rect = Some(Rect::from_min_size(pos2(0.0, 0.0), vec2(ui.max_rect().width(), 80.0)));
-            gridcraft_ui_egui::tabs::sheet_tabs(app, ui);
+            iridium_ui_egui::tabs::sheet_tabs(app, ui);
         },
         crate::common::app(s),
     );
@@ -193,7 +193,7 @@ fn display_options_hide_the_sheet_tabs_and_the_horizontal_scroll_bar() {
     s.execute("view.showHorizontalScrollBar", json!({"on": false})).unwrap();
     let mut h = crate::common::builder()
         .with_size(vec2(900.0, 120.0))
-        .build_ui_state(|ui, app: &mut SheetApp| gridcraft_ui_egui::tabs::sheet_tabs(app, ui), crate::common::app(s));
+        .build_ui_state(|ui, app: &mut SheetApp| iridium_ui_egui::tabs::sheet_tabs(app, ui), crate::common::app(s));
     h.run_steps(5);
     assert!(!shows_tab_name(&h) && h.state().grid.hscroll.is_none() && h.state().grid.tab_split.is_none(), "no bar at all");
 }

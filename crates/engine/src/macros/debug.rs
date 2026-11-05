@@ -11,7 +11,7 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use gridcraft_model::Workbook;
+use iridium_model::Workbook;
 use serde_json::{Value as Json, json};
 
 use super::run::{Machine, StepError, rolled_back};
@@ -337,13 +337,13 @@ fn start(s: &mut Session, p: &Json, only_listed: bool) -> Result<Json> {
     state(s)
 }
 
-fn all_paths(steps: &[gridcraft_model::Step], prefix: &str) -> BTreeSet<String> {
+fn all_paths(steps: &[iridium_model::Step], prefix: &str) -> BTreeSet<String> {
     let mut out = BTreeSet::new();
     for (i, st) in steps.iter().enumerate() {
         let path = if prefix.is_empty() { (i + 1).to_string() } else { format!("{prefix}.{}", i + 1) };
         match &st.kind {
-            gridcraft_model::StepKind::Repeat { body, .. } => out.extend(all_paths(body, &path)),
-            gridcraft_model::StepKind::If { then, otherwise, .. } => {
+            iridium_model::StepKind::Repeat { body, .. } => out.extend(all_paths(body, &path)),
+            iridium_model::StepKind::If { then, otherwise, .. } => {
                 out.extend(all_paths(then, &format!("{path}.then")));
                 out.extend(all_paths(otherwise, &format!("{path}.else")));
             }

@@ -1,7 +1,7 @@
 use super::graph::{HashMap, HashSet, Key};
 use super::{Evaluator, Host, Workbook, stack_position};
-use gridcraft_core::{Array, CellError, CellRef, RangeRef, Value};
-use gridcraft_formula::Expr;
+use iridium_core::{Array, CellError, CellRef, RangeRef, Value};
+use iridium_formula::Expr;
 
 /// Formulas a formula may calculate on demand one inside the other (each needing one another's
 /// value before it is done). Each level takes stack, so a chain deeper than this is suspended and
@@ -135,8 +135,8 @@ fn spill_blocked(host: &PassHost<'_>, (sheet, anchor): Key, a: &Array) -> bool {
                 *o != anchor && r.contains(c) && !host.exprs.contains_key(&(sheet, *o)) && !host.python.contains_key(&(sheet, *o))
             })
     };
-    end.row >= gridcraft_core::MAX_ROWS
-        || end.col >= gridcraft_core::MAX_COLS
+    end.row >= iridium_core::MAX_ROWS
+        || end.col >= iridium_core::MAX_COLS
         || sh.merges.iter().any(|m| m.intersects(&range))
         || sh.tables.iter().any(|t| t.range.contains(anchor))
         || sh.cells.iter_range(range).any(|(c, cell)| c != anchor && (!cell.value.is_empty() || cell.formula.is_some()))
@@ -145,7 +145,7 @@ fn spill_blocked(host: &PassHost<'_>, (sheet, anchor): Key, a: &Array) -> bool {
 
 /// Whether `arr`, anchored at `anchor`, would spill exactly what the sheet already holds over
 /// `range`: the same area, nothing new in the way, and the same values.
-pub(super) fn spills_as_before(sheet: &gridcraft_model::Sheet, anchor: CellRef, range: RangeRef, arr: &Array) -> bool {
+pub(super) fn spills_as_before(sheet: &iridium_model::Sheet, anchor: CellRef, range: RangeRef, arr: &Array) -> bool {
     let end =
         CellRef::new(anchor.row.saturating_add((arr.rows as u32).saturating_sub(1)), anchor.col.saturating_add((arr.cols as u32).saturating_sub(1)));
     RangeRef::new(anchor, end) == range
@@ -168,7 +168,7 @@ fn array_area(anchor: CellRef, a: &Array) -> RangeRef {
 /// outside the range are not walked: with fewer rows in the range than spilled values, each row
 /// is looked up on its own; otherwise one ordered scan visits each spilled value at most once.
 /// Returns how many values were looked at.
-fn stored_spill_in<'s>(sheet: &'s gridcraft_model::Sheet, range: RangeRef, f: &mut dyn FnMut(CellRef, &'s Value) -> bool) -> usize {
+fn stored_spill_in<'s>(sheet: &'s iridium_model::Sheet, range: RangeRef, f: &mut dyn FnMut(CellRef, &'s Value) -> bool) -> usize {
     let mut seen = 0usize;
     if sheet.spill.is_empty() {
         return 0;
@@ -367,7 +367,7 @@ impl PassHost<'_> {
     }
 
     /// A Python cell's kept result as its value: an array spills from the cell unless it is
-    /// blocked, malformed or larger than [`gridcraft_model::python::MAX_RESULT_CELLS`] (only a
+    /// blocked, malformed or larger than [`iridium_model::python::MAX_RESULT_CELLS`] (only a
     /// crafted file holds one), which shows `#SPILL!`.
     fn python_result(&mut self, k: Key, result: Value) -> Value {
         self.pending.remove(&k);
@@ -375,7 +375,7 @@ impl PassHost<'_> {
             Value::Array(a) => {
                 let sane = a.rows >= 1
                     && a.cols >= 1
-                    && a.rows.checked_mul(a.cols).is_some_and(|n| n == a.data.len() && n <= gridcraft_model::python::MAX_RESULT_CELLS);
+                    && a.rows.checked_mul(a.cols).is_some_and(|n| n == a.data.len() && n <= iridium_model::python::MAX_RESULT_CELLS);
                 if sane {
                     self.spills.insert(k, a.clone());
                     a.data.first().cloned().unwrap_or_default()
@@ -507,8 +507,8 @@ impl Host for PassHost<'_> {
         );
         let range = RangeRef::new(anchor, end);
         let sh = self.wb.sheet(sheet)?;
-        let blocked = end.row >= gridcraft_core::MAX_ROWS
-            || end.col >= gridcraft_core::MAX_COLS
+        let blocked = end.row >= iridium_core::MAX_ROWS
+            || end.col >= iridium_core::MAX_COLS
             || sh.cells.iter_range(range).any(|(c, cell)| c != anchor && (cell.formula.is_some() || !cell.value.is_empty()))
             || sh.merges.iter().any(|m| m.intersects(&range));
         (!blocked).then_some(range)

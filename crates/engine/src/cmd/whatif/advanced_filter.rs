@@ -7,7 +7,7 @@ enum Cond {
     /// Column offset in the list, comparison operator and operand text.
     Compare(u32, Value),
     /// A computed criterion: formula relative to the first data row, evaluated at `at`.
-    Computed(gridcraft_formula::Expr, CellRef),
+    Computed(iridium_formula::Expr, CellRef),
 }
 
 /// Splits `">=10"` into (`">="`, `"10"`); text without an operator means "begins with".
@@ -38,7 +38,7 @@ pub(crate) fn criterion_matches(v: &Value, text: &str, crit: &Value) -> bool {
             _ => true,
         };
     }
-    let num = gridcraft_core::parse::parse_number_text(operand);
+    let num = iridium_core::parse::parse_number_text(operand);
     let lower_text = text.to_lowercase();
     let lower_op = operand.to_lowercase();
     use std::cmp::Ordering;
@@ -47,7 +47,7 @@ pub(crate) fn criterion_matches(v: &Value, text: &str, crit: &Value) -> bool {
         (Value::Number(_), None) => None,
         (Value::Empty, _) => None,
         (_, Some(_)) if op != "begins" => None,
-        _ => Some(gridcraft_core::compare_text(text, operand)),
+        _ => Some(iridium_core::compare_text(text, operand)),
     };
     let wild = |pat: &str| crate::cmd::edit::wildcard(&lower_text, pat);
     match op {
@@ -146,8 +146,8 @@ pub(super) fn advanced_filter(s: &mut Session, p: &Json) -> Result<Json> {
                     criterion_matches(&v, &text, crit)
                 }
                 Cond::Computed(e, at) => {
-                    let shifted = gridcraft_formula::adjust::shift_relative(e.clone(), row as i64 - first_data as i64, 0);
-                    let v = gridcraft_calc::recalc::evaluate_expr(wb, criteria.map(|(si, _)| si).unwrap_or(si), *at, &shifted);
+                    let shifted = iridium_formula::adjust::shift_relative(e.clone(), row as i64 - first_data as i64, 0);
+                    let v = iridium_calc::recalc::evaluate_expr(wb, criteria.map(|(si, _)| si).unwrap_or(si), *at, &shifted);
                     matches!(v.scalar().to_bool(), Ok(true))
                 }
             })
@@ -216,7 +216,7 @@ pub(super) fn advanced_filter(s: &mut Session, p: &Json) -> Result<Json> {
             if *k {
                 if let Some(e) = shm.rows.get_mut(row) {
                     e.hidden = false;
-                    if *e == gridcraft_model::LineInfo::default() {
+                    if *e == iridium_model::LineInfo::default() {
                         shm.rows.remove(row);
                     }
                 }

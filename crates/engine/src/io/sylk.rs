@@ -14,8 +14,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use gridcraft_core::{CellError, CellRef, MAX_COLS, MAX_ROWS, Value, col_to_letters};
-use gridcraft_model::{Cell, Formula, NumFmt, Sheet, Style, Workbook};
+use iridium_core::{CellError, CellRef, MAX_COLS, MAX_ROWS, Value, col_to_letters};
+use iridium_model::{Cell, Formula, NumFmt, Sheet, Style, Workbook};
 
 use crate::{EngineError, Result};
 

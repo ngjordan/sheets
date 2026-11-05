@@ -52,7 +52,7 @@ impl SheetApp {
                 // Reserved sequence: fires silently while its command is missing. When the
                 // command lands in the catalog it goes live with no table edit.
                 keytips::Action::Pending(id) => {
-                    if gridcraft_engine::find_command(id).is_some() {
+                    if iridium_engine::find_command(id).is_some() {
                         self.run_or_alert(id, json!({}));
                     }
                 }
@@ -64,7 +64,7 @@ impl SheetApp {
                 // gallery) shows its tab first, so the control is drawn and takes the request.
                 keytips::Action::Control(id) => {
                     // A collapsed ribbon draws no controls either: it is expanded the same way.
-                    let other_tab = gridcraft_engine::find_command(id).and_then(|c| c.menu.first()).filter(|t| **t != self.ui.ribbon_tab);
+                    let other_tab = iridium_engine::find_command(id).and_then(|c| c.menu.first()).filter(|t| **t != self.ui.ribbon_tab);
                     if other_tab.is_some() || self.ui.ribbon_collapsed {
                         if let Some(tab) = other_tab {
                             self.run_or_alert("ui.ribbonTab", json!({"tab": tab}));

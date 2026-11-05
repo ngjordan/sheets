@@ -1,7 +1,7 @@
 //! Automatic array lifting: a function given an array where it expects a scalar is applied to
 //! each element, broadcasting single rows/columns like Excel's dynamic arrays.
 
-use gridcraft_core::{Array, CellError, Value};
+use iridium_core::{Array, CellError, Value};
 
 use crate::util::MAX_CELLS;
 use crate::{Arg, Ctx, FnSpec};
@@ -137,7 +137,7 @@ pub(crate) fn call_lifted(spec: &FnSpec, args: &[Arg], ctx: &mut dyn Ctx) -> Val
 
 #[cfg(test)]
 mod tests {
-    use gridcraft_core::{CellError, Value};
+    use iridium_core::{CellError, Value};
 
     use crate::util::testutil::*;
     use crate::util::{R, num};
@@ -173,7 +173,7 @@ mod tests {
         is_err(crate::call(&s, &[n(1.0)], &mut TestCtx::default()), CellError::Value);
         let huge = crate::call(
             &s,
-            &[av(gridcraft_core::Array::filled(1, 100_000, nv(1.0)).into()), av(gridcraft_core::Array::filled(100_000, 1, nv(1.0)).into())],
+            &[av(iridium_core::Array::filled(1, 100_000, nv(1.0)).into()), av(iridium_core::Array::filled(100_000, 1, nv(1.0)).into())],
             &mut TestCtx::default(),
         );
         is_err(huge, CellError::Num);
@@ -185,7 +185,7 @@ mod tests {
     /// the 1.6 KB file holding it).
     #[test]
     fn lifted_lookups_stop_past_their_work_budget() {
-        use gridcraft_core::Array;
+        use iridium_core::Array;
         let tall = |n: usize| av(Array::filled(n, 1, nv(-1.0)).into());
         let wide = |n: usize| av(Array::filled(1, n, nv(-1.0)).into());
         is_err(ev("XMATCH", vec![tall(1_048_576), tall(1_048_576)]), CellError::Num);

@@ -14,14 +14,14 @@ pub(crate) fn is_formula_input(input: &str) -> bool {
     input.starts_with('=')
         || (input.len() > 1
             && (input.starts_with('+') || input.starts_with('-'))
-            && gridcraft_core::parse::parse_number_text(input).is_none()
+            && iridium_core::parse::parse_number_text(input).is_none()
             && input.chars().nth(1).is_some_and(|c| c.is_ascii_alphabetic() || c == '('))
 }
 
 /// What typing `input` into a cell produces (constant or formula, plus an automatic number
 /// format). Inherits the destination's cell, row or column style, including its number
 /// format, before parsing. Errors when the formula can't be parsed.
-pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut gridcraft_model::Workbook) -> Result<Option<Cell>> {
+pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut iridium_model::Workbook) -> Result<Option<Cell>> {
     let style = wb.sheet(sheet).map(|sh| sh.style_id(at)).unwrap_or_default();
     if input.is_empty() {
         let c = Cell { value: Value::Empty, formula: None, style, py: None };
@@ -32,7 +32,7 @@ pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut gri
         return Ok(Some(Cell { value: Value::text(input), formula: None, style, py: None }));
     }
     let is_formula = is_formula_input(input);
-    if is_formula && gridcraft_model::python::is_py_formula(input) {
+    if is_formula && iridium_model::python::is_py_formula(input) {
         return Err(EngineError::Other(PY_FORMULA.into()));
     }
     if is_formula {
@@ -59,12 +59,12 @@ pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut gri
                 None
             };
             if let Some(code) = auto {
-                cell.style = wb.styles.derive(style, |s| s.num_fmt = gridcraft_model::NumFmt::new(code));
+                cell.style = wb.styles.derive(style, |s| s.num_fmt = iridium_model::NumFmt::new(code));
             }
         }
         return Ok(Some(cell));
     }
-    let mut parsed = gridcraft_core::parse::parse_input(input, wb.date_system);
+    let mut parsed = iridium_core::parse::parse_input(input, wb.date_system);
     // Like Excel's automatic percent entry: a bare number of 1 or more typed into a cell already
     // formatted as a percentage is a percent (3 -> 3%); smaller numbers are taken as fractions.
     if parsed.format.is_none()
@@ -79,7 +79,7 @@ pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut gri
     if let Some(code) = parsed.format {
         let cur = wb.styles.get(style).num_fmt.as_str().to_string();
         if cur == "General" {
-            style = wb.styles.derive(style, |s| s.num_fmt = gridcraft_model::NumFmt::new(code));
+            style = wb.styles.derive(style, |s| s.num_fmt = iridium_model::NumFmt::new(code));
         }
     }
     // Wrap text automatically when the input has line breaks (Alt+Enter).
@@ -91,9 +91,9 @@ pub(crate) fn input_to_cell(input: &str, sheet: usize, at: CellRef, wb: &mut gri
 
 /// Parses a formula as it is typed (without the `=`). Excel closes missing parentheses for you,
 /// and refuses a formula that still doesn't parse.
-pub(crate) fn parse_typed_formula(body: &str) -> Result<gridcraft_formula::Expr> {
+pub(crate) fn parse_typed_formula(body: &str) -> Result<iridium_formula::Expr> {
     // Excel closes missing parentheses for you.
-    let parsed = gridcraft_formula::parse_closing_parens(body, gridcraft_formula::parse);
+    let parsed = iridium_formula::parse_closing_parens(body, iridium_formula::parse);
     parsed.map_err(|e| EngineError::Other(format!("There's a problem with this formula: {e}")))
 }
 
@@ -101,12 +101,12 @@ pub(crate) fn parse_typed_formula(body: &str) -> Result<gridcraft_formula::Expr>
 /// refused when it's entered, rather than stored to show `#VALUE!`. Functions the registry doesn't
 /// hold (special forms like LET, LAMBDA, OFFSET, INDIRECT, SUBTOTAL), defined LAMBDA names and
 /// unknown functions are skipped.
-pub(crate) fn check_arg_counts(expr: &gridcraft_formula::Expr) -> Result<()> {
+pub(crate) fn check_arg_counts(expr: &iridium_formula::Expr) -> Result<()> {
     let mut bad = None;
     expr.walk(&mut |e| {
         if bad.is_none()
-            && let gridcraft_formula::Expr::Call(name, args) = e
-            && let Some(spec) = gridcraft_functions::lookup(name)
+            && let iridium_formula::Expr::Call(name, args) = e
+            && let Some(spec) = iridium_functions::lookup(name)
             && !spec.accepts(args.len())
         {
             let few = args.len() < spec.min_args;
@@ -224,6 +224,14 @@ pub(super) fn range_set_values(s: &mut Session, p: &Json) -> Result<Json> {
         Some(Json::Bool(b)) => *b,
         Some(other) => return Err(bad("range.setValues", format!("parse {other}: true or false"))),
     };
+    // `literal: true` stores every string as the text it is, including one that starts with
+    // `=`. A caller that writes what a server sent wants the text, not a formula that reads
+    // the workbook: a pulled row of `=A1` is a cell that shows what the server sent.
+    let literal = match p.get("literal") {
+        None | Some(Json::Null) => false,
+        Some(Json::Bool(b)) => *b,
+        Some(other) => return Err(bad("range.setValues", format!("literal {other}: true or false"))),
+    };
     if rows.len() > MAX_ROWS as usize {
         return Err(bad("range.setValues", "too many rows"));
     }
@@ -257,6 +265,19 @@ pub(super) fn range_set_values(s: &mut Session, p: &Json) -> Result<Json> {
                     // Text as given: no date or number reading, and a leading `'` is part of the
                     // text rather than the marker that makes it text. A formula is still a
                     // formula, which is what the ticket asks for and what `=` means in a cell.
+                    // Text as given, whatever it starts with: a literal write never makes a
+                    // formula. An empty string still clears the cell, as `null` does.
+                    Json::String(text) if literal => {
+                        if text.is_empty() {
+                            input_to_cell("", sheet, at, &mut cx.wb)?
+                        } else {
+                            let mut style = cx.wb.sheet(sheet).map(|sh| sh.style_id(at)).unwrap_or_default();
+                            if text.contains('\n') && !cx.wb.styles.get(style).align.wrap {
+                                style = cx.wb.styles.derive(style, |s| s.align.wrap = true);
+                            }
+                            Some(Cell { value: Value::Text(text.as_str().into()), formula: None, style, py: None })
+                        }
+                    }
                     Json::String(text) if !parse && !text.starts_with('=') => {
                         if text.is_empty() {
                             // An empty string clears the cell, as `null` and the default path do:
@@ -342,7 +363,7 @@ pub(super) fn range_fill(s: &mut Session, p: &Json) -> Result<Json> {
                 if let Some(f) = &cell.formula
                     && let Some(e) = f.expr()
                 {
-                    let shifted = gridcraft_formula::adjust::shift_relative(e, at.row as i64 - origin.row as i64, at.col as i64 - origin.col as i64);
+                    let shifted = iridium_formula::adjust::shift_relative(e, at.row as i64 - origin.row as i64, at.col as i64 - origin.col as i64);
                     cell.formula = Some(std::sync::Arc::new(Formula::from_expr(shifted)));
                 }
                 let sh = cx.sheet_mut(sheet)?;

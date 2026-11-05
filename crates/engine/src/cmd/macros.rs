@@ -271,8 +271,8 @@ fn start_recording(s: &mut Session, p: &Json, relative: bool) -> Result<Json> {
         None => None,
     };
     let description = match str_param(p, "description") {
-        Some(t) if t.chars().count() > gridcraft_model::MAX_MACRO_TEXT => {
-            return Err(bad("macro.record", format!("`description` can be at most {} characters long", gridcraft_model::MAX_MACRO_TEXT)));
+        Some(t) if t.chars().count() > iridium_model::MAX_MACRO_TEXT => {
+            return Err(bad("macro.record", format!("`description` can be at most {} characters long", iridium_model::MAX_MACRO_TEXT)));
         }
         Some(t) => Some(t.to_string()),
         None => None,
@@ -332,10 +332,10 @@ fn save_recording(s: &mut Session, p: &Json, rec: &crate::record::Recorder, star
     let mut converted = crate::macros::recorder::convert(&name, &start, &rec.steps, &rec.ran);
     // Steps past the macro limit or its size, and ones recorded in another workbook, are left
     // out and counted with the ones the recorder dropped.
-    let mut cut = converted.cut.saturating_add(converted.mac.steps.len().saturating_sub(gridcraft_model::MAX_MACRO_STEPS));
-    converted.mac.steps.truncate(gridcraft_model::MAX_MACRO_STEPS);
+    let mut cut = converted.cut.saturating_add(converted.mac.steps.len().saturating_sub(iridium_model::MAX_MACRO_STEPS));
+    converted.mac.steps.truncate(iridium_model::MAX_MACRO_STEPS);
     if let Some(desc) = str_param(p, "description").or(start.description.as_deref()) {
-        converted.mac.description = desc.chars().take(gridcraft_model::MAX_MACRO_TEXT).collect();
+        converted.mac.description = desc.chars().take(iridium_model::MAX_MACRO_TEXT).collect();
     }
     cut = cut.saturating_add(crate::macros::fit_size(&mut converted.mac));
     // The shortcut, unless another macro took it while recording; then it is left off and the

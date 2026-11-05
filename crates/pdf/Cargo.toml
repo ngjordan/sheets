@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-pdf"
+name = "iridium-pdf"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,3 +10,4 @@ readme = "README.md"
 workspace = true
 
 [dependencies]
+iridium-core = { workspace = true }

@@ -1,7 +1,7 @@
 //! Reference boxes (Excel's RefEdit): text fields that take a range by selection on the grid, with
 //! a button that collapses the dialog to the box while the person selects.
 
-use gridcraft_engine::model::{Sheet, SheetUid, Workbook};
+use iridium_engine::model::{Sheet, SheetUid, Workbook};
 
 use super::data::abs;
 use super::{Dialog, Icon, Json, SheetApp, json, theme, vec2};
@@ -92,7 +92,7 @@ pub(super) enum RefLabel<'a> {
 
 /// The egui id of the reference box `key`, the same wherever the box is drawn.
 fn ref_edit_id(key: &str) -> egui::Id {
-    egui::Id::unique("gridcraft.ref_edit").with(key)
+    egui::Id::unique("iridium-sheets.ref_edit").with(key)
 }
 
 /// Whether the reference box `key` of dialog `dialog` takes several areas joined by commas.
@@ -112,7 +112,7 @@ fn selection_ref(app: &SheetApp, home: Option<&Home>, several: bool) -> String {
     match doc.wb.active() {
         // Once the dialog's own sheet is deleted, every reference carries its sheet's name.
         Some(sh) if home.is_some_and(|h| h.uid.get() != sh.uid.get()) => {
-            let sheet = gridcraft_engine::formula::quote_sheet(&sh.name);
+            let sheet = iridium_engine::formula::quote_sheet(&sh.name);
             areas.map(|a| format!("{sheet}!{a}")).collect::<Vec<_>>().join(",")
         }
         _ => areas.collect::<Vec<_>>().join(","),

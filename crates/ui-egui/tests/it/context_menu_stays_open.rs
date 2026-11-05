@@ -2,9 +2,9 @@
 //! an item, presses Escape or clicks elsewhere.
 
 use egui::{Event, Modifiers, PointerButton, Pos2};
-use gridcraft_engine::Session;
-use gridcraft_engine::core::CellRef;
-use gridcraft_ui_egui::{SheetApp, grid};
+use iridium_engine::Session;
+use iridium_engine::core::CellRef;
+use iridium_ui_egui::{SheetApp, grid};
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
 

@@ -10,7 +10,7 @@ mod render;
 
 use std::sync::Arc;
 
-use gridcraft_core::{CellError, DateSystem, Value};
+use iridium_core::{CellError, DateSystem, Value};
 
 pub use builtin::{builtin_format, builtin_id};
 pub use decimal::format_general_fit;
@@ -51,7 +51,7 @@ impl FormatColor {
             F::Red => [255, 0, 0],
             F::White => [255, 255, 255],
             F::Yellow => [255, 255, 0],
-            F::Indexed(index) => return gridcraft_core::color::indexed_color(index),
+            F::Indexed(index) => return iridium_core::color::indexed_color(index),
         })
     }
 }
@@ -438,7 +438,7 @@ pub fn text_function(v: &Value, code: &str, sys: DateSystem) -> Result<String, C
         Value::Empty => 0.0,
         Value::Number(n) => n,
         Value::Bool(b) => return Ok(fmt.format_text(if b { "TRUE" } else { "FALSE" }).text),
-        Value::Text(t) => match gridcraft_core::parse::parse_number_text(&t) {
+        Value::Text(t) => match iridium_core::parse::parse_number_text(&t) {
             Some(n) => n,
             None => return Ok(fmt.format_text(&t).text),
         },

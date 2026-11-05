@@ -1,7 +1,7 @@
 //! Formulas › Recently Used: the functions most recently entered in a formula, from any command
 //! that enters one, kept in the preferences rather than read back from the journal.
 
-use gridcraft_engine::Session;
+use iridium_engine::Session;
 use serde_json::{Value as Json, json};
 
 fn recent(s: &mut Session) -> Vec<String> {

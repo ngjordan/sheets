@@ -3,8 +3,8 @@
 use std::io::Read;
 use std::sync::Arc;
 
-use gridcraft_core::CellRef;
-use gridcraft_model::{Anchor, Image, Sheet, Workbook};
+use iridium_core::CellRef;
+use iridium_model::{Anchor, Image, Sheet, Workbook};
 
 use crate::{read_xlsx, write_xlsx};
 

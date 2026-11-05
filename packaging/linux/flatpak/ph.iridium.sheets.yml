@@ -16,7 +16,7 @@ runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
-command: gridcraft
+command: iridium-sheets
 finish-args:
   - --filesystem=xdg-data/Iridium Sheets/versions:ro
   # Display: Wayland first; X11 only when no Wayland compositor is running.
@@ -89,21 +89,21 @@ modules:
           - '  esac'
           - 'fi'
           - 'exec "/app/libexec/cups/${0##*/}" "$@"'
-  - name: gridcraft
+  - name: iridium-sheets
     buildsystem: simple
     build-options:
       env:
-        CARGO_HOME: /run/build/gridcraft/cargo
+        CARGO_HOME: /run/build/iridium-sheets/cargo
         CARGO_NET_OFFLINE: 'true'
     build-commands:
-      - cargo --offline build --release --locked -p gridcraft -p gridcraft-cli
-      - install -Dm755 target/release/gridcraft /app/bin/gridcraft
-      - install -Dm755 target/release/gridcraft-cli /app/bin/gridcraft-cli
+      - cargo --offline build --release --locked -p iridium-sheets -p iridium-sheets-cli
+      - install -Dm755 target/release/iridium-sheets /app/bin/iridium-sheets
+      - install -Dm755 target/release/iridium-sheets-cli /app/bin/iridium-sheets-cli
       - install -Dm644 packaging/linux/ph.iridium.sheets.desktop /app/share/applications/ph.iridium.sheets.desktop
       - install -Dm644 packaging/linux/ph.iridium.sheets.mime.xml /app/share/mime/packages/ph.iridium.sheets.xml
       - mkdir -p /app/share/icons && cp -R assets/app-icon/hicolor /app/share/icons/
-      - install -Dm644 NOTICE /app/share/doc/gridcraft/NOTICE
-      - install -Dm644 ATTRIBUTION.md /app/share/doc/gridcraft/ATTRIBUTION.md
+      - install -Dm644 NOTICE /app/share/doc/iridium-sheets/NOTICE
+      - install -Dm644 ATTRIBUTION.md /app/share/doc/iridium-sheets/ATTRIBUTION.md
       - >-
         version=$(awk '/^\[/{p=($0=="[workspace.package]");next} p&&$1=="version"{gsub(/[" ]/,"",$3);print $3;exit}' Cargo.toml);
         install -d /app/share/metainfo;

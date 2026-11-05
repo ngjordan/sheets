@@ -10,7 +10,7 @@
 //! because Excel backs it with the same service, but it works offline: it
 //! reads the script and the function words instead of calling out.
 
-use gridcraft_core::{CellError, Value};
+use iridium_core::{CellError, Value};
 
 use crate::VAR;
 use crate::util::{R, S, arg, text};
@@ -141,7 +141,7 @@ pub(crate) fn specs() -> Vec<crate::FnSpec> {
 #[cfg(test)]
 mod tests {
     use crate::util::testutil::*;
-    use gridcraft_core::{CellError, Value};
+    use iridium_core::{CellError, Value};
 
     #[test]
     fn detectlanguage_names_the_language() {

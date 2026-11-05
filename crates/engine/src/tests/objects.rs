@@ -1,7 +1,7 @@
 //! Floating objects of every kind: found, moved, listed, stacked and deleted by `{kind, id}`.
 
-use gridcraft_core::CellRef;
-use gridcraft_model::{Anchor, AnchorMode, ObjKind, ObjRef, Sheet};
+use iridium_core::CellRef;
+use iridium_model::{Anchor, AnchorMode, ObjKind, ObjRef, Sheet};
 use serde_json::json;
 
 use super::s;

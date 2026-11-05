@@ -106,7 +106,7 @@ pub fn poll(app: &mut SheetApp) {
             });
         }
         Outcome::Fetched { id, title, provider, bytes } => {
-            let b64 = gridcraft_engine::io::base64_encode(&bytes);
+            let b64 = iridium_engine::io::base64_encode(&bytes);
             let name = format!("{}.xlsx", title);
             match app.run("file.open", json!({"name": name, "base64": b64})) {
                 Ok(r) => {
@@ -114,7 +114,7 @@ pub fn poll(app: &mut SheetApp) {
                     app.gsheets_current = Some((provider, id));
                     app.notice = Some(Notice { text: format!("Opened {title} from {}.", provider.label()), kind: NoticeKind::Info, action: None });
                 }
-                Err(e) => app.message = Some(("Iridium Sheets".into(), clean_error(&e))),
+                Err(e) => app.message = Some((iridium_core::brand::NAME.into(), clean_error(&e))),
             }
             app.after_engine();
         }
@@ -123,7 +123,7 @@ pub fn poll(app: &mut SheetApp) {
             app.notice = Some(Notice { text: format!("Saved {title} to {}.", provider.label()), kind: NoticeKind::Info, action: None });
         }
         Outcome::Failed { provider, message } => {
-            app.message = Some(("Iridium Sheets".into(), clean_error(&format!("{}: {message}", provider.label()))));
+            app.message = Some((iridium_core::brand::NAME.into(), clean_error(&format!("{}: {message}", provider.label()))));
         }
     }
 }
@@ -144,7 +144,7 @@ fn backend_for(app: &SheetApp, provider: Provider) -> Option<Arc<dyn Backend>> {
 /// Start listing the spreadsheets the account can open.
 pub fn list(app: &mut SheetApp, provider: Provider) {
     if backend_for(app, provider).is_none() {
-        app.message = Some(("Iridium Sheets".into(), format!("{} is not available in this build.", provider.label())));
+        app.message = Some((iridium_core::brand::NAME.into(), format!("{} is not available in this build.", provider.label())));
         return;
     }
     set_job(
@@ -186,14 +186,14 @@ pub fn push(app: &mut SheetApp, provider: Provider, id: &str, tab: Option<&str>)
     let tab = tab.map(str::to_string);
     // Encode the workbook first: the engine call is cheap and local.
     let bytes = match app.session.run("file.saveBytes", json!({"format": "xlsx"})) {
-        Ok(r) => r.get("base64").and_then(Json::as_str).and_then(gridcraft_engine::io::base64_decode),
+        Ok(r) => r.get("base64").and_then(Json::as_str).and_then(iridium_engine::io::base64_decode),
         Err(e) => {
-            app.message = Some(("Iridium Sheets".into(), clean_error(&e)));
+            app.message = Some((iridium_core::brand::NAME.into(), clean_error(&e)));
             return;
         }
     };
     let Some(bytes) = bytes else {
-        app.message = Some(("Iridium Sheets".into(), "Could not encode the workbook.".into()));
+        app.message = Some((iridium_core::brand::NAME.into(), "Could not encode the workbook.".into()));
         return;
     };
     set_job(

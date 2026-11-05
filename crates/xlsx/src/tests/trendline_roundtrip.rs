@@ -3,8 +3,8 @@
 use std::io::Read;
 use std::sync::Arc;
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::{Anchor, Chart, ChartKind, Color, LegendPos, LineDash, Series, Sheet, Trendline, TrendlineKind, Workbook};
+use iridium_core::{CellRef, Value};
+use iridium_model::{Anchor, Chart, ChartKind, Color, LegendPos, LineDash, Series, Sheet, Trendline, TrendlineKind, Workbook};
 
 use crate::{read_xlsx, write_xlsx};
 

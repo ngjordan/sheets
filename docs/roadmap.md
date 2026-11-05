@@ -102,7 +102,7 @@ to check our files, and Windows machines with the reported GPU drivers.
   catalog vs registered commands); `cargo xtask ci` checks it is current.
 - `cargo xtask test`: engine, formula, function, XLSX and UI behaviour (cargo-nextest when
   installed, else `cargo test`), then the doctests.
-- `cargo run --release -p gridcraft-ui-egui --example snapshot -- --sample sales out.png`: look at
+- `cargo run --release -p iridium-ui-egui --example snapshot -- --sample sales out.png`: look at
   the UI offscreen.
 - Function coverage: the script method in [function-parity.md](function-parity.md). A
   `cargo xtask functions` that diffs the registry against a checked-in Excel name list would make

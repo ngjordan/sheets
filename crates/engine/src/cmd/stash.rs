@@ -18,7 +18,7 @@
 use std::collections::{BTreeMap, HashSet};
 use std::fmt::Write as _;
 
-use gridcraft_model::{DefinedName, Workbook};
+use iridium_model::{DefinedName, Workbook};
 use serde_json::Value as Json;
 
 use crate::{EngineError, Result};
@@ -630,7 +630,7 @@ mod tests {
         let text: String = (0..20_000).map(|i| ['x', '"', 'ü', '\u{1D11E}', ' '][i % 5]).collect();
         set(&mut wb, "blob", &text).unwrap();
         wb.names.push(name("_sc_watch", "\"[\"\"A1\"\"]\""));
-        let bytes = gridcraft_xlsx::write_xlsx(&wb).unwrap();
+        let bytes = iridium_xlsx::write_xlsx(&wb).unwrap();
         let (back, warnings) = crate::io::open_bytes("data.xlsx", &bytes).unwrap();
         assert!(warnings.is_empty(), "{warnings:?}");
         assert_eq!(get(&back, "blob").as_deref(), Some(text.as_str()));
@@ -649,7 +649,7 @@ mod tests {
         let controls = "\u{1}".repeat(9_000);
         set(&mut wb, "controls", &controls).unwrap();
         excel_limits_hold(&wb);
-        let bytes = gridcraft_xlsx::write_xlsx(&wb).unwrap();
+        let bytes = iridium_xlsx::write_xlsx(&wb).unwrap();
         let (back, warnings) = crate::io::open_bytes("data.xlsx", &bytes).unwrap();
         assert!(warnings.is_empty(), "{warnings:?}");
         assert_eq!(get(&back, "odd").as_deref(), Some(text.as_str()));

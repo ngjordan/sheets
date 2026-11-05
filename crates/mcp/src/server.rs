@@ -31,9 +31,9 @@ open_workbook / save_workbook. inspect_workbook summarizes sheets, used ranges, 
 list_functions lists the worksheet functions.";
 
 /// Resource URIs.
-pub const WORKBOOK_URI: &str = "gridcraft://workbook";
-pub const COMMANDS_URI: &str = "gridcraft://commands";
-pub const FUNCTIONS_URI: &str = "gridcraft://functions";
+pub const WORKBOOK_URI: &str = "iridium://workbook";
+pub const COMMANDS_URI: &str = "iridium://commands";
+pub const FUNCTIONS_URI: &str = "iridium://functions";
 
 /// An MCP server bound to one backend.
 pub struct Server {
@@ -154,7 +154,7 @@ impl Server {
                 Ok(json!({
                     "protocolVersion": version,
                     "capabilities": {"tools": {"listChanged": false}, "resources": {"listChanged": false, "subscribe": false}, "prompts": {"listChanged": false}},
-                    "serverInfo": {"name": "gridcraft", "title": "Iridium Sheets", "version": env!("CARGO_PKG_VERSION")},
+                    "serverInfo": {"name": iridium_core::brand::SLUG, "title": iridium_core::brand::NAME, "version": env!("CARGO_PKG_VERSION")},
                     "instructions": format!("{INSTRUCTIONS} Backend: {}.", self.backend.describe()),
                 }))
             }

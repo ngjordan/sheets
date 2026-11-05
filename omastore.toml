@@ -3,9 +3,9 @@ categories = ["Office"]
 icon = "assets/app-icon/hicolor/256x256/apps/ph.iridium.sheets.png"
 
 [linux.x86_64]
-asset = "gridcraft-{version}-linux-x86_64.tar.gz"
-exec = "gridcraft-{version}-linux-x86_64/bin/gridcraft"
+asset = "iridium-{version}-linux-x86_64.tar.gz"
+exec = "iridium-{version}-linux-x86_64/bin/iridium-sheets"
 
 [linux.aarch64]
-asset = "gridcraft-{version}-linux-aarch64.tar.gz"
-exec = "gridcraft-{version}-linux-aarch64/bin/gridcraft"
+asset = "iridium-{version}-linux-aarch64.tar.gz"
+exec = "iridium-{version}-linux-aarch64/bin/iridium-sheets"

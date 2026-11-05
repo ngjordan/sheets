@@ -1,6 +1,6 @@
 use super::RangeRef;
 use crate::eval::Area;
-use gridcraft_core::CellRef;
+use iridium_core::CellRef;
 use std::collections::BTreeSet;
 use std::hash::{BuildHasherDefault, Hasher};
 

@@ -2,10 +2,10 @@
 //! margins in one undo step, so printing goes down, then over or over, then down.
 
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::model::PageOrder;
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::control::{Outcome, handle};
-use gridcraft_ui_egui::i18n::Language;
+use iridium_engine::model::PageOrder;
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::control::{Outcome, handle};
+use iridium_ui_egui::i18n::Language;
 use serde_json::{Value as Json, json};
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

@@ -15,8 +15,8 @@ Save opens Save As and suggests a new `.xlsx` file. The source ODS file is not u
 workbook's save destination; requests to save to `.ods` return an error.
 
 ```sh
-gridcraft-cli info source.ods
-gridcraft-cli convert source.ods imported.xlsx
+iridium-sheets-cli info source.ods
+iridium-sheets-cli convert source.ods imported.xlsx
 ```
 
 CLI import warnings go to stderr, leaving structured output on stdout available for scripts.

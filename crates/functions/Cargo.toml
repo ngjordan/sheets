@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-functions"
+name = "iridium-functions"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,5 +9,5 @@ description = "Iridium Sheets worksheet function library: math, statistics, text
 workspace = true
 
 [dependencies]
-gridcraft-core = { workspace = true }
+iridium-core = { workspace = true }
 regex = { workspace = true }

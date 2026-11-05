@@ -3,10 +3,10 @@
 
 use egui::{Event, Key, vec2};
 use egui_kittest::kittest::Queryable;
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::control::{Outcome, handle};
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::control::{Outcome, handle};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

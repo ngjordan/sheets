@@ -61,7 +61,7 @@ impl SheetApp {
         updates_ui::start(self, true);
         #[cfg(target_arch = "wasm32")]
         {
-            self.message = Some(("Iridium Sheets".into(), "The web version is always the latest release.".into()));
+            self.message = Some((iridium_core::brand::NAME.into(), "The web version is always the latest release.".into()));
         }
     }
 }

@@ -62,17 +62,17 @@ impl Backend for FakeBackend {
 
 /// A workbook the fake backend returns, built by the engine itself.
 fn sample_xlsx() -> Vec<u8> {
-    let mut s = gridcraft_engine::Session::new();
+    let mut s = iridium_engine::Session::new();
     let r = s.run("file.new", serde_json::json!({})).expect("a new workbook");
     let _ = r;
     let bytes = s.run("file.saveBytes", serde_json::json!({"format": "xlsx"})).expect("encoded");
     let b64 = bytes.get("base64").and_then(serde_json::Value::as_str).expect("base64");
-    gridcraft_engine::io::base64_decode(b64).expect("decoded")
+    iridium_engine::io::base64_decode(b64).expect("decoded")
 }
 
 fn app_with(backend: Arc<dyn Backend>) -> SheetApp {
     let services = crate::Services { gsheets: vec![backend], ..Default::default() };
-    SheetApp::new(gridcraft_engine::Session::new(), services)
+    SheetApp::new(iridium_engine::Session::new(), services)
 }
 
 #[test]

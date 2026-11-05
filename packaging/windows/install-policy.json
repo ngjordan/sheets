@@ -1,23 +1,23 @@
 {
-  "id": "gridcraft",
+  "id": "iridium-sheets",
   "name": "Iridium Sheets",
   "upgradeCode": "552EE2C8-4AE1-513A-8B74-AB2833F32150",
   "sources": [
-    "gridcraft.wxs"
+    "iridium-sheets.wxs"
   ],
   "icon": "assets/app-icon/iridium-sheets.ico",
   "localization": [],
   "extensions": [],
   "payloads": [
-    "gridcraft-cli.exe",
-    "gridcraft.exe"
+    "iridium-sheets-cli.exe",
+    "iridium-sheets.exe"
   ],
   "registry": [
     [
       "-1",
-      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\gridcraft.exe",
+      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\iridium-sheets.exe",
       "",
-      "[#GridcraftExe]"
+      "[#IridiumExe]"
     ],
     [
       "-1",
@@ -131,25 +131,25 @@
       "-1",
       "Software\\Classes\\Iridium Sheets.Workbook\\DefaultIcon",
       "",
-      "\"[#GridcraftExe]\",0"
+      "\"[#IridiumExe]\",0"
     ],
     [
       "-1",
       "Software\\Classes\\Iridium Sheets.Workbook\\shell\\open\\command",
       "",
-      "\"[#GridcraftExe]\" \"%1\""
+      "\"[#IridiumExe]\" \"%1\""
     ],
     [
       "-1",
       "Software\\Classes\\Iridium Sheets.TextData\\DefaultIcon",
       "",
-      "\"[#GridcraftExe]\",0"
+      "\"[#IridiumExe]\",0"
     ],
     [
       "-1",
       "Software\\Classes\\Iridium Sheets.TextData\\shell\\open\\command",
       "",
-      "\"[#GridcraftExe]\" \"%1\""
+      "\"[#IridiumExe]\" \"%1\""
     ]
   ],
   "mode": "dualScope"

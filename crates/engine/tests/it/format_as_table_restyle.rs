@@ -1,4 +1,4 @@
-use gridcraft_engine::Session;
+use iridium_engine::Session;
 use serde_json::json;
 
 fn table() -> Session {

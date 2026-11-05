@@ -1,6 +1,6 @@
 //! The python.* commands.
 
-use gridcraft_core::{CellError, Value};
+use iridium_core::{CellError, Value};
 use serde_json::json;
 
 use super::{s, v};
@@ -37,9 +37,9 @@ fn unchanged_code_keeps_its_cached_result() {
         let d = s.doc_mut().unwrap();
         let wb = std::sync::Arc::make_mut(&mut d.wb);
         let sh = wb.sheet_mut(0).unwrap();
-        let cell = sh.cells.get_mut(gridcraft_core::CellRef::new(0, 0)).unwrap();
+        let cell = sh.cells.get_mut(iridium_core::CellRef::new(0, 0)).unwrap();
         let py = std::sync::Arc::make_mut(cell.py.as_mut().unwrap());
-        py.output = Some(gridcraft_model::PyOutput { value: Value::Number(42.0), type_name: "int".into(), preview: "42".into(), convertible: true });
+        py.output = Some(iridium_model::PyOutput { value: Value::Number(42.0), type_name: "int".into(), preview: "42".into(), convertible: true });
         cell.value = Value::Number(42.0);
     }
     set(&mut s, "A1", "21 * 2");
@@ -92,13 +92,13 @@ fn set_over_a_spilling_formula_takes_the_spill_away() {
 
 /// A cached result as a file would have kept it on the cell: `[[1], [2], [3]]`, a list.
 fn cache_list(s: &mut crate::Session, cell: &str) {
-    let at = gridcraft_core::CellRef::parse(cell).unwrap();
+    let at = iridium_core::CellRef::parse(cell).unwrap();
     let d = s.doc_mut().unwrap();
     let wb = std::sync::Arc::make_mut(&mut d.wb);
     let sh = wb.sheet_mut(0).unwrap();
     let py = std::sync::Arc::make_mut(sh.cells.get_mut(at).unwrap().py.as_mut().unwrap());
-    let arr = gridcraft_core::Array::new(3, 1, vec![1.0.into(), 2.0.into(), 3.0.into()]).map(Value::from).unwrap();
-    py.output = Some(gridcraft_model::PyOutput { value: arr, type_name: "list".into(), preview: "[1, 2, 3]".into(), convertible: true });
+    let arr = iridium_core::Array::new(3, 1, vec![1.0.into(), 2.0.into(), 3.0.into()]).map(Value::from).unwrap();
+    py.output = Some(iridium_model::PyOutput { value: arr, type_name: "list".into(), preview: "[1, 2, 3]".into(), convertible: true });
 }
 
 /// A1 holds `[1, 2, 3]` with its cached list spilled over A1:A3 as Excel values; B1 reads A3.
@@ -176,8 +176,8 @@ fn output_refuses_table_headers_and_locked_cells_as_set_does() {
     {
         let d = s.doc_mut().unwrap();
         let wb = std::sync::Arc::make_mut(&mut d.wb);
-        let cell = wb.sheet_mut(0).unwrap().cells.get_mut(gridcraft_core::CellRef::parse("D1").unwrap()).unwrap();
-        cell.py = Some(std::sync::Arc::new(gridcraft_model::PyCode::new("'Score'")));
+        let cell = wb.sheet_mut(0).unwrap().cells.get_mut(iridium_core::CellRef::parse("D1").unwrap()).unwrap();
+        cell.py = Some(std::sync::Arc::new(iridium_model::PyCode::new("'Score'")));
     }
     let e = s.execute("python.output", json!({"cell": "D1"})).unwrap_err();
     assert!(e.to_string().contains("table header"), "{e}");

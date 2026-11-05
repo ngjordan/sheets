@@ -2,8 +2,8 @@
 
 use std::cmp::Ordering;
 
-use gridcraft_core::parse::parse_number_text;
-use gridcraft_core::{CellError, Value, compare_numbers, compare_text};
+use iridium_core::parse::parse_number_text;
+use iridium_core::{CellError, Value, compare_numbers, compare_text};
 
 /// Longest text criterion COUNTIF and its relatives accept, in UTF-16 code units as Excel
 /// counts them (😀 is two units); a longer one is `#VALUE!`.

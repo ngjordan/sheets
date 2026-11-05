@@ -19,8 +19,8 @@
 //!   reads as one (a defined name called `Output`) becomes `{"$text": …}`, and `{{` in a string
 //!   becomes `{{{{`.
 
-use gridcraft_core::{CellRef, RangeRef, Value};
-use gridcraft_model::{ColType, InputKind, MAX_MACRO_STEPS, Macro, NamedInput, Step, StepKind, Workbook};
+use iridium_core::{CellRef, RangeRef, Value};
+use iridium_model::{ColType, InputKind, MAX_MACRO_STEPS, Macro, NamedInput, Step, StepKind, Workbook};
 use serde_json::{Map, Value as Json, json};
 use std::collections::BTreeMap;
 

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::io::Read;
 use std::sync::Arc;
 
-use gridcraft_model::Sheet;
+use iridium_model::Sheet;
 
 use super::make_zip;
 use crate::package::{normalize, resolve, split_dir};
@@ -293,7 +293,7 @@ fn assert_kept_sheet_parts(u: &Unpacked, sheet: &str, sx: &str) {
     assert_eq!(u.parts.get(&img[0].2).unwrap(), EMF);
 }
 
-fn assert_round_trip_kept_content(wb: &gridcraft_model::Workbook, out: &[u8]) {
+fn assert_round_trip_kept_content(wb: &iridium_model::Workbook, out: &[u8]) {
     // Reading the output keeps the same content again.
     let (wb2, rep2) = read_xlsx(out).unwrap();
     assert!(!rep2.warnings.iter().any(|w| w.contains("dropped")), "{:?}", rep2.warnings);
@@ -316,7 +316,7 @@ fn edited_workbooks_keep_consistent_relationships() {
     let s = wb.sheet_mut(1).unwrap();
     s.name = "Renamed".into();
     s.comments.clear();
-    s.set_value(gridcraft_core::CellRef::new(5, 5), gridcraft_core::Value::Number(3.0));
+    s.set_value(iridium_core::CellRef::new(5, 5), iridium_core::Value::Number(3.0));
     let u = Unpacked::new(&write_xlsx(&wb).unwrap());
     u.assert_valid();
     let sheet = sheet_part(&u, "Renamed");
@@ -573,20 +573,20 @@ fn xml_maps_and_their_bindings_survive_a_round_trip() {
 /// Where a link with `target`, in a workbook read from `from`, points once saved into `to`.
 #[cfg(unix)]
 fn rebased(target: &str, from: &str, to: &str) -> String {
-    let link = |rel_type: &str| gridcraft_model::PreservedRel {
+    let link = |rel_type: &str| iridium_model::PreservedRel {
         id: "rId1".into(),
         rel_type: format!("{NS_R}/{rel_type}"),
         target: target.into(),
         external: true,
     };
-    let part = gridcraft_model::PreservedPart {
+    let part = iridium_model::PreservedPart {
         name: "xl/externalLinks/externalLink1.xml".into(),
         content_type: String::new(),
         data: Arc::from(&b""[..]),
         rels: vec![link("externalLinkPath"), link("hyperlink")],
     };
-    let mut wb = gridcraft_model::Workbook::new();
-    wb.preserved = Some(Arc::new(gridcraft_model::Preserved { parts: vec![part], ..Default::default() }));
+    let mut wb = iridium_model::Workbook::new();
+    wb.preserved = Some(Arc::new(iridium_model::Preserved { parts: vec![part], ..Default::default() }));
     wb.source_dir = Some(from.into());
     let Some(out) = crate::rebase_links(&wb, std::path::Path::new(to)) else { return target.into() };
     let rels = &out.preserved.as_ref().unwrap().parts[0].rels;
@@ -833,7 +833,7 @@ fn file_version_and_calc_features_survive_a_save() {
 
     // A workbook that had neither gets a <fileVersion> naming Iridium Sheets (#1699), kept on the next
     // save, and no calcFeatures: Excel recalculates it on open.
-    let new = write_xlsx(&gridcraft_model::Workbook::new()).unwrap();
+    let new = write_xlsx(&iridium_model::Workbook::new()).unwrap();
     let (reread, _) = read_xlsx(&new).unwrap();
     for saved in [new, write_xlsx(&reread).unwrap()] {
         let u = Unpacked::new(&saved);
@@ -841,7 +841,7 @@ fn file_version_and_calc_features_survive_a_save() {
         let plain = u.text("xl/workbook.xml");
         let root = xml::parse(plain.as_bytes()).unwrap();
         assert_eq!(root.children.first().map(|e| e.name.as_str()), Some("fileVersion"), "{plain}");
-        assert!(plain.contains(r#"<fileVersion appName="gridcraft"/>"#) && !plain.contains("extLst"), "{plain}");
+        assert!(plain.contains(r#"<fileVersion appName="iridium-sheets"/>"#) && !plain.contains("extLst"), "{plain}");
     }
 }
 

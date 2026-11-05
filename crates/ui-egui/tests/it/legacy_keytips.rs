@@ -3,8 +3,8 @@
 use egui::os::OperatingSystem;
 use egui::{Event, Key, Modifiers};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 fn press(h: &mut egui_kittest::Harness<'static, SheetApp>, key: Key) {

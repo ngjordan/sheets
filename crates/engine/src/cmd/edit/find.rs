@@ -149,7 +149,7 @@ pub(super) fn replace(s: &mut Session, p: &Json) -> Result<Json> {
                 // stays a Python cell. Code that would no longer fit in a PY formula is left as it was.
                 let old_py = cx.wb.sheet(si).and_then(|sh| sh.cell(c)).and_then(|x| x.py.clone());
                 if let Some(old) = old_py {
-                    let py = gridcraft_model::PyCode { object: old.object, ..gridcraft_model::PyCode::new(&new) };
+                    let py = iridium_model::PyCode { object: old.object, ..iridium_model::PyCode::new(&new) };
                     if py.code == old.code {
                         continue;
                     }
@@ -163,7 +163,7 @@ pub(super) fn replace(s: &mut Session, p: &Json) -> Result<Json> {
                     let style = sh.style_id(c);
                     sh.set_cell(
                         c,
-                        Cell { value: Value::Error(gridcraft_core::CellError::Blocked), formula: None, style, py: Some(std::sync::Arc::new(py)) },
+                        Cell { value: Value::Error(iridium_core::CellError::Blocked), formula: None, style, py: Some(std::sync::Arc::new(py)) },
                     );
                     cx.touch(si, c);
                     n += 1;

@@ -257,7 +257,7 @@ pub(super) fn show_details(s: &mut Session, p: &Json) -> Result<Json> {
         for (c, h) in src.headers.iter().enumerate() {
             sh.set_cell(
                 CellRef::new(0, c as u32),
-                Cell { value: gridcraft_core::Value::text(h.as_str()), formula: None, style: StyleId::default(), py: None },
+                Cell { value: iridium_core::Value::text(h.as_str()), formula: None, style: StyleId::default(), py: None },
             );
         }
         for (r, i) in records.iter().enumerate() {

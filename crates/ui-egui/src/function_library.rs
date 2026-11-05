@@ -58,7 +58,7 @@ pub struct FnEntry {
 pub fn all() -> &'static [FnEntry] {
     static LIST: OnceLock<Vec<FnEntry>> = OnceLock::new();
     LIST.get_or_init(|| {
-        let mut list: Vec<FnEntry> = gridcraft_engine::cmd::formulas::function_list()
+        let mut list: Vec<FnEntry> = iridium_engine::cmd::formulas::function_list()
             .iter()
             .filter_map(|f| {
                 Some(FnEntry {

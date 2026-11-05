@@ -5,7 +5,7 @@
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release):
     iridium-sheets-<version>-windows-<arch>.msi            per-machine installer (WiX v5)
-    iridium-sheets-<version>-windows-<arch>-portable.zip   gridcraft.exe + gridcraft-cli.exe
+    iridium-sheets-<version>-windows-<arch>-portable.zip   iridium-sheets.exe + iridium-sheets-cli.exe
 
   The binaries link the C runtime statically (+crt-static), so neither the MSI nor the portable
   zip needs the Visual C++ redistributable. Signing is delegated to sign.ps1 (skipped with a
@@ -33,7 +33,7 @@ function Invoke-Native([string] $What, [scriptblock] $Block) {
 }
 
 # The version lives in one place: [workspace.package] version in the root Cargo.toml.
-$Version = $env:GRIDCRAFT_VERSION
+$Version = $env:IRIDIUM_VERSION
 if (-not $Version) {
   $inPkg = $false
   foreach ($line in Get-Content (Join-Path $Root 'Cargo.toml')) {
@@ -50,8 +50,8 @@ $Dist = if ($env:DIST) { $env:DIST } else { Join-Path $Root 'dist\release' }
 $TargetDir = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $Root 'target' }
 New-Item -ItemType Directory -Force -Path $Dist | Out-Null
 
-if (-not $env:GRIDCRAFT_BUILD_SHA) { $env:GRIDCRAFT_BUILD_SHA = (git -C $Root rev-parse HEAD 2>$null) }
-if (-not $env:GRIDCRAFT_BUILD_DATE) { $env:GRIDCRAFT_BUILD_DATE = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
+if (-not $env:IRIDIUM_BUILD_SHA) { $env:IRIDIUM_BUILD_SHA = (git -C $Root rev-parse HEAD 2>$null) }
+if (-not $env:IRIDIUM_BUILD_DATE) { $env:IRIDIUM_BUILD_DATE = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
 
 Write-Output "Iridium Sheets $Version for Windows $Arch ($Target)"
 
@@ -61,8 +61,8 @@ if (-not $SkipBuild) {
   $flagVar = 'CARGO_TARGET_' + ($Target.ToUpper() -replace '-', '_') + '_RUSTFLAGS'
   [Environment]::SetEnvironmentVariable($flagVar, '-C target-feature=+crt-static')
   # Fail the build (rather than warn) if the icon/VERSIONINFO can't be embedded.
-  $env:GRIDCRAFT_REQUIRE_WINRES = '1'
-  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p gridcraft -p gridcraft-cli --target $Target }
+  $env:IRIDIUM_REQUIRE_WINRES = '1'
+  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli --target $Target }
 }
 
 $Bin = Join-Path $TargetDir "$Target\release"
@@ -77,7 +77,7 @@ function Get-PeHeader([string] $Path) {
   return @{ Machine = [BitConverter]::ToUInt16($bytes, $pe + 4); Subsystem = [BitConverter]::ToUInt16($bytes, $pe + 0x5C) }
 }
 $Machine = switch ($Arch) { 'x64' { 0x8664 } 'x86' { 0x14C } 'arm64' { 0xAA64 } }
-foreach ($check in @(@('gridcraft.exe', 2), @('gridcraft-cli.exe', 3))) {
+foreach ($check in @(@('iridium-sheets.exe', 2), @('iridium-sheets-cli.exe', 3))) {
   $h = Get-PeHeader (Join-Path $Bin $check[0])
   if ($h.Machine -ne $Machine) { throw "$($check[0]) is for machine 0x$('{0:X}' -f $h.Machine), expected 0x$('{0:X}' -f $Machine) ($Arch)" }
   if ($h.Subsystem -ne $check[1]) { throw "$($check[0]) has PE subsystem $($h.Subsystem), expected $($check[1])" }
@@ -86,7 +86,7 @@ foreach ($check in @(@('gridcraft.exe', 2), @('gridcraft-cli.exe', 3))) {
 $Stage = Join-Path $TargetDir "windows-package\$Arch"
 Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage | Out-Null
-Copy-Item (Join-Path $Bin 'gridcraft.exe'), (Join-Path $Bin 'gridcraft-cli.exe') $Stage
+Copy-Item (Join-Path $Bin 'iridium-sheets.exe'), (Join-Path $Bin 'iridium-sheets-cli.exe') $Stage
 
 # ---- Cloud spreadsheet helpers ----------------------------------------------------------------
 # The app talks to Google and Microsoft through small Python helpers (one
@@ -96,12 +96,25 @@ Copy-Item (Join-Path $Bin 'gridcraft.exe'), (Join-Path $Bin 'gridcraft-cli.exe')
 # time to go wrong.
 $GoogleDir = Join-Path $Stage 'pylib'
 New-Item -ItemType Directory -Force -Path $GoogleDir | Out-Null
-Copy-Item -LiteralPath (Join-Path $Root 'tools\gsheets_backend.py'), (Join-Path $Root 'tools\m365_backend.py') -Destination $GoogleDir
+Copy-Item -LiteralPath (Join-Path $Root 'tools\gsheets_backend.py'), (Join-Path $Root 'tools\m365_backend.py'), (Join-Path $Root 'tools\connector_backend.py') -Destination $GoogleDir
 
-& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'gridcraft.exe') (Join-Path $Stage 'gridcraft-cli.exe')
+& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'iridium-sheets.exe') (Join-Path $Stage 'iridium-sheets-cli.exe')
 
 # ---- font notices for the MSI ------------------------------------------------------------------
 # The portable ZIP already carries these notices; stage the complete files before MSI creation too.
+# The app's branding, from branding/brand.env (the same source the Rust build reads).
+$Brand = @{}
+Get-Content (Join-Path $Root 'branding\brand.env') | ForEach-Object {
+  $line = $_.Trim()
+  if ($line -and -not $line.StartsWith('#') -and $line.Contains('=')) {
+    $k, $v = $line.Split('=', 2)
+    $Brand[$k.Trim()] = $v.Trim().Trim('"')
+  }
+}
+$AppName = $Brand['APP_NAME']
+$Manufacturer = $Brand['APP_VENDOR']
+$Homepage = $Brand['APP_HOMEPAGE']
+
 $Docs = Join-Path $Stage 'font-licences'
 New-Item -ItemType Directory -Force -Path $Docs | Out-Null
 # Bundled dependency font notices are required even without optional craft-fonts.
@@ -118,8 +131,9 @@ if ($env:CRAFT_FONTS_DIR) {
 # ---- MSI ---------------------------------------------------------------------------------------
 $Msi = Join-Path $Dist "iridium-sheets-$Version-windows-$Arch.msi"
 Invoke-Native 'wix build' {
-  wix build (Join-Path $PSScriptRoot 'gridcraft.wxs') -arch $Arch `
+  wix build (Join-Path $PSScriptRoot 'iridium-sheets.wxs') -arch $Arch `
     -d "Version=$MsiVersion" -d "BinDir=$Stage" -d "IconPath=$(Join-Path $Root 'assets\app-icon\iridium-sheets.ico')" `
+    -d "AppName=$AppName" -d "Manufacturer=$Manufacturer" -d "Homepage=$Homepage" `
     -d "DocsDir=$Docs" -d "HasCraftFontLicences=$HasCraftFontLicences" `
     -o $Msi
 }
@@ -156,8 +170,8 @@ Compress-Archive -Path $Portable -DestinationPath $Zip
 # here; .github/workflows/windows-arm64.yml installs and runs it on ARM64 instead.
 $HostArch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLowerInvariant()
 if ($Arch -ne 'arm64' -or $HostArch -eq 'arm64') {
-  Invoke-Native 'gridcraft-cli --version' { & (Join-Path $Stage 'gridcraft-cli.exe') --version }
+  Invoke-Native 'iridium-sheets-cli --version' { & (Join-Path $Stage 'iridium-sheets-cli.exe') --version }
 } else {
-  Write-Output "skipping gridcraft-cli --version: an $Arch build doesn't run on this $HostArch machine"
+  Write-Output "skipping iridium-sheets-cli --version: an $Arch build doesn't run on this $HostArch machine"
 }
 Get-Item $Msi, $Zip | Format-Table Name, Length

@@ -51,21 +51,21 @@ pub(super) fn delete_sheet(s: &mut Session, p: &Json) -> Result<Json> {
     edit_doc(d, |cx| {
         cx.wb.sheets.remove(i);
         for si in 0..cx.wb.sheets.len() {
-            let keys: Vec<(CellRef, Arc<gridcraft_model::Formula>)> =
+            let keys: Vec<(CellRef, Arc<iridium_model::Formula>)> =
                 cx.wb.sheets.get(si).map(|s| s.cells.iter().filter_map(|(c, x)| x.formula.clone().map(|f| (c, f))).collect()).unwrap_or_default();
             let Some(sh) = cx.wb.sheet_mut(si) else { continue };
             for (c, f) in keys {
                 if let Some(e) = f.expr() {
-                    let ne = gridcraft_formula::adjust::delete_sheet(e, &name, &order);
+                    let ne = iridium_formula::adjust::delete_sheet(e, &name, &order);
                     if let Some(cell) = sh.cells.get_mut(c) {
-                        cell.formula = Some(Arc::new(gridcraft_model::Formula::from_expr(ne)));
+                        cell.formula = Some(Arc::new(iridium_model::Formula::from_expr(ne)));
                     }
                 }
             }
         }
-        crate::cmd::edit::rewrite_python_refs(&mut cx.wb, &|_, e| gridcraft_formula::adjust::delete_sheet(e, &name, &order))?;
+        crate::cmd::edit::rewrite_python_refs(&mut cx.wb, &|_, e| iridium_formula::adjust::delete_sheet(e, &name, &order))?;
         // Chart series into the deleted sheet become #REF!, like formulas.
-        crate::cmd::edit::rewrite_cell_links(&mut cx.wb, |_, e| gridcraft_formula::adjust::delete_sheet(e, &name, &order));
+        crate::cmd::edit::rewrite_cell_links(&mut cx.wb, |_, e| iridium_formula::adjust::delete_sheet(e, &name, &order));
         cx.wb.names.retain(|n| n.scope != Some(i));
         for n in cx.wb.names.iter_mut() {
             if let Some(sc) = n.scope.as_mut()
@@ -74,10 +74,10 @@ pub(super) fn delete_sheet(s: &mut Session, p: &Json) -> Result<Json> {
                 *sc -= 1;
             }
             // Names referring to the sheet become #REF!.
-            if let Ok(e) = gridcraft_formula::parse_name(&n.formula) {
-                let ne = gridcraft_formula::adjust::delete_sheet(e.clone(), &name, &order);
+            if let Ok(e) = iridium_formula::parse_name(&n.formula) {
+                let ne = iridium_formula::adjust::delete_sheet(e.clone(), &name, &order);
                 if ne != e {
-                    n.formula = gridcraft_formula::print(&ne);
+                    n.formula = iridium_formula::print(&ne);
                 }
             }
         }
@@ -105,17 +105,17 @@ pub(super) fn rename_sheet(s: &mut Session, p: &Json) -> Result<Json> {
         let old = cx.wb.sheet(i).map(|s| s.name.clone()).unwrap_or_default();
         cx.sheet_mut(i)?.name = name.clone();
         for si in 0..cx.wb.sheets.len() {
-            let keys: Vec<(CellRef, Arc<gridcraft_model::Formula>)> =
+            let keys: Vec<(CellRef, Arc<iridium_model::Formula>)> =
                 cx.wb.sheets.get(si).map(|s| s.cells.iter().filter_map(|(c, x)| x.formula.clone().map(|f| (c, f))).collect()).unwrap_or_default();
             let Some(sh) = cx.wb.sheet_mut(si) else { continue };
             for (c, f) in keys {
                 if let Some(e) = f.expr() {
-                    let ne = gridcraft_formula::adjust::rename_sheet(e, &old, &name);
-                    let text = gridcraft_formula::print(&ne);
+                    let ne = iridium_formula::adjust::rename_sheet(e, &old, &name);
+                    let text = iridium_formula::print(&ne);
                     if text != f.text
                         && let Some(cell) = sh.cells.get_mut(c)
                     {
-                        cell.formula = Some(Arc::new(gridcraft_model::Formula::from_expr(ne)));
+                        cell.formula = Some(Arc::new(iridium_model::Formula::from_expr(ne)));
                     }
                 }
             }
@@ -128,13 +128,13 @@ pub(super) fn rename_sheet(s: &mut Session, p: &Json) -> Result<Json> {
                 }
             }
         }
-        crate::cmd::edit::rewrite_cell_links(&mut cx.wb, |_, e| gridcraft_formula::adjust::rename_sheet(e, &old, &name));
+        crate::cmd::edit::rewrite_cell_links(&mut cx.wb, |_, e| iridium_formula::adjust::rename_sheet(e, &old, &name));
         for n in cx.wb.names.iter_mut() {
-            if let Ok(e) = gridcraft_formula::parse_name(&n.formula) {
-                n.formula = gridcraft_formula::print(&gridcraft_formula::adjust::rename_sheet(e, &old, &name));
+            if let Ok(e) = iridium_formula::parse_name(&n.formula) {
+                n.formula = iridium_formula::print(&iridium_formula::adjust::rename_sheet(e, &old, &name));
             }
         }
-        crate::cmd::edit::rewrite_python_refs(&mut cx.wb, &|_, e| gridcraft_formula::adjust::rename_sheet(e, &old, &name))?;
+        crate::cmd::edit::rewrite_python_refs(&mut cx.wb, &|_, e| iridium_formula::adjust::rename_sheet(e, &old, &name))?;
         cx.structural = true;
         Ok(Json::Null)
     })
@@ -153,7 +153,7 @@ pub(super) fn move_sheet(s: &mut Session, p: &Json) -> Result<Json> {
         if copy {
             let mut sh = (*src).clone();
             // The copy is a sheet of its own, not the one it was copied from.
-            sh.uid = gridcraft_model::SheetUid::fresh();
+            sh.uid = iridium_model::SheetUid::fresh();
             let base = sh.name.clone();
             // `Name (2)`: the name is shortened so the suffix fits in Excel's 31 characters.
             let name = (2..)
@@ -183,16 +183,16 @@ pub(super) fn move_sheet(s: &mut Session, p: &Json) -> Result<Json> {
             sh.slicers.iter_mut().for_each(|o| o.id = fresh());
             let at = to.min(n);
             // The copy gets its own copies of the sheet's names, referring to the copy.
-            let copies: Vec<gridcraft_model::DefinedName> = cx
+            let copies: Vec<iridium_model::DefinedName> = cx
                 .wb
                 .names
                 .iter()
                 .filter(|nm| nm.scope == Some(i))
                 .map(|nm| {
-                    let formula = gridcraft_formula::parse_name(&nm.formula)
-                        .map(|e| gridcraft_formula::print(&gridcraft_formula::adjust::rename_sheet(e, &base, &sh.name)))
+                    let formula = iridium_formula::parse_name(&nm.formula)
+                        .map(|e| iridium_formula::print(&iridium_formula::adjust::rename_sheet(e, &base, &sh.name)))
                         .unwrap_or_else(|_| nm.formula.clone());
-                    gridcraft_model::DefinedName { scope: Some(at), formula, ..nm.clone() }
+                    iridium_model::DefinedName { scope: Some(at), formula, ..nm.clone() }
                 })
                 .collect();
             for nm in cx.wb.names.iter_mut() {
@@ -231,7 +231,7 @@ pub(super) fn tab_color(s: &mut Session, p: &Json) -> Result<Json> {
     let i = target_sheet(s, p)?;
     let c = crate::cmd::format::color_param(p.get("color"));
     edit(s, |cx| {
-        cx.sheet_mut(i)?.tab_color = c.filter(|c| *c != gridcraft_model::Color::Auto);
+        cx.sheet_mut(i)?.tab_color = c.filter(|c| *c != iridium_model::Color::Auto);
         Ok(Json::Null)
     })
 }

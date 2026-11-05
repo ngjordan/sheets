@@ -2,9 +2,9 @@
 //! its icon does.
 
 use egui::{Event, Shape, vec2};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::i18n::Language;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::i18n::Language;
 use serde_json::json;
 
 #[test]

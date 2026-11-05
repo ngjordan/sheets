@@ -1,4 +1,4 @@
-use gridcraft_engine::model::{ObjKind, ObjRef};
+use iridium_engine::model::{ObjKind, ObjRef};
 
 use super::editor::validation_arrow;
 use super::geo::Geo;
@@ -29,7 +29,7 @@ struct InteractionInput<'a> {
     in_column_header: bool,
     in_row_header: bool,
     in_corner: bool,
-    selection: gridcraft_engine::Selection,
+    selection: iridium_engine::Selection,
     current_rect: Rect,
     handle: Rect,
     handle_panes: Vec<Rect>,
@@ -239,7 +239,7 @@ fn handle_draw_tool(app: &mut SheetApp, input: &InteractionInput<'_>) -> bool {
         if app.session.draw_tool == "eraser" && (primary_clicked || resp.dragged()) {
             if let Some(p) = pos
                 && let Some((ObjRef { kind: ObjKind::Shape, id }, _)) = crate::chartview::hit(app, geo, sh, p)
-                && sh.shapes.iter().any(|s| s.id == id && s.kind == gridcraft_engine::model::ShapeKind::Ink)
+                && sh.shapes.iter().any(|s| s.id == id && s.kind == iridium_engine::model::ShapeKind::Ink)
             {
                 let _ = app.run("object.delete", json!({"kind": "shape", "id": id}));
             }
@@ -252,9 +252,9 @@ fn handle_draw_tool(app: &mut SheetApp, input: &InteractionInput<'_>) -> bool {
 /// The colour and width (points) of the ink a pen stroke commits, as `draw.stroke` stores it (the
 /// pen's colour, pen blue by default; its width, 2 pt by default, kept to 0.5–40 pt and stored
 /// whole) and as Ink shapes paint it (a highlighter, over 8 pt, is translucent).
-pub(crate) fn pen_ink(color: &str, width: f32, theme: &gridcraft_engine::model::Theme) -> (Color32, f32) {
-    let pen_blue = gridcraft_engine::model::Color::rgb(0x1F, 0x5F, 0xC9);
-    let line = gridcraft_engine::model::Color::from_hex(color).unwrap_or(pen_blue);
+pub(crate) fn pen_ink(color: &str, width: f32, theme: &iridium_engine::model::Theme) -> (Color32, f32) {
+    let pen_blue = iridium_engine::model::Color::rgb(0x1F, 0x5F, 0xC9);
+    let line = iridium_engine::model::Color::from_hex(color).unwrap_or(pen_blue);
     let width = if width <= 0.0 { 2.0 } else { width }.clamp(0.5, 40.0).round().max(1.0);
     let color = line.resolve(theme).map(crate::theme::color32).unwrap_or(Color32::from_rgb(0x1F, 0x5F, 0xC9));
     (crate::chartview::ink_color(color, width), width)
@@ -437,7 +437,7 @@ fn handle_press(app: &mut SheetApp, input: &InteractionInput<'_>) {
         let text = if range.is_single() { c.a1() } else { range.a1() };
         let sheet_name = (ed.sheet != wb.active_sheet()).then(|| sh.name.clone());
         let r = match sheet_name {
-            Some(n) => format!("{}!{text}", gridcraft_engine::formula::quote_sheet(&n)),
+            Some(n) => format!("{}!{text}", iridium_engine::formula::quote_sheet(&n)),
             None => text,
         };
         if mods.command && !mods.shift {
@@ -527,12 +527,12 @@ fn handle_cell_double_click(app: &mut SheetApp, input: &InteractionInput<'_>, c:
         // Details); its labels and headers still edit.
         if sh.pivots.iter().any(|pt| pt.last_range.is_some_and(|r| r.contains(c))) {
             let not_a_value_cell =
-                gridcraft_engine::EngineError::Disabled("pivot.showDetails".into(), gridcraft_engine::pivot::NOT_A_VALUE_CELL.into()).to_string();
+                iridium_engine::EngineError::Disabled("pivot.showDetails".into(), iridium_engine::pivot::NOT_A_VALUE_CELL.into()).to_string();
             match app.run("pivot.showDetails", json!({"cell": c.a1()})) {
                 Ok(_) => return true,
                 Err(e) if e == not_a_value_cell => {}
                 Err(e) => {
-                    app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+                    app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
                     return true;
                 }
             }
@@ -640,7 +640,7 @@ fn handle_dragging(app: &mut SheetApp, input: &InteractionInput<'_>) {
             Drag::ResizeCol { col, start, orig } => {
                 let w = (orig + (p.x - start) / geo.z).max(0.0);
                 app.toast =
-                    Some((format!("Width: {:.2} ({} pixels)", gridcraft_engine::cmd::format::points_to_chars(w as f64), w.round()), crate::now_ms()));
+                    Some((format!("Width: {:.2} ({} pixels)", iridium_engine::cmd::format::points_to_chars(w as f64), w.round()), crate::now_ms()));
                 // Inside a selection of whole columns, every selected column takes the new width
                 // (Ctrl-selected areas included); otherwise only the dragged one.
                 let cols = if sel.ranges.iter().any(|r| r.is_full_cols() && col >= r.start.col && col <= r.end.col) {
@@ -730,7 +730,7 @@ fn handle_release(app: &mut SheetApp, input: &InteractionInput<'_>) {
                     let mode = if mods.command { "alternate" } else { "series" };
                     match app.run("edit.autoFill", json!({"source": src.a1(), "target": t.a1(), "mode": mode})) {
                         Ok(_) => set_fill_tag(app, src, t),
-                        Err(e) => app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e))),
+                        Err(e) => app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e))),
                     }
                 }
             }
@@ -751,7 +751,7 @@ fn handle_release(app: &mut SheetApp, input: &InteractionInput<'_>) {
             }
             Drag::MoveCols { source, before: Some(before) } => {
                 if let Err(e) = app.run("sheet.moveColumns", json!({"cols": source.a1(), "before": before})) {
-                    app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+                    app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
                 }
             }
             _ => {}
@@ -771,7 +771,7 @@ fn format_painter_apply(app: &mut SheetApp) {
         if let Some(dest) = dest
             && let Err(e) = app.run("edit.formatPainter", json!({"apply": dest}))
         {
-            app.message = Some(("Iridium Sheets".into(), crate::clean_error(&e)));
+            app.message = Some((iridium_core::brand::NAME.into(), crate::clean_error(&e)));
         }
     }
 }
@@ -823,7 +823,7 @@ fn point_header(app: &mut SheetApp, wb: &Workbook, sh: &Sheet, range: RangeRef, 
 
 fn header_reference(ed: &EditState, wb: &Workbook, sh: &Sheet, range: RangeRef) -> String {
     let reference = range.a1();
-    if ed.sheet != wb.active_sheet() { format!("{}!{reference}", gridcraft_engine::formula::quote_sheet(&sh.name)) } else { reference }
+    if ed.sheet != wb.active_sheet() { format!("{}!{reference}", iridium_engine::formula::quote_sheet(&sh.name)) } else { reference }
 }
 
 /// The frame that starts a drag reports no `dragged()`, so its movement is applied here.
@@ -872,7 +872,7 @@ fn select_to_pointer(app: &mut SheetApp, geo: &Geo, sh: &Sheet, wb: &Workbook, p
         if let Some(start) = ed.point_anchor.filter(|(sheet, _)| *sheet == wb.active_sheet()).map(|(_, cell)| cell).or(ed.point_cell) {
             let range = RangeRef::new(start, cell);
             let text = if range.is_single() { range.start.a1() } else { range.a1() };
-            let text = if ed.sheet != wb.active_sheet() { format!("{}!{text}", gridcraft_engine::formula::quote_sheet(&sh.name)) } else { text };
+            let text = if ed.sheet != wb.active_sheet() { format!("{}!{text}", iridium_engine::formula::quote_sheet(&sh.name)) } else { text };
             ed.insert_ref(&text);
             ed.point_cell = Some(cell);
             ed.point_anchor = Some((wb.active_sheet(), start));
@@ -1070,9 +1070,9 @@ fn drag_object(app: &mut SheetApp, geo: &Geo, sh: &Sheet, p: Pos2) {
 
 /// A click on a hyperlink. References select; web and e-mail addresses ask first (the dialog's
 /// OK runs `link.open`); every other kind is refused with a message. The decision is the
-/// engine's ([`gridcraft_engine::links::classify`]), the same one `link.open` applies.
+/// engine's ([`iridium_engine::links::classify`]), the same one `link.open` applies.
 pub fn follow_link(app: &mut SheetApp, target: &str) {
-    use gridcraft_engine::links::{LinkKind, classify};
+    use iridium_engine::links::{LinkKind, classify};
     match classify(target) {
         LinkKind::Internal(r) => {
             let _ = app.session.run("edit.goTo", json!({"reference": r.trim_start_matches('#')}));
@@ -1089,7 +1089,7 @@ pub fn point_move(app: &mut SheetApp, ed: &mut EditState, dr: i64, dc: i64, exte
     let Some(d) = app.session.active() else { return };
     let Some(sheet) = d.wb.active() else { return };
     let from = ed.point_cell.unwrap_or(ed.cell);
-    let to = if jump { gridcraft_engine::selection::jump(sheet, from, dr.signum(), dc.signum()) } else { from.offset_clamped(dr, dc) };
+    let to = if jump { iridium_engine::selection::jump(sheet, from, dr.signum(), dc.signum()) } else { from.offset_clamped(dr, dc) };
     let anchor = if extend {
         // The anchor is the corner opposite the moving end: the written range is normalized, so
         // after extending up or left its first cell is the moving end, not the anchor.
@@ -1107,7 +1107,7 @@ pub fn point_move(app: &mut SheetApp, ed: &mut EditState, dr: i64, dc: i64, exte
         to
     };
     let text = if extend { RangeRef::new(anchor, to).a1() } else { to.a1() };
-    let text = if ed.sheet != d.wb.active_sheet() { format!("{}!{text}", gridcraft_engine::formula::quote_sheet(&sheet.name)) } else { text };
+    let text = if ed.sheet != d.wb.active_sheet() { format!("{}!{text}", iridium_engine::formula::quote_sheet(&sheet.name)) } else { text };
     let sheet = d.wb.active_sheet();
     ed.insert_ref(&text);
     ed.point_cell = Some(to);
@@ -1122,7 +1122,7 @@ mod tests {
     #[test]
     fn the_pen_preview_is_the_ink_the_stroke_commits() {
         // #1786: the preview was always blue at 2 pt, whatever the pen.
-        let theme = gridcraft_engine::model::Theme::default();
+        let theme = iridium_engine::model::Theme::default();
         assert_eq!(pen_ink("#C00000", 3.0, &theme), (Color32::from_rgb(0xC0, 0, 0), 3.0));
         assert_eq!(pen_ink("", 0.0, &theme), (Color32::from_rgb(0x1F, 0x5F, 0xC9), 2.0), "no pen chosen yet: pen blue, 2 pt");
         assert_eq!(pen_ink("not a colour", 0.2, &theme), (Color32::from_rgb(0x1F, 0x5F, 0xC9), 1.0));

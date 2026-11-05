@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-xlsx"
+name = "iridium-xlsx"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -14,10 +14,10 @@ workspace = true
 test-support = []
 
 [dependencies]
-gridcraft-core = { workspace = true }
-gridcraft-formula = { workspace = true }
-gridcraft-math = { workspace = true }
-gridcraft-model = { workspace = true }
+iridium-core = { workspace = true }
+iridium-formula = { workspace = true }
+iridium-math = { workspace = true }
+iridium-model = { workspace = true }
 thiserror = { workspace = true }
 quick-xml = { workspace = true }
 zip = { workspace = true }
@@ -27,4 +27,4 @@ sha2 = { workspace = true }
 
 [dev-dependencies]
 # Every registered function name, for the formula file-spelling test.
-gridcraft-functions = { workspace = true }
+iridium-functions = { workspace = true }

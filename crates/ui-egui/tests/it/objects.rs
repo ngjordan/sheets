@@ -2,11 +2,11 @@
 //! each of the eight handles, deleting with Delete and Backspace, and double-click routing.
 
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, Rect, vec2};
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_engine::model::{ObjKind, ObjRef};
-use gridcraft_ui_egui::objects::{Handle, OpenAction, open_action};
-use gridcraft_ui_egui::{SheetApp, chartview, grid::Geo};
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_engine::model::{ObjKind, ObjRef};
+use iridium_ui_egui::objects::{Handle, OpenAction, open_action};
+use iridium_ui_egui::{SheetApp, chartview, grid::Geo};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -73,7 +73,7 @@ fn tiny_png() -> String {
     image::RgbaImage::from_pixel(2, 2, image::Rgba([40, 120, 200, 255]))
         .write_to(&mut std::io::Cursor::new(&mut bytes), image::ImageFormat::Png)
         .unwrap();
-    gridcraft_engine::io::base64_encode(&bytes)
+    iridium_engine::io::base64_encode(&bytes)
 }
 
 fn rect(h: &Harness, o: ObjRef) -> Rect {
@@ -373,7 +373,7 @@ fn dragging_an_unselected_object_by_its_edge_moves_it() {
     assert!((after.min - before.min - vec2(30.0, 20.0)).length() < 1.0, "moved with the pointer: {before:?} {after:?}");
 }
 
-fn anchor(h: &Harness, o: ObjRef) -> gridcraft_engine::model::Anchor {
+fn anchor(h: &Harness, o: ObjRef) -> iridium_engine::model::Anchor {
     h.state().session.doc().unwrap().wb.active().unwrap().object_anchor(o).unwrap()
 }
 

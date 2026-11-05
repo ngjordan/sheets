@@ -4,8 +4,8 @@
 
 use egui::{Event, Key, Modifiers, PointerButton};
 use egui_kittest::kittest::Queryable;
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;

@@ -3,9 +3,9 @@
 
 use std::sync::Arc;
 
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_engine::model::{Cell, Formula, Workbook};
-use gridcraft_engine::{DocState, Session, io};
+use iridium_engine::core::{CellRef, Value};
+use iridium_engine::model::{Cell, Formula, Workbook};
+use iridium_engine::{DocState, Session, io};
 use serde_json::json;
 
 fn at(s: &str) -> CellRef {
@@ -26,7 +26,7 @@ fn opened() -> Session {
     let bytes = io::save_bytes(&wb, "dynamic.xlsx").unwrap();
     let (back, _) = io::open_bytes("dynamic.xlsx", &bytes).unwrap();
     let mut s = Session::new();
-    s.add_document(DocState::new(back, None, "dynamic".into(), gridcraft_engine::Trust::FromFile));
+    s.add_document(DocState::new(back, None, "dynamic".into(), iridium_engine::Trust::FromFile));
     s
 }
 

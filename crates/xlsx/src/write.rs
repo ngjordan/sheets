@@ -3,9 +3,9 @@
 use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write as _;
 
-use gridcraft_core::RangeRef;
-use gridcraft_formula::quote_sheet;
-use gridcraft_model::{CalcMode, CalcSettings, PhoneticString, ShowObjects, Style, Visibility, Workbook, WorkbookView};
+use iridium_core::RangeRef;
+use iridium_formula::quote_sheet;
+use iridium_model::{CalcMode, CalcSettings, PhoneticString, ShowObjects, Style, Visibility, Workbook, WorkbookView};
 
 use crate::package::ZipOut;
 use crate::xml::{esc, esc_attr};
@@ -166,7 +166,7 @@ pub fn person_guid(i: usize) -> String {
 
 /// `$A$1:$D$20` (or `$1:$3` / `$A:$C`).
 pub fn abs_range(r: &RangeRef) -> String {
-    let c = |col: u32| gridcraft_core::col_to_letters(col);
+    let c = |col: u32| iridium_core::col_to_letters(col);
     if r.is_full_rows() && !r.is_full_cols() {
         return format!("${}:${}", r.start.row + 1, r.end.row + 1);
     }
@@ -283,14 +283,14 @@ pub fn write_xlsx_named(wb: &Workbook, kind: XlsxKind, book_name: Option<&str>) 
     // A workbook read from a file keeps its <fileVersion> as it was: Excel trusts the saved values
     // only when appName is "xl" (#799). One without names Iridium Sheets (#1699), and Excel recalculates it.
     let file_version = crate::passthrough::workbook_elements(wb, "fileVersion");
-    w.push_str(if file_version.is_empty() { "<fileVersion appName=\"gridcraft\"/>" } else { &file_version });
+    w.push_str(if file_version.is_empty() { "<fileVersion appName=\"iridium-sheets\"/>" } else { &file_version });
     w.push_str("<workbookPr");
     match wb.show_objects {
         ShowObjects::All => {}
         ShowObjects::Placeholders => w.push_str(" showObjects=\"placeholders\""),
         ShowObjects::None => w.push_str(" showObjects=\"none\""),
     }
-    if wb.date_system == gridcraft_core::DateSystem::D1904 {
+    if wb.date_system == iridium_core::DateSystem::D1904 {
         w.push_str(" date1904=\"1\"");
     }
     if wb.remove_personal_info {

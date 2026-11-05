@@ -2,7 +2,7 @@
 
 use std::cmp::Ordering;
 
-use gridcraft_core::{Array, CellError, Value, compare_text};
+use iridium_core::{Array, CellError, Value, compare_text};
 
 use crate::util::{A, MAX_CELLS, R, S, has, scalar, text};
 use crate::{Arg, Ctx, FnSpec, VAR};
@@ -113,7 +113,7 @@ fn info(a: &[Arg], _c: &mut dyn Ctx) -> R<Value> {
         "directory" => "/".into(),
         "numfile" => Value::Number(1.0),
         "origin" => "$A:$A$1".into(),
-        "osversion" => "Iridium Sheets".into(),
+        "osversion" => iridium_core::brand::NAME.into(),
         "recalc" => "Automatic".into(),
         "release" => "16.0".into(),
         "system" => "pcdos".into(),
@@ -494,7 +494,7 @@ pub(crate) fn specs() -> Vec<FnSpec> {
 
 #[cfg(test)]
 mod tests {
-    use gridcraft_core::{CellError, Value};
+    use iridium_core::{CellError, Value};
 
     use crate::util::testutil::*;
 

@@ -193,19 +193,63 @@ def push(item_id: str, xlsx: bytes, tab: str | None) -> str:
     if not rows:
         raise RuntimeError("the workbook is empty")
 
+    # A value that begins with "=" (or with a sign and something that is not
+    # a number) is a formula to Excel, and the workbook API has no "write this
+    # as text" option. Such a cell is left out rather than written as a live
+    # formula, and the caller is told which ones were.
+    safe, risky = split_formula_like(rows)
+
     # Write the values through the live workbook API.
     graph(
         f"/me/drive/items/{item_id}/workbook/worksheets/{ws_id}/range(address='A1')",
         method="PATCH",
-        body={"values": rows, "@odata.type": "#microsoft.graph.jsonArray"},
+        body={"values": safe, "@odata.type": "#microsoft.graph.jsonArray"},
     )
     meta = graph(f"/me/drive/items/{item_id}?$select=name")
-    return meta.get("name", target_name)
+    name = meta.get("name", target_name)
+    if risky:
+        PUSH_NOTES.append(f"{len(risky)} cells that look like formulas were not written")
+    return name
+
+
+# The notes a push leaves for the caller.
+PUSH_NOTES: list[str] = []
+
+
+def is_formula_like(value) -> bool:
+    """Whether Excel would read this value as a formula."""
+    if not isinstance(value, str) or not value:
+        return False
+    if value.startswith("="):
+        return True
+    if value[0] in "+-":
+        # A sign followed by a number is a number; anything else is a formula.
+        return len(value) > 1 and not value[1].isdigit()
+    if value.startswith("@"):
+        # "@" is Excel's implicit intersection operator.
+        return True
+    return False
+
+
+def split_formula_like(rows: list[list[str]]) -> tuple[list[list[str]], list[str]]:
+    """The rows to write, and the cells that look like a formula."""
+    risky: list[str] = []
+    out: list[list[str]] = []
+    for row in rows:
+        new_row = []
+        for value in row:
+            if is_formula_like(value):
+                risky.append(str(value))
+                new_row.append("")
+            else:
+                new_row.append(value)
+        out.append(new_row)
+    return out, risky
 
 
 def read_workbook(xlsx: bytes) -> list[list[str]]:
     """Read a workbook's values with Iridium Sheets's own reader."""
-    cli = os.environ.get("GRIDCRAFT_CLI", "gridcraft-cli")
+    cli = os.environ.get("IRIDIUM_CLI", "iridium-sheets-cli")
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as f:
         f.write(xlsx)
         path = f.name
@@ -238,8 +282,9 @@ def main() -> int:
             respond({"ok": True, "xlsx": base64.b64encode(data).decode()})
         elif op == "push":
             data = base64.b64decode(req["xlsx"])
+            PUSH_NOTES.clear()
             title = push(req["id"], data, req.get("tab"))
-            respond({"ok": True, "title": title})
+            respond({"ok": True, "title": title, "note": "; ".join(PUSH_NOTES)})
         elif op == "signIn":
             respond({"ok": True, **device_code()})
         else:

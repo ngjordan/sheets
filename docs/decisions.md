@@ -116,7 +116,7 @@ LaTeX subset:
   matrices (`matrix`, `pmatrix`, `bmatrix`, `vmatrix`, `cases`, `aligned`, `array`), accents,
   braces, arrows, `\mathbb`/`\mathcal`/`\mathfrak`, `\text`, colours and mhchem all lay out.
 
-Because a stray panic is still possible, RaTeX runs only inside `gridcraft-math`, under
+Because a stray panic is still possible, RaTeX runs only inside `iridium-math`, under
 `catch_unwind`, with input capped at 4 KB and depth 32. Its output is converted to plain data and
 cached on the shape; painting (egui and PDF) reads only that cache, so nothing in a paint path
 can reach RaTeX. On the web build (`wasm32-unknown-unknown`) a panic aborts instead of unwinding,

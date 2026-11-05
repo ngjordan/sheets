@@ -181,6 +181,24 @@ def a1(row: int, col: int) -> str:
     return f"{letters}{row + 1}"
 
 
+def is_formula_like(value) -> bool:
+    """Whether Google would read this value as a formula.
+
+    A value that begins with "=" is a formula. So is a sign followed by
+    something that is not a number ("-ABS(2)"), and a value that begins with
+    "@", which is Excel's implicit intersection operator.
+    """
+    if not isinstance(value, str) or not value:
+        return False
+    if value.startswith("="):
+        return True
+    if value[0] in "+-":
+        return len(value) > 1 and not value[1].isdigit()
+    if value.startswith("@"):
+        return True
+    return False
+
+
 def split_formula_like(rows: list[list[str]]) -> tuple[list[list[str]], list[tuple[str, str]]]:
     """The rows, and the cells whose text Google would read as a formula.
 
@@ -193,7 +211,7 @@ def split_formula_like(rows: list[list[str]]) -> tuple[list[list[str]], list[tup
     for r, row in enumerate(rows):
         new_row = []
         for c, value in enumerate(row):
-            if isinstance(value, str) and value.startswith("="):
+            if is_formula_like(value):
                 risky.append((a1(r, c), value))
                 new_row.append("")
             else:
@@ -216,7 +234,7 @@ def push(sid: str, xlsx: bytes, tab: str | None) -> str:
     values are written cell by cell. Formulas are sent as USER_ENTERED so
     Google evaluates them rather than storing them as text.
     """
-    cli = os.environ.get("GRIDCRAFT_CLI", "gridcraft-cli")
+    cli = os.environ.get("IRIDIUM_CLI", "iridium-sheets-cli")
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as f:
         f.write(xlsx)
         path = f.name

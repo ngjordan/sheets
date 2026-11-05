@@ -7,32 +7,32 @@ publishes it.
 
 This process was copied from DesignCraft and renamed. User-facing names say
 **Iridium Sheets**. Files, binaries and ids stay lowercase
-(`gridcraft-<version>-<platform>-<arch>.<ext>`, `ph.iridium.sheets`).
+(`iridium-<version>-<platform>-<arch>.<ext>`, `ph.iridium.sheets`).
 
 | App-specific value | Where |
 |---|---|
-| Display name `Iridium Sheets`, binaries `gridcraft` + `gridcraft-cli` | every script and workflow |
+| Display name `Iridium Sheets`, binaries `iridium-sheets` + `iridium-sheets-cli` | every script and workflow |
 | Bundle / app id `ph.iridium.sheets` | `packaging/macos/Info.plist.in`, `packaging/linux/*`, flatpak manifest |
-| WiX UpgradeCode `5511327B-F305-41BE-92D0-EB84944E7C4D` (fixed forever) | `packaging/windows/gridcraft.wxs` |
+| WiX UpgradeCode `5511327B-F305-41BE-92D0-EB84944E7C4D` (fixed forever) | `packaging/windows/iridium-sheets.wxs` |
 | File types `.xlsx` `.xlsm` `.xlsb` `.ods` `.csv` `.tsv` | Info.plist (`CFBundleDocumentTypes`), WiX (ProgIds/OpenWithProgids), `.desktop` `MimeType=`, `ph.iridium.sheets.mime.xml`, metainfo |
-| Web app dir `apps/gridcraft-web` | `packaging/web/package.sh` |
+| Web app dir `apps/iridium-sheets-web` | `packaging/web/package.sh` |
 | App colour `#0b6e4f` (ink `#084f39`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
 
 ## Application release prerequisites
 
-The `apps/gridcraft` and `apps/gridcraft-web` crates are workspace members, and
-`apps/gridcraft-cli` supports `--version`. The `cargo xtask` alias is defined in
+The `apps/iridium-sheets` and `apps/iridium-sheets-web` crates are workspace members, and
+`apps/iridium-sheets-cli` supports `--version`. The `cargo xtask` alias is defined in
 `.cargo/config.toml`. The current app-specific release setup includes:
 
-- **Windows resources:** `apps/gridcraft/build.rs` embeds the icon and version information with
+- **Windows resources:** `apps/iridium-sheets/build.rs` embeds the icon and version information with
   `winresource` (instructions at the top of the file). `package.ps1` sets
-  `GRIDCRAFT_REQUIRE_WINRES=1`, so a release build without the icon fails, and it checks that
-  `gridcraft.exe` is a GUI-subsystem binary. `apps/gridcraft/src/main.rs` sets
+  `IRIDIUM_REQUIRE_WINRES=1`, so a release build without the icon fails, and it checks that
+  `iridium-sheets.exe` is a GUI-subsystem binary. `apps/iridium-sheets/src/main.rs` sets
   `windows_subsystem = "windows"` for release builds.
-- **Version information:** `gridcraft --version`, `gridcraft-cli --version` and the About dialog
+- **Version information:** `iridium-sheets --version`, `iridium-sheets-cli --version` and the About dialog
   use `env!("CARGO_PKG_VERSION")` from `[workspace.package]`. `packaging/env.sh` also exports
-  `GRIDCRAFT_BUILD_SHA` and `GRIDCRAFT_BUILD_DATE` for artifact metadata.
-- **Runtime icon:** `apps/gridcraft/src/main.rs` embeds
+  `IRIDIUM_BUILD_SHA` and `IRIDIUM_BUILD_DATE` for artifact metadata.
+- **Runtime icon:** `apps/iridium-sheets/src/main.rs` embeds
   `assets/app-icon/iridium-sheets-macos-512.png` (macOS Dock) and
   `hicolor/256x256/apps/ph.iridium.sheets.png` (Windows/Linux) as the window icon, and
   uses `ph.iridium.sheets` as the Wayland app id / `StartupWMClass`.
@@ -74,16 +74,16 @@ and upload their artifacts, the environment refuses macOS and Windows, and no re
 
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal: Apple silicon + Intel) | `gridcraft-<v>-macos-universal.dmg`, `gridcraft-cli-<v>-macos-universal.zip` | `macos-15` |
-| Windows 10+ x64 | `gridcraft-<v>-windows-x64.msi`, `gridcraft-<v>-windows-x64-portable.zip` | `windows-latest` |
-| Windows 10+ x86 (32-bit) | `gridcraft-<v>-windows-x86.msi`, `gridcraft-<v>-windows-x86-portable.zip` | `windows-latest` |
-| Windows 11 ARM64 | `gridcraft-<v>-windows-arm64.msi`, `…-portable.zip` (cross-compiled, signed like x64) | `windows-latest`; installed and run on `windows-11-arm` by `windows-arm64.yml` |
-| Linux x86_64 | `gridcraft-<v>-linux-x86_64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}` | `ubuntu-22.04` |
-| Linux aarch64 | `gridcraft-<v>-linux-aarch64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}` | `ubuntu-22.04-arm` |
-| Linux riscv64 | `gridcraft-<v>-linux-riscv64.tar.gz` (cross-compiled, glibc >= 2.39; CLI smoke-tested under QEMU) | `ubuntu-24.04` |
-| Flatpak x86_64, aarch64 | `gridcraft-<v>-linux-<arch>.flatpak` (repackages the Linux tarball) | `ubuntu-24.04`, `ubuntu-24.04-arm` |
-| FreeBSD 14 x86_64 | `gridcraft-<v>-freebsd-x86_64.tar.gz` | FreeBSD 14.3 VM (`freebsd.yml`, called by `release.yml`) |
-| Web | `gridcraft-web-<v>.zip` (static site; see [`packaging/web/README.md`](../packaging/web/README.md)) | `ubuntu-latest` |
+| macOS 11+ (universal: Apple silicon + Intel) | `iridium-<v>-macos-universal.dmg`, `iridium-sheets-cli-<v>-macos-universal.zip` | `macos-15` |
+| Windows 10+ x64 | `iridium-<v>-windows-x64.msi`, `iridium-<v>-windows-x64-portable.zip` | `windows-latest` |
+| Windows 10+ x86 (32-bit) | `iridium-<v>-windows-x86.msi`, `iridium-<v>-windows-x86-portable.zip` | `windows-latest` |
+| Windows 11 ARM64 | `iridium-<v>-windows-arm64.msi`, `…-portable.zip` (cross-compiled, signed like x64) | `windows-latest`; installed and run on `windows-11-arm` by `windows-arm64.yml` |
+| Linux x86_64 | `iridium-<v>-linux-x86_64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}` | `ubuntu-22.04` |
+| Linux aarch64 | `iridium-<v>-linux-aarch64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}` | `ubuntu-22.04-arm` |
+| Linux riscv64 | `iridium-<v>-linux-riscv64.tar.gz` (cross-compiled, glibc >= 2.39; CLI smoke-tested under QEMU) | `ubuntu-24.04` |
+| Flatpak x86_64, aarch64 | `iridium-<v>-linux-<arch>.flatpak` (repackages the Linux tarball) | `ubuntu-24.04`, `ubuntu-24.04-arm` |
+| FreeBSD 14 x86_64 | `iridium-<v>-freebsd-x86_64.tar.gz` | FreeBSD 14.3 VM (`freebsd.yml`, called by `release.yml`) |
+| Web | `iridium-sheets-web-<v>.zip` (static site; see [`packaging/web/README.md`](../packaging/web/README.md)) | `ubuntu-latest` |
 
 ### macOS
 
@@ -103,33 +103,33 @@ and upload their artifacts, the environment refuses macOS and Windows, and no re
   Its Finder window (background, icon size and positions) comes from
   [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `Iridium Sheets`
   without the version, which the window's background needs; the DMG file name keeps the version.
-- **CLI:** the universal `gridcraft-cli` is signed, zipped and notarized.
+- **CLI:** the universal `iridium-sheets-cli` is signed, zipped and notarized.
 
 Locally, without certificates, the script signs ad-hoc (`codesign -s -`) and skips notarization:
 
 ```sh
 packaging/macos/package.sh                    # universal; needs both rustup targets
 packaging/macos/package.sh --arch aarch64     # quicker, host-only
-open dist/release/gridcraft-*-macos-*.dmg
+open dist/release/iridium-*-macos-*.dmg
 ```
 
 ### Windows
 
 `packaging/windows/package.ps1 -Arch x64|x86|arm64` builds with `-C target-feature=+crt-static`
-(no VC++ redistributable needed), checks both PE headers (machine matches `-Arch`; `gridcraft.exe`
-is GUI, `gridcraft-cli.exe` console), signs both executables, builds the MSI with WiX v5, signs
+(no VC++ redistributable needed), checks both PE headers (machine matches `-Arch`; `iridium-sheets.exe`
+is GUI, `iridium-sheets-cli.exe` console), signs both executables, builds the MSI with WiX v5, signs
 the MSI, and zips a portable build.
 
-- `gridcraft.wxs`: a dual-scope package (per-user by default into
+- `iridium-sheets.wxs`: a dual-scope package (per-user by default into
   `%LOCALAPPDATA%\Programs\Iridium\Iridium Sheets`, per-machine into `Program Files\Iridium\Iridium Sheets` (`Program Files (x86)` for the 32-bit build),
   see `packaging/windows/INSTALLATION.md`), advertised Start Menu shortcut, App
-  Paths (Win+R `gridcraft`). File types: ProgIds `Iridium Sheets.Workbook` (`.xlsx`, `.xlsm`) and
+  Paths (Win+R `iridium-sheets`). File types: ProgIds `Iridium Sheets.Workbook` (`.xlsx`, `.xlsm`) and
   `Iridium Sheets.TextData` (`.csv`, `.tsv`), listed under each extension's `OpenWithProgids` and
   in `Capabilities` + `RegisteredApplications`, so Iridium Sheets appears in *Open with* and
   *Settings › Default apps* but never silently becomes the default. The MSI version is the
   numeric `X.Y.Z`; same-version upgrades let release candidates replace each other.
 - **Desktop shortcut:** full installer UI offers an unchecked checkbox on a new installation.
-  Unattended installs can use `msiexec /i gridcraft.msi /qn DESKTOPSHORTCUT=1` to opt in
+  Unattended installs can use `msiexec /i iridium-sheets.msi /qn DESKTOPSHORTCUT=1` to opt in
   (or `DESKTOPSHORTCUT=0` to opt out). The choice is stored per machine and reused on upgrades;
   repair retains the installed component choice, and uninstall removes the managed shortcut.
   The Start Menu shortcut is always installed. Run
@@ -147,7 +147,7 @@ the MSI, and zips a portable build.
   the separate silent lifecycle test verifies installation behavior. Normal full UI presents
   the shortcut choice and then completion; cancel/failure and files-in-use dialogs are support
   paths. To review on a maintainer branch, run **Packaging lint** with that branch selected
-  (or `gh workflow run packaging-lint.yml --repo storytold/gridcraft --ref BRANCH`). No release
+  (or `gh workflow run packaging-lint.yml --repo ngjordan/iridium-sheets --ref BRANCH`). No release
   environment, signing credentials or Rust build is required. Interactive checkbox behavior
   still needs a Windows desktop check; previews alone do not establish that behavior.
 - **Signing:** `packaging/windows/sign.ps1` uses `signtool` with SHA-256 and an RFC 3161
@@ -167,7 +167,7 @@ binaries need glibc ≥ 2.35. X11/Wayland/xkbcommon/Vulkan/EGL are loaded at run
 packages declare them (see `nfpm.yaml`).
 
 Each AppImage embeds update information
-(`gh-releases-zsync|storytold|gridcraft|latest|gridcraft-*-linux-<arch>.AppImage.zsync`), and the
+(`gh-releases-zsync|storytold|iridium-sheets|latest|iridium-*-linux-<arch>.AppImage.zsync`), and the
 matching `.zsync` is published beside it, so AppImageUpdate and AppImageLauncher fetch only the
 changed blocks of the newest published release. appimagetool writes the `.zsync` when
 `zsyncmake` (the `zsync` package) is installed; without it the script warns and skips it.
@@ -188,14 +188,14 @@ Locally (on Linux): install [nfpm](https://nfpm.goreleaser.com/install/), then
 GitHub has no FreeBSD runners. `.github/workflows/freebsd.yml` boots a FreeBSD 14.3 VM
 (`vmactions/freebsd-vm`). Run by hand from `release`, it builds and tests the workspace; called
 from `release.yml` with `package: true` it runs `packaging/freebsd/package.sh`, which builds the
-release binaries and writes `gridcraft-<v>-freebsd-x86_64.tar.gz` (`bin/` + `share/`, extract
+release binaries and writes `iridium-<v>-freebsd-x86_64.tar.gz` (`bin/` + `share/`, extract
 under `/usr/local`). The target dir lives outside the synced checkout so only `dist/release`
 comes back from the VM. No signing (checksums are in `SHA256SUMS.txt`).
 
 ### Web
 
 `packaging/web/package.sh` runs `trunk build --release --dist dist/web --public-url ./` in
-`apps/gridcraft-web` and zips the site with sample `_headers` / `.htaccess` and the hosting guide
+`apps/iridium-sheets-web` and zips the site with sample `_headers` / `.htaccess` and the hosting guide
 ([`packaging/web/README.md`](../packaging/web/README.md)). Relative URLs only, so it works under
 any path and in an iframe; the script fails on root-absolute URLs.
 
@@ -223,11 +223,11 @@ shows a `::warning::`. Never store these as org- or repo-level Actions secrets (
 `GITHUB_TOKEN` creates the release; only the final job gets `contents: write`.
 
 The repository setup commands, run by an org
-admin. Done for storytold/gridcraft on 2026-10-07; the `release-managers` team also has write
+admin. Done for ngjordan/iridium-sheets on 2026-10-07; the `release-managers` team also has write
 access to the repo, which its ruleset bypass needs.
 
 ```sh
-REPO=storytold/gridcraft
+REPO=ngjordan/iridium-sheets
 RMTEAM_ID=19837241   # release-managers team; `gh api orgs/storytold/teams/release-managers --jq .id`
 
 # 1a. release branch from the default branch head

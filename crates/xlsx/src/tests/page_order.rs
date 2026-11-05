@@ -1,7 +1,7 @@
 //! Page Setup › Sheet › Page order: `<pageSetup pageOrder>` is read and written back. As in
 //! Excel's files, only "over, then down" is written; "down, then over" is the schema default.
 
-use gridcraft_model::{PageOrder, Workbook};
+use iridium_model::{PageOrder, Workbook};
 
 use super::minimal;
 use crate::{read_xlsx, write_xlsx};

@@ -160,7 +160,7 @@ fn cells_of(wb: &Workbook, t: &str, default_sheet: usize, cap: usize) -> Result<
 }
 
 fn num_text(t: &str) -> Option<f64> {
-    gridcraft_core::parse::parse_number_text(t.trim()).filter(|v| v.is_finite())
+    iridium_core::parse::parse_number_text(t.trim()).filter(|v| v.is_finite())
 }
 
 /// Splits `"B5 <= 10"` / `"B2 int"` into (lhs, relation, rhs).
@@ -343,7 +343,7 @@ fn abs_text(sheet_name: Option<&str>, cells: &str) -> String {
         .filter(|x| !x.is_empty())
         .filter_map(|part| {
             let r = RangeRef::parse(split_sheet(part).1.trim())?;
-            let abs = |c: CellRef| format!("${}${}", gridcraft_core::col_to_letters(c.col), c.row as u64 + 1);
+            let abs = |c: CellRef| format!("${}${}", iridium_core::col_to_letters(c.col), c.row as u64 + 1);
             Some(if r.is_single() { format!("{q}{}", abs(r.start)) } else { format!("{q}{}:{}", abs(r.start), abs(r.end)) })
         })
         .collect::<Vec<_>>()
@@ -358,8 +358,8 @@ fn ref_text(sheet_name: &str, cells: &str) -> String {
 /// Excel's `solver_itr` counts iterations (100 by default) and `solver_mni` seconds, so a
 /// workbook from Excel would cut Iridium Sheets's search short. They are saved under Iridium Sheets's own
 /// names, which Excel ignores.
-const EVALS_NAME: &str = "gridcraft_solver_evals";
-const STALL_NAME: &str = "gridcraft_solver_stall";
+const EVALS_NAME: &str = "iridium_solver_evals";
+const STALL_NAME: &str = "iridium_solver_stall";
 
 /// The names of a saved model after `solver_`, as Excel's Solver writes them (Iridium Sheets writes
 /// some of them). Saving a model and Reset All remove these and no other `solver_` names.
@@ -561,7 +561,7 @@ pub(super) fn model_formulas(m: &Model) -> Result<Vec<String>> {
     rows.push(match m.goal {
         Goal::Max => format!("=MAX({obj})"),
         Goal::Min => format!("=MIN({obj})"),
-        Goal::Value(v) => format!("={obj}={}", gridcraft_core::number_to_text(v)),
+        Goal::Value(v) => format!("={obj}={}", iridium_core::number_to_text(v)),
     });
     rows.push(format!("=COUNT({})", abs_text(None, &m.vars_text)));
     for c in &m.cons {
@@ -573,12 +573,12 @@ pub(super) fn model_formulas(m: &Model) -> Result<Vec<String>> {
             (Rel::Int, _) => format!("=AND({lhs}=INT({lhs}))"),
             (Rel::Bin, _) => format!("=AND(({lhs}=0)+({lhs}=1))"),
             (rel, Rhs::Cells(_)) => format!("=AND({lhs}{}{})", rel.text(), abs_text(None, &c.rhs_text)),
-            (rel, Rhs::Const(v)) => format!("=AND({lhs}{}{})", rel.text(), gridcraft_core::number_to_text(*v)),
+            (rel, Rhs::Const(v)) => format!("=AND({lhs}{}{})", rel.text(), iridium_core::number_to_text(*v)),
             (rel, Rhs::None) => format!("=AND({lhs}{}0)", rel.text()),
         });
     }
     let e = &m.evo;
-    let n = gridcraft_core::number_to_text;
+    let n = iridium_core::number_to_text;
     let eng = match m.method {
         Method::Grg => 1,
         Method::Simplex => 2,

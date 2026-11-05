@@ -5,8 +5,8 @@
 //! `keytips` test binary's copy of `common` free of helpers only this binary uses.
 
 use crate::common::{Harness, app, builder, harness_with, prepare};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::{Services, SheetApp};
+use iridium_engine::Session;
+use iridium_ui_egui::{Services, SheetApp};
 
 /// A blank workbook session, as most integration tests start.
 pub fn blank_session() -> Session {

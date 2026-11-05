@@ -16,7 +16,7 @@
 //!   BOOKNAME)
 //! - <https://www.wps.ai/en-us/docs/wps-sheets/formulas-and-functions/>
 
-use gridcraft_core::{CellError, Value};
+use iridium_core::{CellError, Value};
 
 use crate::VAR;
 use crate::text::TJ;
@@ -143,7 +143,7 @@ fn reptarray(a: &[crate::Arg], _c: &mut dyn crate::Ctx) -> R<Value> {
     for _ in 0..count {
         data.extend(arr.data.iter().cloned());
     }
-    let out = gridcraft_core::Array::new(arr.rows.saturating_mul(count), arr.cols, data).ok_or(CellError::Calc)?;
+    let out = iridium_core::Array::new(arr.rows.saturating_mul(count), arr.cols, data).ok_or(CellError::Calc)?;
     Ok(Value::from(out))
 }
 
@@ -548,7 +548,7 @@ pub(crate) fn specs() -> Vec<crate::FnSpec> {
 #[cfg(test)]
 mod tests {
     use crate::util::testutil::*;
-    use gridcraft_core::{CellError, Value};
+    use iridium_core::{CellError, Value};
 
     #[test]
     fn roundbank_rounds_a_half_to_even() {

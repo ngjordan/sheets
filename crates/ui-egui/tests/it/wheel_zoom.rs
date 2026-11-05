@@ -1,8 +1,8 @@
 //! Ctrl+wheel zoom steps along a ladder of percentages that always comes back to 100%.
 
 use egui::{Event, Modifiers, MouseWheelSource, MouseWheelUnit, TouchPhase, vec2};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -287,7 +287,7 @@ fn trace_arrows_stay_through_a_wheel_zoom() {
     h.state_mut().run("selection.set", json!({"range": "F7"})).unwrap();
     let r = h.state_mut().run("formulas.tracePrecedents", json!({})).unwrap();
     let app = h.state_mut();
-    app.grid.trace = gridcraft_ui_egui::grid::Trace::new(app, r);
+    app.grid.trace = iridium_ui_egui::grid::Trace::new(app, r);
     let current = |h: &Harness| {
         let d = h.state().session.active().unwrap();
         h.state().grid.trace.as_ref().is_some_and(|t| (t.uid, t.revision) == (d.uid, d.revision))

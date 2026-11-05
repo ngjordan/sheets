@@ -20,17 +20,17 @@
   <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20%2F%20Apache--2.0-084f39?style=flat-square">
   <img alt="Agent-drivable over MCP" src="https://img.shields.io/badge/agents-MCP-0b6e4f?style=flat-square">
   <br>
-  <a href="https://sonarcloud.io/project/overview?id=storytold_gridcraft"><img alt="Scanned by SonarCloud" src="https://img.shields.io/badge/Scanned_by-SonarCloud-4b9fd5?style=flat-square&logo=sonarqubecloud&logoColor=white"></a>
-  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/storytold/gridcraft?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
+  <a href="https://sonarcloud.io/project/overview?id=storytold_iridium"><img alt="Scanned by SonarCloud" src="https://img.shields.io/badge/Scanned_by-SonarCloud-4b9fd5?style=flat-square&logo=sonarqubecloud&logoColor=white"></a>
+  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/ngjordan/iridium-sheets?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
 </p>
 
 <p align="center">
-  <a href="https://iridium.ph"><img alt="Iridium Technologies, Inc." src="https://img.shields.io/badge/Iridium%20Technologies-0B6E4F?style=for-the-badge" height="40"></a>
+  <a href="https://iridium-sheets.ph"><img alt="Iridium Technologies, Inc." src="https://img.shields.io/badge/Iridium%20Technologies-0B6E4F?style=for-the-badge" height="40"></a>
 </p>
 
 <p align="center">
-  <a href="https://iridium.ph"><b>Iridium Sheets by Iridium Technologies, Inc.</b></a> ·
-  <a href="https://github.com/storytold/gridcraft">Based on GridCraft by the ArtCraft team</a>
+  <a href="https://iridium-sheets.ph"><b>Iridium Sheets by Iridium Technologies, Inc.</b></a> ·
+  <a href="https://github.com/ngjordan/iridium-sheets">Based on GridCraft by the ArtCraft team</a>
 </p>
 
 <br>
@@ -98,10 +98,10 @@
 ## Quick start
 
 ```sh
-cargo run --release -p gridcraft                              # desktop app
-cargo run --release -p gridcraft -- --sample sales            # open a sample (sales, budget, grades)
-cargo run --release -p gridcraft -- book.xlsx                 # open a workbook
-cargo run --release -p gridcraft -- --sample sales --control 7979   # + JSON control channel
+cargo run --release -p iridium-sheets                              # desktop app
+cargo run --release -p iridium-sheets -- --sample sales            # open a sample (sales, budget, grades)
+cargo run --release -p iridium-sheets -- book.xlsx                 # open a workbook
+cargo run --release -p iridium-sheets -- --sample sales --control 7979   # + JSON control channel
 cargo xtask ci                                                 # fmt, clippy, tests, assets, layering, wasm
 ```
 
@@ -111,8 +111,8 @@ Workbooks, clipboard exchange, and programmatic APIs retain canonical English sy
 ### Web
 
 ```sh
-cd apps/gridcraft-web && trunk build --release     # → dist/web (serve it with any static server)
-cd apps/gridcraft-web && trunk serve --release     # http://127.0.0.1:8771  (?sample=sales opens a sample)
+cd apps/iridium-sheets-web && trunk build --release     # → dist/web (serve it with any static server)
+cd apps/iridium-sheets-web && trunk serve --release     # http://127.0.0.1:8771  (?sample=sales opens a sample)
 ```
 
 You need [trunk](https://trunk-rs.github.io/trunk/) and the `wasm32-unknown-unknown` target. Open uses the
@@ -143,26 +143,26 @@ Browsers or desktop environments may reserve Alt/F10 for their own menus.
 
 ### Logs
 
-The desktop app writes its log to standard error and to `gridcraft.log` in the `logs` folder
-next to its settings: `~/.config/gridcraft/logs` on Linux and BSD (`$XDG_CONFIG_HOME/gridcraft/logs`
+The desktop app writes its log to standard error and to `iridium-sheets.log` in the `logs` folder
+next to its settings: `~/.config/iridium-sheets/logs` on Linux and BSD (`$XDG_CONFIG_HOME/iridium-sheets/logs`
 when set), `~/Library/Application Support/Iridium Sheets/logs` on macOS and
-`%APPDATA%\Iridium Sheets\logs` on Windows. Each start moves the previous log to `gridcraft.1.log` and
-that one to `gridcraft.2.log`, so the log of a run that crashed survives the next start; attach
+`%APPDATA%\Iridium Sheets\logs` on Windows. Each start moves the previous log to `iridium-sheets.1.log` and
+that one to `iridium-sheets.2.log`, so the log of a run that crashed survives the next start; attach
 them to a bug report. A log file stops growing at 16 MiB. By default Iridium Sheets's own crates log
 at `info` and everything else at `warn`; `RUST_LOG` replaces that with env_logger-style
-directives, e.g. `RUST_LOG=debug` or `RUST_LOG=warn,gridcraft_engine=debug` (a trailing `*`
-matches a prefix: `gridcraft*=debug`). Runs with `GRIDCRAFT_NO_PREFS` set (no saved settings)
+directives, e.g. `RUST_LOG=debug` or `RUST_LOG=warn,iridium_engine=debug` (a trailing `*`
+matches a prefix: `iridium_sheets*=debug`). Runs with `IRIDIUM_NO_PREFS` set (no saved settings)
 log to standard error only.
 
 ## For agents: MCP, CLI and the control channel
 
 ```sh
-claude mcp add gridcraft -- gridcraft-cli mcp                 # headless MCP server
-gridcraft-cli mcp --connect 7979                               # MCP bridged to a running window
-gridcraft-cli eval '=XLOOKUP("b",{"a","b"},{1,2})'             # → 2
-gridcraft-cli run --sample budget --cmd 'home.bold={"range":"B4:F4"}' --out budget.xlsx
-gridcraft-cli cat budget.xlsx --range B4:F15                   # aligned text table
-gridcraft-cli commands --search chart                          # every command and its params
+claude mcp add iridium-sheets -- iridium-sheets-cli mcp                 # headless MCP server
+iridium-sheets-cli mcp --connect 7979                               # MCP bridged to a running window
+iridium-sheets-cli eval '=XLOOKUP("b",{"a","b"},{1,2})'             # → 2
+iridium-sheets-cli run --sample budget --cmd 'home.bold={"range":"B4:F4"}' --out budget.xlsx
+iridium-sheets-cli cat budget.xlsx --range B4:F15                   # aligned text table
+iridium-sheets-cli commands --search chart                          # every command and its params
 ```
 
 The MCP server offers tools such as `read_range`, `write_range`, `set_cell`, `evaluate_formula`,
@@ -184,7 +184,7 @@ egui frontend is a separate crate, so the UI can be swapped without touching the
 | L3 | `chart` (toolkit-free chart layout and rendering) |
 | L5 | `engine` (session, commands, history, clipboard, fill, sort, filter, file I/O) |
 | L6 | `ui-egui` (spreadsheet UI, control channel) · `mcp` (MCP server) |
-| L7 | `apps/gridcraft`, `apps/gridcraft-cli`, `apps/gridcraft-web` |
+| L7 | `apps/iridium-sheets`, `apps/iridium-sheets-cli`, `apps/iridium-sheets-web` |
 
 - **Contributor and agent rules** (independent, asset policy, never-crash, quality gates): [`AGENTS.md`](AGENTS.md)
 - **Bundled assets:** each one is listed with its licence in [`ATTRIBUTION.md`](ATTRIBUTION.md)
@@ -223,7 +223,7 @@ PowerShell, from the folder containing the executable:
 
 ```powershell
 $env:WGPU_BACKEND = "vulkan"
-& .\gridcraft.exe
+& .\iridium-sheets.exe
 Remove-Item Env:WGPU_BACKEND                     # restore the default for later launches
 ```
 
@@ -302,7 +302,7 @@ upstream brand licence requires for forks.
 <br>
 
 <p align="center">
-  <sub>Based on <a href="https://github.com/storytold/gridcraft">GridCraft</a> by the ArtCraft team.
+  <sub>Based on <a href="https://github.com/ngjordan/iridium-sheets">GridCraft</a> by the ArtCraft team.
   Iridium Sheets is a modified distribution; the ArtCraft marks have been removed as the upstream
   brand licence requires. MIT OR Apache-2.0.</sub>
 </p>

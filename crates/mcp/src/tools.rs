@@ -65,6 +65,18 @@ fn tool(name: &str, title: &str, desc: &str, schema: Value, read_only: bool) -> 
     })
 }
 
+/// A tool that reaches the network: the client is told it is open, so it
+/// asks before it runs.
+fn tool_net(name: &str, title: &str, desc: &str, schema: Value, read_only: bool) -> Value {
+    json!({
+        "name": name,
+        "title": title,
+        "description": desc,
+        "inputSchema": schema,
+        "annotations": {"title": title, "readOnlyHint": read_only, "destructiveHint": false, "openWorldHint": true},
+    })
+}
+
 const RANGE: &str = "A1-style range, e.g. \"A1:D10\", \"B:B\", \"Sheet2!A1:C3\"";
 const CHART_TYPES: &[&str] = &[
     "column",
@@ -385,10 +397,10 @@ fn base_tool_definitions() -> Vec<Value> {
             false,
         ),
         tool("redo", "Redo", "Redo the last undone change(s).", obj(json!({"steps": int("Number of steps (default 1)")}), &[]), false),
-        tool(
+        tool_net(
             "pull_connector",
             "Pull from a connector",
-            "Pull rows from an external source into a new sheet as a table. Give either the name of a saved connector, or the source itself: `url` (http/https, or a local file), `source` (rest|csv|json), `method`, `headers` (a header value of `env:NAME` is replaced by that environment variable, so a secret never enters the workbook), and `path` (a JSON path to the rows inside the reply). The rows land in a new sheet named after the connector.",
+            "Pull rows from an external source into a new sheet as a table. Give either the name of a saved connector, or the source itself: `url` (http or https), `source` (rest|csv|json), `method`, `headers`, and `path` (a JSON path to the rows inside the reply). A header value of `env:NAME@host` is replaced by that environment variable, and is sent only to that host; it works on a saved connector only. The rows land in a new sheet named after the connector, as the text the server sent: a row that starts with `=` is not a formula.",
             obj(
                 json!({
                     "name": string("Name of a saved connector"),
@@ -405,7 +417,7 @@ fn base_tool_definitions() -> Vec<Value> {
         tool(
             "screenshot",
             "Screenshot",
-            "Save a PNG screenshot of the Iridium Sheets window to `path`. Desktop app only (`gridcraft-cli mcp --connect 7979`).",
+            "Save a PNG screenshot of the Iridium Sheets window to `path`. Desktop app only (`iridium-sheets-cli mcp --connect 7979`).",
             obj(json!({"path": string("Output PNG path")}), &["path"]),
             true,
         ),
@@ -645,6 +657,11 @@ fn dispatch(b: &mut dyn Backend, name: &str, a: &Args) -> Result<Value, String> 
     match name {
         "execute_command" => {
             let cmd = req_str(a, "command")?;
+            // Saving or removing a connector changes what the app will send the
+            // user's credentials to later, so it is the user's own action.
+            if cmd.starts_with("ui.connector.save") || cmd.starts_with("ui.connector.remove") {
+                return Err(format!("{cmd} is not available here; manage the connectors in the app's Data menu."));
+            }
             let p = match a.get("params") {
                 None | Some(Value::Null) => json!({}),
                 Some(v @ Value::Object(_)) => v.clone(),
@@ -695,7 +712,7 @@ impl Backend for Targeted<'_> {
     fn call(&mut self, method: &str, params: Value) -> Result<Value, String> {
         let envelope = if method == "engine.execute" {
             params
-        } else if gridcraft_engine::find_command(method).is_some() {
+        } else if iridium_engine::find_command(method).is_some() {
             json!({"command": method, "params": params})
         } else {
             return self.inner.call(method, params);

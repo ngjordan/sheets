@@ -3,10 +3,10 @@
 
 use egui::{Event, Key, Modifiers, PointerButton};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_engine::model::{Step, StepKind};
-use gridcraft_ui_egui::{Services, SheetApp};
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_engine::model::{Step, StepKind};
+use iridium_ui_egui::{Services, SheetApp};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -379,10 +379,10 @@ fn the_editor_works_only_on_the_workbook_it_opened_in() {
     let mut ed = h.state_mut().macros.editor.take().unwrap();
     let app = h.state_mut();
     // Save, Check, Run and Debug never act on the other workbook.
-    assert!(!gridcraft_ui_egui::macro_editor::save(app, &mut ed));
-    gridcraft_ui_egui::macro_editor::check(app, &mut ed);
-    gridcraft_ui_egui::macro_editor::run(app, &mut ed);
-    gridcraft_ui_egui::macro_editor::debug_action(app, &mut ed, "step");
+    assert!(!iridium_ui_egui::macro_editor::save(app, &mut ed));
+    iridium_ui_egui::macro_editor::check(app, &mut ed);
+    iridium_ui_egui::macro_editor::run(app, &mut ed);
+    iridium_ui_egui::macro_editor::debug_action(app, &mut ed, "step");
     assert!(app.session.macro_debug.is_none());
     assert!(app.session.active().unwrap().wb.macros.is_empty(), "nothing was saved into the other workbook");
     assert_eq!(value(&h, "A1"), Value::Empty, "nothing ran there");
@@ -399,7 +399,7 @@ fn the_editor_works_only_on_the_workbook_it_opened_in() {
     assert!(h.state().dialog.as_ref().is_some_and(|d| d.name() == "macroEditor"), "the editor is back with its workbook");
     let mut ed = h.state_mut().macros.editor.take().unwrap();
     let app = h.state_mut();
-    assert!(gridcraft_ui_egui::macro_editor::save(app, &mut ed));
+    assert!(iridium_ui_egui::macro_editor::save(app, &mut ed));
     assert_eq!(app.session.active().unwrap().wb.macros.iter().map(|m| m.name.as_str()).collect::<Vec<_>>(), ["Fresh"]);
     app.macros.editor = Some(ed);
     h.run_steps(3);
@@ -446,7 +446,7 @@ fn a_deferred_close_acts_on_the_editors_window_whichever_window_is_active_meanwh
     ed.dirty = false;
     ed.close_requested = true;
     let mut open = true;
-    let mut out = ctx.run_pass(egui::RawInput::default(), |ctx| gridcraft_ui_egui::macro_editor::window(app, ctx, &mut d, &mut open));
+    let mut out = ctx.run_pass(egui::RawInput::default(), |ctx| iridium_ui_egui::macro_editor::window(app, ctx, &mut d, &mut open));
     out.textures_delta.clear(); // not painted
     assert!(!open, "the editor closed");
     // The close that was asked in the editor's window closes that workbook, not the other.
@@ -538,13 +538,13 @@ fn the_control_channels_cancel_closes_the_editor_as_its_own_close_does() {
     let mut h = harness();
     three(&mut h);
     let ctx = h.ctx.clone();
-    let reply = |o: gridcraft_ui_egui::control::Outcome| match o {
-        gridcraft_ui_egui::control::Outcome::Done(v) => v,
+    let reply = |o: iridium_ui_egui::control::Outcome| match o {
+        iridium_ui_egui::control::Outcome::Done(v) => v,
         _ => json!(null),
     };
     // Unsaved steps are only the editor's to ask about: cancel is refused and keeps them.
     h.state_mut().macros.editor.as_mut().unwrap().dirty = true;
-    let r = reply(gridcraft_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({})));
+    let r = reply(iridium_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({})));
     assert!(r.get("error").is_some(), "{r}");
     assert!(h.state().macros.editor.is_some());
     // A saved editor closes, and takes its overlays with it.
@@ -552,7 +552,7 @@ fn the_control_channels_cancel_closes_the_editor_as_its_own_close_does() {
     h.get_by_label("Check").click();
     h.run_steps(3);
     assert!(h.state().grid.macro_overlay.is_some());
-    let r = reply(gridcraft_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({})));
+    let r = reply(iridium_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({})));
     assert!(r.get("error").is_none(), "{r}");
     h.run_steps(2);
     assert!(h.state().dialog.is_none());
@@ -591,7 +591,7 @@ fn the_editor_fits_a_narrow_window() {
 #[test]
 fn a_macro_at_the_step_limit_opens_without_freezing_the_editor() {
     let mut h = harness();
-    let steps: Vec<_> = (0..gridcraft_engine::model::MAX_MACRO_STEPS)
+    let steps: Vec<_> = (0..iridium_engine::model::MAX_MACRO_STEPS)
         .map(|i| json!({"command": "cell.set", "params": {"cell": format!("A{}", i + 1), "input": "x"}}))
         .collect();
     h.state_mut().run("macro.save", json!({"macro": {"name": "Big", "steps": steps}})).unwrap();
@@ -599,9 +599,9 @@ fn a_macro_at_the_step_limit_opens_without_freezing_the_editor() {
     h.run_steps(2);
     // Each row used to copy the whole list: five frames took about a minute. Now well under a
     // second; the bound leaves room for a slow machine.
-    let t = gridcraft_ui_egui::now_ms();
+    let t = iridium_ui_egui::now_ms();
     h.run_steps(5);
-    let ms = gridcraft_ui_egui::now_ms() - t;
+    let ms = iridium_ui_egui::now_ms() - t;
     assert!(ms < 10_000.0, "five frames took {ms} ms");
     assert!(h.query_by_label_contains("Step 1: ").is_some());
 }
@@ -669,7 +669,7 @@ fn closing_the_workbook_asks_about_an_unsaved_draft_first() {
 
 #[test]
 fn save_in_the_question_saves_the_macro_then_the_workbook_asks_about_itself() {
-    let path = std::env::temp_dir().join(format!("gridcraft-macro-draft-{}.xlsx", std::process::id()));
+    let path = std::env::temp_dir().join(format!("iridium-macro-draft-{}.xlsx", std::process::id()));
     let _ = std::fs::remove_file(&path);
     let target = path.to_string_lossy().to_string();
     let mut h = harness_with(Services { pick_save: Some(Box::new(move |_| Some(target.clone()))), ..Default::default() });
@@ -832,8 +832,8 @@ fn an_untouched_new_macro_closes_without_asking_however_the_editor_closes() {
     assert!(h.state().macros.editor.is_none(), "no Save changes question for a macro nobody edited");
     // The control channel's cancel.
     open_new(&mut h);
-    let r = gridcraft_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({}));
-    assert!(matches!(&r, gridcraft_ui_egui::control::Outcome::Done(v) if v.get("error").is_none()));
+    let r = iridium_ui_egui::control::handle(h.state_mut(), &ctx, "ui.dialog.cancel", &json!({}));
+    assert!(matches!(&r, iridium_ui_egui::control::Outcome::Done(v) if v.get("error").is_none()));
     h.run_steps(2);
     assert!(h.state().macros.editor.is_none());
     // Quit, with every workbook saved: the editor closes and the quit goes on.

@@ -210,7 +210,7 @@ fn resolve_source(wb: &Workbook, text: &str, default_sheet: usize, depth: u32) -
         let xml = if valid { format!("<worksheetSource name=\"{}\"/>", esc_attr(&tb.name)) } else { range_source_xml(&sh.name, r) };
         return Some((si, r, xml));
     }
-    let (sheet, body) = gridcraft_core::split_sheet(t);
+    let (sheet, body) = iridium_core::split_sheet(t);
     if let Some(r) = RangeRef::parse(body) {
         let si = match &sheet {
             Some(n) => wb.sheet_index(n)?,
@@ -246,7 +246,7 @@ fn header_text(v: &Value) -> String {
     }
 }
 
-fn cache_fields(sh: &gridcraft_model::Sheet, r: RangeRef) -> Vec<CField> {
+fn cache_fields(sh: &iridium_model::Sheet, r: RangeRef) -> Vec<CField> {
     let mut fields: Vec<CField> = Vec::new();
     // Lower-case names taken, and the next suffix for each header (linear for repeated headers).
     let mut taken = std::collections::HashSet::new();

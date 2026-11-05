@@ -18,7 +18,8 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=ph.iridium.sheets
+# shellcheck source=../brand.sh
+. "$ROOT/packaging/brand.sh"
 
 SKIP_BUILD=0
 FORMATS="appimage deb rpm tar"
@@ -38,16 +39,16 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export GRIDCRAFT_MAINTAINER="${GRIDCRAFT_MAINTAINER:-Iridium Sheets maintainers <maintainers@iridium.ph>}"
+export IRIDIUM_MAINTAINER="${IRIDIUM_MAINTAINER:-Iridium Sheets maintainers <maintainers@iridium-sheets.ph>}"
 BASENAME="iridium-sheets-$VERSION-linux-$ARCH"
 
 echo "==> Iridium Sheets $VERSION for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
-    (cd "$ROOT" && cargo build --release --locked -p gridcraft -p gridcraft-cli --target "$CROSS_TARGET")
+    (cd "$ROOT" && cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli --target "$CROSS_TARGET")
   else
-    (cd "$ROOT" && cargo build --release --locked -p gridcraft -p gridcraft-cli)
+    (cd "$ROOT" && cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli)
   fi
 fi
 BIN="$CARGO_TARGET_DIR/${CROSS_TARGET:+$CROSS_TARGET/}release"
@@ -56,18 +57,21 @@ STAGE="$WORK/root"
 rm -rf "$WORK"
 
 # ---- stage an FHS tree (shared by every format) -------------------------------------------------
-install -Dm755 "$BIN/gridcraft" "$STAGE/usr/bin/gridcraft"
-install -Dm755 "$BIN/gridcraft-cli" "$STAGE/usr/bin/gridcraft-cli"
-"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/gridcraft" "$STAGE/usr/bin/gridcraft-cli" 2>/dev/null || true
-install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
+install -Dm755 "$BIN/iridium-sheets" "$STAGE/usr/bin/iridium-sheets"
+install -Dm755 "$BIN/iridium-sheets-cli" "$STAGE/usr/bin/iridium-sheets-cli"
+"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/iridium-sheets" "$STAGE/usr/bin/iridium-sheets-cli" 2>/dev/null || true
+brand_subst "$HERE/$APP_ID.desktop" "$WORK/$APP_ID.desktop"
+install -Dm644 "$WORK/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
-sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$GRIDCRAFT_BUILD_DATE/g" \
+sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$IRIDIUM_BUILD_DATE/g" \
+  -e "s/@APP_NAME@/$APP_NAME/g" -e "s/@APP_ID@/$APP_ID/g" -e "s/@APP_VENDOR@/$APP_VENDOR/g" \
+  -e "s/@APP_SLUG@/$APP_SLUG/g" -e "s/@APP_HOMEPAGE@/$APP_HOMEPAGE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
 cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"
-mkdir -p "$STAGE/usr/share/doc/gridcraft"
-copy_docs "$STAGE/usr/share/doc/gridcraft"
+mkdir -p "$STAGE/usr/share/doc/iridium-sheets"
+copy_docs "$STAGE/usr/share/doc/iridium-sheets"
 
 if command -v desktop-file-validate >/dev/null; then
   desktop-file-validate "$STAGE/usr/share/applications/$APP_ID.desktop"
@@ -131,8 +135,8 @@ if has appimage; then
   }
   APPDIR="$WORK/Iridium Sheets.AppDir"
   cp -R "$STAGE" "$APPDIR"
-  ln -s usr/bin/gridcraft "$APPDIR/AppRun"
-  cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
+  ln -s usr/bin/iridium-sheets "$APPDIR/AppRun"
+  cp "$WORK/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
   cp "$ROOT/assets/app-icon/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
   ln -s "$APP_ID.png" "$APPDIR/.DirIcon"
 
@@ -170,7 +174,7 @@ if has appimage; then
   # fetch only the blocks that changed in a newer release, through the .zsync published next to
   # each AppImage on GitHub Releases. `latest` is the newest published release that is not a
   # pre-release. A fork's builds point at its own releases through GITHUB_REPOSITORY.
-  REPO="${GITHUB_REPOSITORY:-storytold/gridcraft}"
+  REPO="${GITHUB_REPOSITORY:-ngjordan/iridium-sheets}"
   UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|iridium-sheets-*-linux-$ARCH.AppImage.zsync"
   # Extract-and-run: works without FUSE (containers, CI). The output embeds the static runtime,
   # so users don't need libfuse2 either. With zsyncmake on the host (CI installs the zsync
@@ -185,9 +189,9 @@ if has appimage; then
 fi
 
 if [[ -z "${CROSS_TARGET:-}" ]]; then
-  "$STAGE/usr/bin/gridcraft-cli" --version
+  "$STAGE/usr/bin/iridium-sheets-cli" --version
 elif [[ -n "${EMULATOR:-}" ]]; then
-  "$EMULATOR" "$STAGE/usr/bin/gridcraft-cli" --version
+  "$EMULATOR" "$STAGE/usr/bin/iridium-sheets-cli" --version
 fi
 echo "==> done"
 ls -lh "$DIST"

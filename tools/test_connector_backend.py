@@ -79,33 +79,83 @@ def test_csv_rows_are_padded_to_the_header() -> None:
     assert rows == [["1", "", ""]], rows
 
 
-def test_an_env_header_is_resolved_at_call_time() -> None:
+def test_an_env_header_is_resolved_for_the_host_it_was_saved_for() -> None:
     os.environ["IRIDIUM_TEST_TOKEN"] = "secret-value"
     try:
-        headers = cb.resolved_headers({"headers": [["Authorization", "env:IRIDIUM_TEST_TOKEN"]]})
+        headers, _notes = cb.resolved_headers(
+            {"saved": True, "headers": [["Authorization", "env:IRIDIUM_TEST_TOKEN@api.example.com"]]},
+            "https://api.example.com/data",
+        )
         assert headers["Authorization"] == "secret-value", headers
     finally:
         del os.environ["IRIDIUM_TEST_TOKEN"]
 
 
+def test_an_env_header_is_not_sent_to_another_host() -> None:
+    """The secret follows the host it was saved for."""
+    os.environ["IRIDIUM_TEST_TOKEN"] = "secret-value"
+    try:
+        headers, notes = cb.resolved_headers(
+            {"saved": True, "headers": [["Authorization", "env:IRIDIUM_TEST_TOKEN@api.example.com"]]},
+            "https://attacker.example/data",
+        )
+        assert "Authorization" not in headers, headers
+        assert any("not sent" in n for n in notes), notes
+    finally:
+        del os.environ["IRIDIUM_TEST_TOKEN"]
+
+
+def test_an_env_header_without_a_host_is_refused() -> None:
+    os.environ["IRIDIUM_TEST_TOKEN"] = "secret-value"
+    try:
+        headers, notes = cb.resolved_headers(
+            {"saved": True, "headers": [["Authorization", "env:IRIDIUM_TEST_TOKEN"]]},
+            "https://api.example.com/data",
+        )
+        assert "Authorization" not in headers, headers
+        assert any("host" in n for n in notes), notes
+    finally:
+        del os.environ["IRIDIUM_TEST_TOKEN"]
+
+
+def test_an_env_header_on_a_connector_that_is_not_saved_is_refused() -> None:
+    """A connector a caller made up never carries a secret."""
+    os.environ["IRIDIUM_TEST_TOKEN"] = "secret-value"
+    try:
+        headers, notes = cb.resolved_headers(
+            {"headers": [["Authorization", "env:IRIDIUM_TEST_TOKEN@api.example.com"]]},
+            "https://api.example.com/data",
+        )
+        assert "Authorization" not in headers, headers
+        assert any("saved connector" in n for n in notes), notes
+    finally:
+        del os.environ["IRIDIUM_TEST_TOKEN"]
+
+
 def test_an_env_header_that_is_not_set_is_left_out() -> None:
-    headers = cb.resolved_headers({"headers": [["Authorization", "env:NOT_SET_ANYWHERE"]]})
+    headers, _notes = cb.resolved_headers(
+        {"saved": True, "headers": [["Authorization", "env:NOT_SET_ANYWHERE@api.example.com"]]},
+        "https://api.example.com/data",
+    )
     assert "Authorization" not in headers, headers
 
 
 def test_a_plain_header_is_kept_as_it_is() -> None:
-    headers = cb.resolved_headers({"headers": [["Accept", "application/json"]]})
+    headers, _notes = cb.resolved_headers({"headers": [["Accept", "application/json"]]}, "https://x.example/")
     assert headers["Accept"] == "application/json", headers
 
 
-def test_a_local_file_is_a_source_too() -> None:
+def test_a_local_file_is_not_a_source() -> None:
+    """Only the network is a connector source: a file would let any caller read one."""
     with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as f:
         f.write("a,b\n1,2\n")
         path = f.name
     try:
-        header, rows, _note = cb.fetch({"url": path, "source": "csv"})
-        assert header == ["a", "b"], header
-        assert rows == [["1", "2"]], rows
+        cb.fetch({"url": path, "source": "csv"})
+    except RuntimeError as e:
+        assert "http" in str(e), e
+    else:
+        raise AssertionError("a local file was accepted")
     finally:
         os.unlink(path)
 

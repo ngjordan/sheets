@@ -74,14 +74,14 @@ pub fn poll(app: &mut SheetApp) {
                     app.notice =
                         Some(Notice { text: format!("Pulled {note} from {} into {sheet}.", connector.name), kind: NoticeKind::Info, action: None });
                 }
-                Err(e) => app.message = Some(("Iridium Sheets".into(), clean_error(&e))),
+                Err(e) => app.message = Some((iridium_core::brand::NAME.into(), clean_error(&e))),
             }
         }
         Outcome::Saved(name) => {
             app.notice = Some(Notice { text: format!("Saved the connector {name}."), kind: NoticeKind::Info, action: None });
         }
         Outcome::Failed(message) => {
-            app.message = Some(("Iridium Sheets".into(), clean_error(&message)));
+            app.message = Some((iridium_core::brand::NAME.into(), clean_error(&message)));
         }
     }
 }
@@ -105,9 +105,10 @@ fn write_rows(app: &mut SheetApp, connector: &Connector, rows: &Rows) -> Result<
     let name = sheet_name(&connector.name);
     let inserted = app.run("home.insertSheet", json!({"name": name}))?;
     let sheet = inserted.get("name").and_then(Json::as_str).unwrap_or(&name).to_string();
-    // The values go in as text: a cell that holds "1E5" or "=" should stay
-    // exactly what the server sent.
-    app.run("range.setValues", json!({"range": "A1", "values": values}))?;
+    // The values go in as literal text: a cell that holds "1E5" or "=" stays
+    // exactly what the server sent, and a server cannot write a formula that
+    // reads the workbook.
+    app.run("range.setValues", json!({"range": "A1", "values": values, "literal": true}))?;
     let last = column_letters(width);
     let end = format!("A1:{last}{}", values.len());
     let _ = app.run("insert.table", json!({"range": end, "header": true}));
@@ -158,7 +159,9 @@ fn connector_from(p: &Json) -> Result<Connector, String> {
         .and_then(Json::as_object)
         .map(|m| m.iter().map(|(k, v)| (k.clone(), v.as_str().unwrap_or_default().to_string())).collect::<Vec<_>>())
         .unwrap_or_default();
-    Ok(Connector { name, url, source, method, headers, path, append })
+    // A connector made from a command's parameters is not one of the user's
+    // saved connectors, so it cannot carry an `env:` header.
+    Ok(Connector { name, url, source, method, headers, path, append, saved: false })
 }
 
 /// List the connectors the host offers.
@@ -202,17 +205,22 @@ pub fn remove(app: &mut SheetApp, name: String) {
 /// Pull a connector by name from the host's list.
 pub fn fetch_named(app: &mut SheetApp, name: &str) {
     if app.services.connectors.is_empty() {
-        app.message = Some(("Iridium Sheets".into(), "connectors are not available in this build".into()));
+        app.message = Some((iridium_core::brand::NAME.into(), "connectors are not available in this build".into()));
         return;
     };
     let name = name.to_string();
     let state = app.connector_state.clone();
     let mut s = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     s.job = Some(Box::new(move |b: &dyn Backend| match b.list().into_iter().find(|c| c.name == name) {
-        Some(c) => match b.fetch(&c) {
-            Ok(rows) => Outcome::Fetched { connector: c, rows },
-            Err(e) => Outcome::Failed(e),
-        },
+        // It comes from the host's own list, so it is the user's saved
+        // connector: only such a one may carry an `env:` header.
+        Some(mut c) => {
+            c.saved = true;
+            match b.fetch(&c) {
+                Ok(rows) => Outcome::Fetched { connector: c, rows },
+                Err(e) => Outcome::Failed(e),
+            }
+        }
         None => Outcome::Failed(format!("there is no connector named {name}")),
     }));
 }

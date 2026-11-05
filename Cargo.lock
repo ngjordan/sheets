@@ -1948,221 +1948,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gridcraft"
-version = "0.17.0"
-dependencies = [
- "arboard",
- "chrono",
- "craft-print",
- "craft-update",
- "eframe",
- "egui",
- "fmv-macos-events",
- "getrandom 0.4.3",
- "gridcraft-engine",
- "gridcraft-mcp",
- "gridcraft-ui-egui",
- "image",
- "log",
- "muda",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "pollster 1.0.1",
- "rfd",
- "serde_json",
- "winit",
- "winresource",
-]
-
-[[package]]
-name = "gridcraft-calc"
-version = "0.17.0"
-dependencies = [
- "gridcraft-core",
- "gridcraft-formula",
- "gridcraft-functions",
- "gridcraft-model",
- "gridcraft-numfmt",
- "log",
-]
-
-[[package]]
-name = "gridcraft-chart"
-version = "0.17.0"
-dependencies = [
- "gridcraft-calc",
- "gridcraft-core",
- "gridcraft-model",
- "gridcraft-numfmt",
- "serde",
-]
-
-[[package]]
-name = "gridcraft-cli"
-version = "0.17.0"
-dependencies = [
- "gridcraft-engine",
- "gridcraft-mcp",
- "log",
- "quick-xml 0.41.0",
- "serde_json",
- "zip",
-]
-
-[[package]]
-name = "gridcraft-core"
-version = "0.17.0"
-dependencies = [
- "chrono",
- "js-sys",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "gridcraft-engine"
-version = "0.17.0"
-dependencies = [
- "gridcraft-calc",
- "gridcraft-chart",
- "gridcraft-core",
- "gridcraft-formula",
- "gridcraft-functions",
- "gridcraft-math",
- "gridcraft-model",
- "gridcraft-numfmt",
- "gridcraft-pdf",
- "gridcraft-xlsx",
- "image",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "web-time",
- "zip",
-]
-
-[[package]]
-name = "gridcraft-formula"
-version = "0.17.0"
-dependencies = [
- "gridcraft-core",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "gridcraft-functions"
-version = "0.17.0"
-dependencies = [
- "gridcraft-core",
- "regex",
-]
-
-[[package]]
-name = "gridcraft-math"
-version = "0.17.0"
-dependencies = [
- "ratex-font",
- "ratex-layout",
- "ratex-parser",
- "ratex-types",
-]
-
-[[package]]
-name = "gridcraft-mcp"
-version = "0.17.0"
-dependencies = [
- "gridcraft-engine",
- "log",
- "serde_json",
-]
-
-[[package]]
-name = "gridcraft-model"
-version = "0.17.0"
-dependencies = [
- "gridcraft-core",
- "gridcraft-formula",
- "gridcraft-math",
- "serde",
- "serde_json",
- "sha2 0.11.1",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "gridcraft-numfmt"
-version = "0.17.0"
-dependencies = [
- "gridcraft-core",
-]
-
-[[package]]
-name = "gridcraft-pdf"
-version = "0.17.0"
-
-[[package]]
-name = "gridcraft-ui-egui"
-version = "0.17.0"
-dependencies = [
- "craft-ui",
- "craft-update",
- "craft-window",
- "egui",
- "egui_kittest",
- "epaint_default_fonts",
- "gridcraft-chart",
- "gridcraft-engine",
- "gridcraft-xlsx",
- "image",
- "log",
- "serde",
- "serde_json",
- "skrifa",
- "sys-locale",
- "toml",
- "web-sys",
- "web-time",
- "zbus",
-]
-
-[[package]]
-name = "gridcraft-web"
-version = "0.17.0"
-dependencies = [
- "eframe",
- "egui",
- "gridcraft-engine",
- "gridcraft-ui-egui",
- "js-sys",
- "log",
- "rfd",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "gridcraft-xlsx"
-version = "0.17.0"
-dependencies = [
- "aes",
- "gridcraft-core",
- "gridcraft-formula",
- "gridcraft-functions",
- "gridcraft-math",
- "gridcraft-model",
- "quick-xml 0.41.0",
- "sha1 0.11.0",
- "sha2 0.11.1",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
 name = "guillotiere"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2633,6 +2418,227 @@ name = "ipnet"
 version = "2.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "791930b43c0d5973160d90a8f3894509f2b273430f5c5c73b668636d0287c5c0"
+
+[[package]]
+name = "iridium-calc"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+ "iridium-formula",
+ "iridium-functions",
+ "iridium-model",
+ "iridium-numfmt",
+ "log",
+]
+
+[[package]]
+name = "iridium-chart"
+version = "0.18.0"
+dependencies = [
+ "iridium-calc",
+ "iridium-core",
+ "iridium-model",
+ "iridium-numfmt",
+ "serde",
+]
+
+[[package]]
+name = "iridium-core"
+version = "0.18.0"
+dependencies = [
+ "chrono",
+ "js-sys",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "iridium-engine"
+version = "0.18.0"
+dependencies = [
+ "image",
+ "iridium-calc",
+ "iridium-chart",
+ "iridium-core",
+ "iridium-formula",
+ "iridium-functions",
+ "iridium-math",
+ "iridium-model",
+ "iridium-numfmt",
+ "iridium-pdf",
+ "iridium-xlsx",
+ "log",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "web-time",
+ "zip",
+]
+
+[[package]]
+name = "iridium-formula"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "iridium-functions"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+ "regex",
+]
+
+[[package]]
+name = "iridium-math"
+version = "0.18.0"
+dependencies = [
+ "ratex-font",
+ "ratex-layout",
+ "ratex-parser",
+ "ratex-types",
+]
+
+[[package]]
+name = "iridium-mcp"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+ "iridium-engine",
+ "log",
+ "serde_json",
+]
+
+[[package]]
+name = "iridium-model"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+ "iridium-formula",
+ "iridium-math",
+ "serde",
+ "serde_json",
+ "sha2 0.11.1",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "iridium-numfmt"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+]
+
+[[package]]
+name = "iridium-pdf"
+version = "0.18.0"
+dependencies = [
+ "iridium-core",
+]
+
+[[package]]
+name = "iridium-sheets"
+version = "0.18.0"
+dependencies = [
+ "arboard",
+ "chrono",
+ "craft-print",
+ "craft-update",
+ "eframe",
+ "egui",
+ "fmv-macos-events",
+ "getrandom 0.4.3",
+ "image",
+ "iridium-core",
+ "iridium-engine",
+ "iridium-mcp",
+ "iridium-ui-egui",
+ "log",
+ "muda",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "pollster 1.0.1",
+ "rfd",
+ "serde_json",
+ "winit",
+ "winresource",
+]
+
+[[package]]
+name = "iridium-sheets-cli"
+version = "0.18.0"
+dependencies = [
+ "iridium-engine",
+ "iridium-mcp",
+ "log",
+ "quick-xml 0.41.0",
+ "serde_json",
+ "zip",
+]
+
+[[package]]
+name = "iridium-sheets-web"
+version = "0.18.0"
+dependencies = [
+ "eframe",
+ "egui",
+ "iridium-engine",
+ "iridium-ui-egui",
+ "js-sys",
+ "log",
+ "rfd",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
+name = "iridium-ui-egui"
+version = "0.18.0"
+dependencies = [
+ "craft-ui",
+ "craft-update",
+ "craft-window",
+ "egui",
+ "egui_kittest",
+ "epaint_default_fonts",
+ "image",
+ "iridium-chart",
+ "iridium-core",
+ "iridium-engine",
+ "iridium-xlsx",
+ "log",
+ "serde",
+ "serde_json",
+ "skrifa",
+ "sys-locale",
+ "toml",
+ "web-sys",
+ "web-time",
+ "zbus",
+]
+
+[[package]]
+name = "iridium-xlsx"
+version = "0.18.0"
+dependencies = [
+ "aes",
+ "iridium-core",
+ "iridium-formula",
+ "iridium-functions",
+ "iridium-math",
+ "iridium-model",
+ "quick-xml 0.41.0",
+ "sha1 0.11.0",
+ "sha2 0.11.1",
+ "thiserror 2.0.21",
+ "zip",
+]
 
 [[package]]
 name = "is-docker"
@@ -6598,9 +6604,9 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
- "gridcraft-engine",
+ "iridium-engine",
  "serde_json",
 ]
 

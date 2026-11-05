@@ -8,8 +8,8 @@
 
 use egui::os::OperatingSystem;
 use egui::{Event, Key, Modifiers};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
 
@@ -3069,7 +3069,7 @@ fn keytip_q_() {
 #[test]
 fn generated_test_count_matches_the_table() {
     const EXPECTED: usize = 410;
-    assert_eq!(gridcraft_ui_egui::keytips::keytip_table::SEQUENCES.len(), EXPECTED);
+    assert_eq!(iridium_ui_egui::keytips::keytip_table::SEQUENCES.len(), EXPECTED);
 }
 
 #[test]

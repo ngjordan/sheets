@@ -316,7 +316,7 @@ fn nesting_built_by_macros_is_refused_by_the_parser() {
     assert_eq!(run(&frac(64)), Outcome::Rejected("Recursion limit exceeded".into()), "64 macro-built fractions");
     // The wrapper's text count sees no nesting in the first source, so the parser's guard is the
     // one that holds there too.
-    assert!(gridcraft_math::layout(&built(64)).is_err());
+    assert!(iridium_math::layout(&built(64)).is_err());
 }
 
 #[test]
@@ -342,8 +342,8 @@ fn editor_syntax_is_covered() {
 }
 
 /// Whether every number in `list` is finite and within the caps the wrapper promises.
-fn within_caps(list: &gridcraft_math::MathList) -> bool {
-    use gridcraft_math::{Item, MAX_EM, MAX_ITEMS, PathCmd};
+fn within_caps(list: &iridium_math::MathList) -> bool {
+    use iridium_math::{Item, MAX_EM, MAX_ITEMS, PathCmd};
     let ok = |v: f32| v.is_finite() && v.abs() <= MAX_EM;
     let path_ok = |c: &PathCmd| match *c {
         PathCmd::MoveTo(a, b) | PathCmd::LineTo(a, b) => ok(a) && ok(b),
@@ -384,7 +384,7 @@ fn the_guarded_entry_points_survive_hostile_input() {
             inputs.push(format!("{}x{}", open.repeat(d), close.repeat(d)));
         }
     }
-    let cap = gridcraft_math::MAX_SOURCE_BYTES;
+    let cap = iridium_math::MAX_SOURCE_BYTES;
     inputs.push("x".repeat(cap));
     inputs.push("x".repeat(cap + 1));
     inputs.push(format!("{}\u{e9}", "x".repeat(cap - 1)));
@@ -393,9 +393,9 @@ fn the_guarded_entry_points_survive_hostile_input() {
     let mut failures = Vec::new();
     for s in &inputs {
         let r = catch_unwind(AssertUnwindSafe(|| {
-            let laid = gridcraft_math::layout(s);
-            let checked = gridcraft_math::check(s);
-            let omml = gridcraft_math::to_omml(s, 11.0, None);
+            let laid = iridium_math::layout(s);
+            let checked = iridium_math::check(s);
+            let omml = iridium_math::to_omml(s, 11.0, None);
             (laid, checked, omml)
         }));
         let Ok((laid, checked, omml)) = r else {
@@ -433,7 +433,7 @@ fn pathological_source_at_the_cap_finishes_in_bounded_time() {
     // inside the bound (the slowest, `\ce{+-+-...}`, takes 0.8 s in a debug build on an Apple M
     // series machine; catastrophic backtracking would take minutes), so a regression in RaTeX or
     // its dependencies shows up here without making a slow CI runner fail.
-    use gridcraft_math::{MAX_DEPTH, MAX_SOURCE_BYTES, check, layout, to_omml};
+    use iridium_math::{MAX_DEPTH, MAX_SOURCE_BYTES, check, layout, to_omml};
     use std::time::{Duration, Instant};
     let fill = |head: &str, body: &str, tail: &str| {
         let room = MAX_SOURCE_BYTES.saturating_sub(head.len() + tail.len());

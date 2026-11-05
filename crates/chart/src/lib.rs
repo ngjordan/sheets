@@ -20,7 +20,7 @@ mod trend;
 #[cfg(test)]
 mod tests;
 
-pub use gridcraft_model::{Chart, ChartKind, LegendPos, SparklineKind, Trendline, TrendlineKind};
+pub use iridium_model::{Chart, ChartKind, LegendPos, SparklineKind, Trendline, TrendlineKind};
 use serde::{Deserialize, Serialize};
 
 pub use axis::{Scale, format_number, nice_scale};

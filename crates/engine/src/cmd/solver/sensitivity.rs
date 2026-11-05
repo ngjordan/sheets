@@ -53,7 +53,7 @@ fn sens_num(v: f64, noise: f64) -> Value {
 }
 
 fn num(v: f64) -> Value {
-    if v.is_finite() { Value::number(v) } else { Value::Error(gridcraft_core::CellError::Value) }
+    if v.is_finite() { Value::number(v) } else { Value::Error(iridium_core::CellError::Value) }
 }
 
 /// The smallest ratio `num / den` over the `den` above zero (the step to the first bound).
@@ -588,7 +588,7 @@ fn nonlinear_body(ev: &mut Evaluator, at: &At) -> Result<Body> {
 #[cfg(test)]
 mod tests {
     use super::{Goal, MULTIPLIER_WORK, Row, Sense, multipliers};
-    use gridcraft_core::CellRef;
+    use iridium_core::CellRef;
 
     #[test]
     fn multipliers_at_the_constraint_limit_stop_at_the_work_limit() {

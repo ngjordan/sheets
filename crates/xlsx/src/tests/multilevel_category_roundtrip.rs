@@ -4,8 +4,8 @@
 use std::io::Read as _;
 use std::sync::Arc;
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::{Anchor, Chart, ChartKind, LegendPos, Series, Sheet, Workbook};
+use iridium_core::{CellRef, Value};
+use iridium_model::{Anchor, Chart, ChartKind, LegendPos, Series, Sheet, Workbook};
 
 use crate::{read_xlsx, write_xlsx};
 

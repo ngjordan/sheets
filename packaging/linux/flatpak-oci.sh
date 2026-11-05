@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build gridcraft as an OCI container layout and push it to GitHub Container Registry (GHCR)
+# Build iridium-sheets as an OCI container layout and push it to GitHub Container Registry (GHCR)
 # for consumption by Flatpak OCI clients (flatpak-oci-specs).
 #
 # Usage:
 #   packaging/linux/flatpak-oci.sh [--push] [TARBALL]
 #
 # Environment variables:
-#   REGISTRY       Target registry image (default: ghcr.io/storytold/gridcraft)
+#   REGISTRY       Target registry image (default: ghcr.io/ngjordan/iridium-sheets)
 #   TAG            Target image tag (default: $VERSION-$ARCH, also tags stable-$ARCH)
 #   GITHUB_TOKEN   Token for GHCR authentication when --push is used
 set -euo pipefail
@@ -40,7 +40,7 @@ echo "==> Building Flatpak OCI layout for $BASENAME"
 
 [[ -d "$OUT_OCI" ]] || { echo "error: $OUT_OCI layout not generated" >&2; exit 1; }
 
-REGISTRY="${REGISTRY:-ghcr.io/storytold/gridcraft}"
+REGISTRY="${REGISTRY:-ghcr.io/ngjordan/iridium-sheets}"
 TAG="${TAG:-$VERSION-$ARCH}"
 
 echo "==> OCI layout ready at $OUT_OCI (Target: $REGISTRY:$TAG)"

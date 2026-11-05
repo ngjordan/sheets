@@ -1,5 +1,5 @@
 use super::*;
-use gridcraft_model::ChartDataTable;
+use iridium_model::ChartDataTable;
 
 #[test]
 fn tables_draw_source_values_for_every_supported_chart_kind() {

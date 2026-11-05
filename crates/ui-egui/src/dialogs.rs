@@ -7,7 +7,7 @@
 use egui::{Color32, Key, Sense, Stroke, StrokeKind, vec2};
 
 use crate::icons::{self, Icon};
-use gridcraft_engine::core::{CellRef, RangeRef};
+use iridium_engine::core::{CellRef, RangeRef};
 use serde_json::{Map, Value as Json, json};
 
 use crate::SheetApp;
@@ -198,7 +198,7 @@ impl Dialog {
         let reference = if active_sheet.eq_ignore_ascii_case(&pick.sheet) {
             range
         } else {
-            format!("{}!{range}", gridcraft_engine::formula::quote_sheet(active_sheet))
+            format!("{}!{range}", iridium_engine::formula::quote_sheet(active_sheet))
         };
         ed.insert_ref(&reference);
         pick.caret = ed.caret;
@@ -317,7 +317,7 @@ impl Dialog {
                 "Column Width",
                 "home.columnWidth",
                 vec![Number { key: "chars", label: "Column width (characters):" }],
-                json!({"chars": app.session.active().and_then(|d| d.wb.active().map(|s| gridcraft_engine::cmd::format::points_to_chars(s.col_width(d.selection.active.col) as f64))).unwrap_or(8.43)}),
+                json!({"chars": app.session.active().and_then(|d| d.wb.active().map(|s| iridium_engine::cmd::format::points_to_chars(s.col_width(d.selection.active.col) as f64))).unwrap_or(8.43)}),
             ),
             "defaultWidth" => Dialog::form(
                 "defaultWidth",
@@ -559,7 +559,7 @@ impl Dialog {
                     && let Some(sheet) = doc.wb.active()
                     && let Some(link) = sheet.hyperlinks.get(&doc.selection.active)
                 {
-                    let text = gridcraft_engine::display::cell_text(&doc.wb, sheet, doc.selection.active);
+                    let text = iridium_engine::display::cell_text(&doc.wb, sheet, doc.selection.active);
                     d.values.insert("target".into(), json!(link.target));
                     d.values.insert("text".into(), json!(text));
                     d.values.insert("tooltip".into(), json!(link.tooltip));
@@ -655,7 +655,7 @@ impl Dialog {
                 let list = app
                     .session
                     .active()
-                    .and_then(|d| d.wb.active().map(|sh| gridcraft_engine::selection::current_region(sh, d.selection.active).a1()))
+                    .and_then(|d| d.wb.active().map(|sh| iridium_engine::selection::current_region(sh, d.selection.active).a1()))
                     .unwrap_or(sel.clone());
                 let mut d = Dialog::form(
                     "advancedFilter",
@@ -712,7 +712,7 @@ impl Dialog {
                 // Opened with a known `tool`, it goes straight to that tool's form.
                 let tool = params.get("tool").and_then(Json::as_str).unwrap_or("");
                 let mut d = Dialog::custom("analysisToolPak", "Data Analysis", json!({"tool": "", "pick": tool}));
-                if gridcraft_engine::cmd::analysis::TOOLS.iter().any(|(id, _)| *id == tool) {
+                if iridium_engine::cmd::analysis::TOOLS.iter().any(|(id, _)| *id == tool) {
                     d.values = toolpak_defaults(&sel, tool);
                 }
                 d.command = Some("data.analysisToolPak");
@@ -721,7 +721,7 @@ impl Dialog {
             "solver" => {
                 // Starts from the sheet's saved model, else the active cell as objective; fields
                 // given when opening it go over either.
-                let saved = app.session.active().and_then(|doc| gridcraft_engine::cmd::solver::saved_model(&doc.wb, doc.wb.active_sheet()));
+                let saved = app.session.active().and_then(|doc| iridium_engine::cmd::solver::saved_model(&doc.wb, doc.wb.active_sheet()));
                 let mut values = json!({"objective": active, "goal": "max", "value": "0", "variables": "", "constraints": [], "nonNegative": true, "method": "grg"});
                 for m in [saved.as_ref(), Some(&params)].into_iter().flatten().filter_map(Json::as_object) {
                     if let Some(v) = values.as_object_mut() {
@@ -801,7 +801,7 @@ impl Dialog {
                 // its current fields; New… and Define Name start from the selection.
                 let editing = params.get("oldName").and_then(Json::as_str).is_some();
                 let selection = app.session.active().and_then(|d| {
-                    d.wb.active().map(|s| format!("={}!{}", gridcraft_engine::formula::quote_sheet(&s.name), abs(&d.selection.current())))
+                    d.wb.active().map(|s| format!("={}!{}", iridium_engine::formula::quote_sheet(&s.name), abs(&d.selection.current())))
                 });
                 let mut defaults = json!({"scope": "Workbook", "refersTo": selection});
                 for key in ["name", "scope", "comment", "refersTo", "oldName", "oldScope"] {
@@ -972,7 +972,7 @@ impl Dialog {
             ),
             "sort" => {
                 // Seed "Sort by" from the column the user is actually in (#1906).
-                let col = app.session.active().map(|d| gridcraft_engine::core::col_to_letters(d.selection.active.col)).unwrap_or_else(|| "A".into());
+                let col = app.session.active().map(|d| iridium_engine::core::col_to_letters(d.selection.active.col)).unwrap_or_else(|| "A".into());
                 Dialog::custom("sort", "Sort", json!({"header": true, "levels": [{"column": col, "order": "asc"}]}))
             }
             "nameManager" => Dialog::custom("nameManager", "Name Manager", json!({})),
@@ -1022,7 +1022,7 @@ impl Dialog {
                     let si = doc.wb.active_sheet();
                     let sh = doc.wb.sheet(si)?;
                     let ch = sh.charts.iter().find(|c| Some(u64::from(c.id)) == id)?;
-                    let data = gridcraft_chart::resolve(&doc.wb, si, ch);
+                    let data = iridium_chart::resolve(&doc.wb, si, ch);
                     let names: Vec<String> = data.series.iter().map(|x| x.name.clone()).collect();
                     let cats = ch.series.first().and_then(|x| x.categories.clone()).unwrap_or_default();
                     Some((ch.source.clone().unwrap_or_default(), cats, names))
@@ -1093,7 +1093,7 @@ impl Dialog {
             "pickList" => Dialog::custom("pickList", "Pick From List", json!({})),
             "saveCopy" => Dialog::custom("saveCopy", "Save a Copy", json!({"format": p("format")})),
             "saveChanges" => Dialog::custom("saveChanges", "Save Changes?", json!({"title": p("title"), "quit": p("quit")})),
-            "start" => Dialog::custom("start", "Iridium Sheets", json!({})),
+            "start" => Dialog::custom("start", iridium_core::brand::NAME, json!({})),
             "comments" => {
                 app.grid.pane = None;
                 app.run_or_alert("review.showComments", json!({"on": true}));
@@ -1122,7 +1122,7 @@ mod tests {
 
     #[test]
     fn remove_duplicates_prefills_the_selection_and_submits_the_edited_range() {
-        let mut session = gridcraft_engine::Session::default();
+        let mut session = iridium_engine::Session::default();
         session.new_workbook();
         session.execute("selection.set", json!({"range": "B2:C5"})).unwrap();
         let mut app = SheetApp::new(session, Default::default());
@@ -1136,7 +1136,7 @@ mod tests {
 
     #[test]
     fn remove_duplicates_with_only_the_cursor_prefills_the_current_region() {
-        let mut session = gridcraft_engine::Session::default();
+        let mut session = iridium_engine::Session::default();
         session.new_workbook();
         session.execute("range.setValues", json!({"range": "B2:C4", "values": [["a", 1], ["a", 1], ["b", 2]]})).unwrap();
         session.execute("selection.set", json!({"range": "C3"})).unwrap();
@@ -1147,7 +1147,7 @@ mod tests {
 
     #[test]
     fn data_validation_opens_on_the_rule_of_the_active_cell() {
-        let mut session = gridcraft_engine::Session::default();
+        let mut session = iridium_engine::Session::default();
         session.new_workbook();
         let mut app = SheetApp::new(session, Default::default());
         app.run("data.validation", json!({"range": "A1", "type": "whole", "operator": "greater", "formula1": "5"})).unwrap();
@@ -1158,14 +1158,14 @@ mod tests {
         // OK without edits keeps the rule: 6 is accepted, 4 is rejected.
         app.run(d.command.unwrap(), build_params(&d)).unwrap();
         let doc = app.session.active().unwrap();
-        let at = gridcraft_engine::core::CellRef::new(0, 0);
-        assert!(gridcraft_engine::cmd::data::check_validation(&doc.wb, 0, at, "6").is_none());
-        assert!(gridcraft_engine::cmd::data::check_validation(&doc.wb, 0, at, "4").is_some());
+        let at = iridium_engine::core::CellRef::new(0, 0);
+        assert!(iridium_engine::cmd::data::check_validation(&doc.wb, 0, at, "6").is_none());
+        assert!(iridium_engine::cmd::data::check_validation(&doc.wb, 0, at, "4").is_some());
     }
 
     #[test]
     fn data_validation_without_a_rule_opens_on_a_blank_list() {
-        let mut session = gridcraft_engine::Session::default();
+        let mut session = iridium_engine::Session::default();
         session.new_workbook();
         let mut app = SheetApp::new(session, Default::default());
         let d = Dialog::open(&mut app, "dataValidation", json!({})).unwrap();

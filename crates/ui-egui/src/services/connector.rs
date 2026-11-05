@@ -49,15 +49,20 @@ pub struct Connector {
     pub source: Source,
     /// The HTTP method, for a REST source.
     pub method: String,
-    /// Extra headers to send. A header whose value starts with `env:` is
-    /// replaced by that environment variable's value, so a secret stays out
-    /// of the workbook.
+    /// Extra headers to send. A header whose value is `env:NAME@host` is
+    /// replaced by that environment variable's value and sent only to
+    /// `host`, so a secret stays out of the workbook and follows the host it
+    /// was saved for.
     pub headers: Vec<(String, String)>,
     /// Where in the reply the rows are: a JSON path like `data.items`. Empty
     /// means the whole reply.
     pub path: String,
     /// Whether a refresh replaces the sheet's rows or adds to them.
     pub append: bool,
+    /// Whether this is one of the user's own saved connectors. A saved
+    /// connector is the only one whose `env:` headers are read, so a
+    /// connector a caller made up cannot carry a secret away.
+    pub saved: bool,
 }
 
 impl Connector {
@@ -70,6 +75,7 @@ impl Connector {
             headers: Vec::new(),
             path: String::new(),
             append: false,
+            saved: false,
         }
     }
 }

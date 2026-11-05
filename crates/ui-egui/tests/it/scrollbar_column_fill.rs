@@ -2,8 +2,8 @@
 //! dark mode instead of showing a light square (#2086).
 
 use egui::{Shape, pos2};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::{SheetApp, theme::Tokens};
+use iridium_engine::Session;
+use iridium_ui_egui::{SheetApp, theme::Tokens};
 use serde_json::json;
 
 #[test]

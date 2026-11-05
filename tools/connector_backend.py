@@ -30,6 +30,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -39,6 +40,9 @@ STORE = HOME / "connectors.json"
 # A request may not run forever: a server that never answers must not hang
 # the sheet.
 TIMEOUT = 60
+
+# A reply bigger than this is refused rather than loaded into memory.
+MAX_BYTES = 32 * 1024 * 1024
 
 
 def respond(obj: dict) -> None:
@@ -61,25 +65,61 @@ def load() -> list[dict]:
 
 
 def save_all(connectors: list[dict]) -> None:
+    """Write the store atomically, so a crash cannot leave it empty."""
     STORE.parent.mkdir(parents=True, exist_ok=True)
-    # The file holds credentials, so only the user may read it.
-    fd = os.open(str(STORE), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w") as f:
-        json.dump(connectors, f, indent=1)
+    tmp = STORE.with_name(f"{STORE.name}.{os.getpid()}.tmp")
+    try:
+        # The file holds credentials, so only the user may read it.
+        fd = os.open(str(tmp), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as f:
+            json.dump(connectors, f, indent=1)
+        os.replace(tmp, STORE)
+        os.chmod(STORE, 0o600)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
 
 
-def resolved_headers(connector: dict) -> dict[str, str]:
-    headers = {}
+def resolved_headers(connector: dict, url: str) -> tuple[dict[str, str], list[str]]:
+    """The headers to send, and the notes about the ones that were left out.
+
+    A header whose value is ``env:NAME@host`` reads that environment variable
+    and sends it, but only to ``host``: the secret follows the host it was
+    saved for, so a connector that is pointed somewhere else never carries it.
+    A plain ``env:NAME`` is refused, and so is any ``env:`` header on a
+    connector that is not a saved one (the store is the user's own list).
+    """
+    headers: dict[str, str] = {}
+    notes: list[str] = []
+    saved = connector.get("saved") is True
     for pair in connector.get("headers") or []:
         if not isinstance(pair, (list, tuple)) or len(pair) != 2:
             continue
         key, value = str(pair[0]), str(pair[1])
         if value.startswith("env:"):
-            value = os.environ.get(value[4:], "")
+            spec = value[4:]
+            name, _, want_host = spec.partition("@")
+            if not want_host:
+                notes.append(f"{key}: an env: header needs a host (env:NAME@host)")
+                continue
+            if not saved:
+                notes.append(f"{key}: an env: header only works on a saved connector")
+                continue
+            if host_of(url) != want_host.lower():
+                notes.append(f"{key}: env: header not sent to {host_of(url)}")
+                continue
+            value = os.environ.get(name, "")
             if not value:
+                notes.append(f"{key}: {name} is not set")
                 continue
         headers[key] = value
-    return headers
+    return headers, notes
+
+
+def host_of(url: str) -> str:
+    """The host of a URL, lowercased, without the port."""
+    host = urllib.parse.urlsplit(url).hostname or ""
+    return host.lower()
 
 
 def fetch(connector: dict) -> tuple[list[str], list[list[str]], str]:
@@ -88,23 +128,28 @@ def fetch(connector: dict) -> tuple[list[str], list[list[str]], str]:
     if not url:
         raise RuntimeError("the connector has no URL")
     if not url.startswith(("http://", "https://")):
-        # A local file is a source too, and it needs no network.
-        path = Path(url).expanduser()
-        if not path.exists():
-            raise RuntimeError(f"the connector's URL is not http(s) and {url} does not exist")
-        text = path.read_text(errors="replace")
-        return parse_rows(text, connector)
+        # Only the network is a connector source. A local file would let any
+        # caller read one, and the file open already handles those.
+        raise RuntimeError("a connector's URL must be http:// or https://")
 
     method = str(connector.get("method") or "GET").upper()
+    if method not in ("GET", "POST", "HEAD"):
+        raise RuntimeError(f"{method} is not a connector method; use GET, POST or HEAD")
     body = None
-    headers = resolved_headers(connector)
+    headers, notes = resolved_headers(connector, url)
     headers.setdefault("User-Agent", "iridium-sheets")
     headers.setdefault("Accept", "application/json, text/csv, */*")
 
-    request = urllib.request.Request(url, method=method, headers=headers, data=body)
+    request = urllib.request.Request(url, method=method, data=body)
+    # `add_unredirected_header` keeps a header off a redirect: a server that
+    # answers 302 sends the secret only to the host it was meant for.
+    for key, value in headers.items():
+        request.add_unredirected_header(key, value)
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-            raw = response.read()
+            raw = response.read(MAX_BYTES + 1)
+            if len(raw) > MAX_BYTES:
+                raise RuntimeError(f"the server sent more than {MAX_BYTES} bytes")
             text = raw.decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:200] if e.fp else ""
@@ -113,7 +158,10 @@ def fetch(connector: dict) -> tuple[list[str], list[list[str]], str]:
         raise RuntimeError(f"could not reach {url}: {e.reason}") from e
     except TimeoutError as e:
         raise RuntimeError(f"{url} did not answer within {TIMEOUT} seconds") from e
-    return parse_rows(text, connector)
+    header, rows, note = parse_rows(text, connector)
+    if notes:
+        note = f"{note}; " + "; ".join(notes)
+    return header, rows, note
 
 
 def parse_rows(text: str, connector: dict) -> tuple[list[str], list[list[str]], str]:

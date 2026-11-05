@@ -14,10 +14,10 @@ HERE="$ROOT/packaging/web"
 SITE="$ROOT/dist/web"
 if [[ "${1:-}" != "--skip-build" ]]; then
   command -v trunk >/dev/null || { echo "error: trunk not found (cargo install trunk --locked)" >&2; exit 1; }
-  [[ -f "$ROOT/apps/gridcraft-web/index.html" ]] || { echo "error: apps/gridcraft-web/index.html missing (the web app isn't set up yet)" >&2; exit 1; }
+  [[ -f "$ROOT/apps/iridium-sheets-web/index.html" ]] || { echo "error: apps/iridium-sheets-web/index.html missing (the web app isn't set up yet)" >&2; exit 1; }
   # --dist/--public-url here, so the output doesn't depend on Trunk.toml (which should agree:
   # public_url = "./").
-  (cd "$ROOT/apps/gridcraft-web" && trunk build --release --dist "$SITE" --public-url ./)
+  (cd "$ROOT/apps/iridium-sheets-web" && trunk build --release --dist "$SITE" --public-url ./)
 fi
 
 [[ -f "$SITE/index.html" ]] || { echo "error: $SITE/index.html missing; run without --skip-build" >&2; exit 1; }

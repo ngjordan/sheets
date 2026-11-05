@@ -12,7 +12,8 @@
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
-APP_ID=ph.iridium.sheets
+# shellcheck source=../brand.sh
+. "$ROOT/packaging/brand.sh"
 LINUX="$ROOT/packaging/linux"
 
 SKIP_BUILD=0
@@ -44,7 +45,7 @@ BASENAME="iridium-sheets-$VERSION-freebsd-$ARCH"
 echo "==> Iridium Sheets $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
-  (cd "$ROOT" && cargo build --release --locked -p gridcraft -p gridcraft-cli ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"})
+  (cd "$ROOT" && cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"})
 fi
 BIN="$CARGO_TARGET_DIR/${CARGO_BUILD_TARGET:+$CARGO_BUILD_TARGET/}release"
 WORK="$CARGO_TARGET_DIR/freebsd-package"
@@ -52,20 +53,20 @@ TREE="$WORK/$BASENAME"
 rm -rf "$WORK"
 
 install -d "$TREE/bin" "$TREE/share/applications" "$TREE/share/metainfo" "$TREE/share/mime/packages" \
-  "$TREE/share/icons" "$TREE/share/doc/gridcraft"
-install -m 755 "$BIN/gridcraft" "$BIN/gridcraft-cli" "$TREE/bin/"
-strip "$TREE/bin/gridcraft" "$TREE/bin/gridcraft-cli" 2>/dev/null || true
+  "$TREE/share/icons" "$TREE/share/doc/iridium-sheets"
+install -m 755 "$BIN/iridium-sheets" "$BIN/iridium-sheets-cli" "$TREE/bin/"
+strip "$TREE/bin/iridium-sheets" "$TREE/bin/iridium-sheets-cli" 2>/dev/null || true
 install -m 644 "$LINUX/$APP_ID.desktop" "$TREE/share/applications/$APP_ID.desktop"
 install -m 644 "$LINUX/$APP_ID.mime.xml" "$TREE/share/mime/packages/$APP_ID.xml"
-sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$GRIDCRAFT_BUILD_DATE/g" \
+sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$IRIDIUM_BUILD_DATE/g" \
   "$LINUX/$APP_ID.metainfo.xml.in" >"$TREE/share/metainfo/$APP_ID.metainfo.xml"
 cp -R "$ROOT/assets/app-icon/hicolor" "$TREE/share/icons/"
-copy_docs "$TREE/share/doc/gridcraft"
+copy_docs "$TREE/share/doc/iridium-sheets"
 
 tar -C "$WORK" -czf "$DIST/$BASENAME.tar.gz" "$BASENAME"
 echo "wrote $DIST/$BASENAME.tar.gz"
 
 # A cross-built binary cannot run on the x86_64 host.
-if [[ -z "${CARGO_BUILD_TARGET:-}" ]]; then "$TREE/bin/gridcraft-cli" --version; fi
+if [[ -z "${CARGO_BUILD_TARGET:-}" ]]; then "$TREE/bin/iridium-sheets-cli" --version; fi
 echo "==> done"
 ls -lh "$DIST/$BASENAME.tar.gz"

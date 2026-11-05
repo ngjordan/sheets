@@ -1,7 +1,7 @@
 //! Cell entry, selection, undo/redo, clipboard, clear, fill, find & replace.
 
-use gridcraft_core::{CellRef, MAX_ROWS, RangeRef, Value};
-use gridcraft_model::{Cell, Formula, StyleId};
+use iridium_core::{CellRef, MAX_ROWS, RangeRef, Value};
+use iridium_model::{Cell, Formula, StyleId};
 use serde_json::{Value as Json, json};
 
 use super::{
@@ -46,7 +46,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Set Values",
             [],
             None,
-            "{range?: \"A1\", values: [[...]] (rows of numbers/strings/bools/null; strings starting with = are formulas), parse?: bool (default true: a string goes through typed input, so \"05.04.2026\" becomes a date and \"2.500\" a number, by en-US rules; false stores every other string as the text it is, so a dd.mm.yyyy date or a thousands separator survives, a leading ' is kept and an empty string clears the cell)} → {cells, convertedCount, converted: [{cell, input, stored}] (up to 20 of the strings typed input read as a number, date, time, boolean or error, so a script can notice)}",
+            "{range?: \"A1\", values: [[...]] (rows of numbers/strings/bools/null; strings starting with = are formulas), literal?: bool (default false: true stores every string as the text it is, so a string that starts with = stays text and is not a formula), parse?: bool (default true: a string goes through typed input, so \"05.04.2026\" becomes a date and \"2.500\" a number, by en-US rules; false stores every other string as the text it is, so a dd.mm.yyyy date or a thousands separator survives, a leading ' is kept and an empty string clears the cell)} → {cells, convertedCount, converted: [{cell, input, stored}] (up to 20 of the strings typed input read as a number, date, time, boolean or error, so a script can notice)}",
             has_doc,
             range_set_values
         ),
@@ -238,7 +238,7 @@ fn redo(s: &mut Session, p: &Json) -> Result<Json> {
 // ---------------------------------------------------------------- clear
 
 /// The rows of `range` an applied filter hides (rows hidden by hand are not among them).
-fn filtered_rows(sh: &gridcraft_model::Sheet, range: RangeRef) -> std::collections::BTreeSet<u32> {
+fn filtered_rows(sh: &iridium_model::Sheet, range: RangeRef) -> std::collections::BTreeSet<u32> {
     sh.rows.range(range.start.row..=range.end.row).filter(|(r, info)| info.hidden && sh.is_row_filtered(**r)).map(|(r, _)| *r).collect()
 }
 
@@ -306,7 +306,7 @@ fn clear(s: &mut Session, p: &Json, what: &str) -> Result<Json> {
                     } else {
                         cell.value = Value::Empty;
                         if checkbox {
-                            cell.style = cx.wb.styles.derive(cell.style, |st| st.num_fmt = gridcraft_model::NumFmt::new("General"));
+                            cell.style = cx.wb.styles.derive(cell.style, |st| st.num_fmt = iridium_model::NumFmt::new("General"));
                         }
                     }
                 }
@@ -361,7 +361,7 @@ fn clear(s: &mut Session, p: &Json, what: &str) -> Result<Json> {
                     let blocked: Vec<_> = sh
                         .cells
                         .iter_range(reach)
-                        .filter(|(_, cell)| cell.formula.is_some() && cell.value == Value::Error(gridcraft_core::CellError::Spill))
+                        .filter(|(_, cell)| cell.formula.is_some() && cell.value == Value::Error(iridium_core::CellError::Spill))
                         .map(|(c, _)| (sheet, c))
                         .collect();
                     cx.changed.extend(blocked);

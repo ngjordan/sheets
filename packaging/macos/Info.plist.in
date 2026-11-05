@@ -31,13 +31,13 @@
     <string>zh-Hans</string>
   </array>
   <key>CFBundleDisplayName</key>
-  <string>Iridium Sheets</string>
+  <string>@APP_NAME@</string>
   <key>CFBundleName</key>
-  <string>Iridium Sheets</string>
+  <string>@APP_NAME@</string>
   <key>CFBundleExecutable</key>
-  <string>Iridium Sheets</string>
+  <string>@APP_NAME@</string>
   <key>CFBundleIdentifier</key>
-  <string>ph.iridium.sheets</string>
+  <string>@APP_ID@</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundlePackageType</key>
@@ -48,12 +48,12 @@
   <string>@SHORT_VERSION@</string>
   <key>CFBundleVersion</key>
   <string>@SHORT_VERSION@</string>
-  <key>Iridium SheetsVersion</key>
+  <key>IridiumVersion</key>
   <string>@VERSION@</string>
-  <key>Iridium SheetsBuildCommit</key>
+  <key>IridiumBuildCommit</key>
   <string>@BUILD_SHA@</string>
   <key>CFBundleIconFile</key>
-  <string>Iridium Sheets</string>
+  <string>@APP_NAME@</string>
   <key>LSApplicationCategoryType</key>
   <string>public.app-category.productivity</string>
   <!-- Must match MACOSX_DEPLOYMENT_TARGET in package.sh. Big Sur is the first release on
@@ -67,7 +67,7 @@
   <key>NSRequiresAquaSystemAppearance</key>
   <false/>
   <key>NSHumanReadableCopyright</key>
-  <string>Copyright © the Iridium Sheets authors. MIT OR Apache-2.0.</string>
+  <string>Copyright © the @APP_NAME@ authors. MIT OR Apache-2.0.</string>
 
   <!-- Files Iridium Sheets opens. Rank Alternate: it's offered under "Open With" without taking
        over the default app (Numbers, another spreadsheet) for these types. -->

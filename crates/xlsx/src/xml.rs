@@ -3,7 +3,7 @@
 
 use std::fmt::Write as _;
 
-use gridcraft_model::{PhoneticProps, PhoneticRun, PhoneticString};
+use iridium_model::{PhoneticProps, PhoneticRun, PhoneticString};
 use quick_xml::Reader;
 use quick_xml::XmlVersion;
 use quick_xml::events::{BytesStart, Event};
@@ -378,8 +378,8 @@ pub fn push_u64(o: &mut String, mut n: u64) {
     }
 }
 
-/// Appends the `A1`-style text of `c` ([`gridcraft_core::CellRef::a1`]).
-pub fn push_a1(o: &mut String, c: gridcraft_core::CellRef) {
+/// Appends the `A1`-style text of `c` ([`iridium_core::CellRef::a1`]).
+pub fn push_a1(o: &mut String, c: iridium_core::CellRef) {
     let mut letters = [0u8; 8];
     let mut i = letters.len();
     let mut n = u64::from(c.col) + 1;
@@ -717,7 +717,7 @@ mod tests {
     /// (`CellRef::a1`, `to_string`, the `num` formula and the `esc` character loop) write.
     #[test]
     fn appending_helpers_match_the_allocating_spellings() {
-        use gridcraft_core::{CellRef, MAX_COLS, MAX_ROWS};
+        use iridium_core::{CellRef, MAX_COLS, MAX_ROWS};
         for c in [
             CellRef::new(0, 0),
             CellRef::new(9, 25),

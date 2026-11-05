@@ -2,8 +2,8 @@
 
 use std::sync::Arc;
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::{Cell, PyCode};
+use iridium_core::{CellRef, Value};
+use iridium_model::{Cell, PyCode};
 use serde_json::json;
 
 use super::s;
@@ -116,7 +116,7 @@ fn a_rename_to_a_name_that_needs_quotes_rewrites_single_quoted_references() {
     s.execute("sheet.rename", json!({"sheet": 1, "name": "Bob's \"Q4\""})).unwrap();
     let c = code(&s, 0, "A1").unwrap();
     assert_eq!(c, "a = xl(\"'Bob''s \\\"Q4\\\"'!B2\")\nb = xl(\"'Bob''s \\\"Q4\\\"'!C3\")");
-    let refs: Vec<Option<String>> = gridcraft_model::python::xl_calls(&c).into_iter().map(|x| x.reference).collect();
+    let refs: Vec<Option<String>> = iridium_model::python::xl_calls(&c).into_iter().map(|x| x.reference).collect();
     assert_eq!(refs, [Some("'Bob''s \"Q4\"'!B2".to_string()), Some("'Bob''s \"Q4\"'!C3".to_string())]);
     // And back to a plain name.
     s.execute("sheet.rename", json!({"sheet": 1, "name": "Data"})).unwrap();
@@ -187,7 +187,7 @@ fn python_cells_survive_native_json() {
     plant(&mut s, 0, "B2", "x = 1\nx");
     let wb = s.doc().unwrap().wb.clone();
     let json = serde_json::to_string(&*wb).unwrap();
-    let back: gridcraft_model::Workbook = serde_json::from_str(&json).unwrap();
+    let back: iridium_model::Workbook = serde_json::from_str(&json).unwrap();
     let cell = back.sheet(0).unwrap().cell(CellRef::parse("B2").unwrap()).unwrap();
     assert_eq!(cell.py.as_ref().unwrap().code, "x = 1\nx");
     // Cells written before Python existed have no `py` field.
@@ -198,7 +198,7 @@ fn python_cells_survive_native_json() {
 
 #[test]
 fn new_errors_parse_and_have_error_type_numbers() {
-    use gridcraft_core::CellError;
+    use iridium_core::CellError;
     for (text, e) in
         [("#PYTHON!", CellError::Python), ("#BUSY!", CellError::Busy), ("#TIMEOUT!", CellError::Timeout), ("#BLOCKED!", CellError::Blocked)]
     {
@@ -242,9 +242,9 @@ fn a_macro_counts_python_code_as_data_and_a_blocked_spill_as_no_write() {
         let wb = Arc::make_mut(&mut d.wb);
         let cell = wb.sheet_mut(0).unwrap().cells.get_mut(CellRef::parse("J2").unwrap()).unwrap();
         let data = vec![Value::Number(5.0), Value::Number(6.0)];
-        let value = Value::Array(Arc::new(gridcraft_core::Array::new(2, 1, data).unwrap()));
+        let value = Value::Array(Arc::new(iridium_core::Array::new(2, 1, data).unwrap()));
         Arc::make_mut(cell.py.as_mut().unwrap()).output =
-            Some(gridcraft_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
+            Some(iridium_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
     }
     s.execute("formulas.calculateNow", json!({})).unwrap();
     assert_eq!(super::v(&s, "J3"), Value::Number(6.0));
@@ -281,7 +281,7 @@ fn replace_edits_a_python_cells_code_and_keeps_it_a_python_cell() {
     let d = s.doc().unwrap();
     let cell = d.wb.sheet(0).unwrap().cell(CellRef::parse("A1").unwrap()).unwrap();
     assert!(cell.py.as_ref().unwrap().object, "the return type is kept");
-    assert_eq!(cell.value, Value::Error(gridcraft_core::CellError::Blocked));
+    assert_eq!(cell.value, Value::Error(iridium_core::CellError::Blocked));
     s.execute("edit.undo", json!({})).unwrap();
     assert_eq!(code(&s, 0, "A1").as_deref(), Some("x = 1\nx"));
 }
@@ -289,7 +289,7 @@ fn replace_edits_a_python_cells_code_and_keeps_it_a_python_cell() {
 #[test]
 fn replace_leaves_python_code_that_would_no_longer_fit() {
     let mut s = s();
-    let long = "a".repeat(gridcraft_model::python::MAX_FORMULA_CHARS / 2);
+    let long = "a".repeat(iridium_model::python::MAX_FORMULA_CHARS / 2);
     plant(&mut s, 0, "A1", &long);
     let r = s.execute("edit.replace", json!({"what": "a", "with": "bb"})).unwrap();
     assert_eq!(r["replaced"], 0);
@@ -338,14 +338,14 @@ fn unmerging_lets_a_blocked_python_result_spill_again() {
         let d = s.doc_mut().unwrap();
         let wb = Arc::make_mut(&mut d.wb);
         let cell = wb.sheet_mut(0).unwrap().cells.get_mut(CellRef::parse("A1").unwrap()).unwrap();
-        let value = Value::Array(Arc::new(gridcraft_core::Array::new(2, 1, vec![Value::Number(5.0), Value::Number(6.0)]).unwrap()));
+        let value = Value::Array(Arc::new(iridium_core::Array::new(2, 1, vec![Value::Number(5.0), Value::Number(6.0)]).unwrap()));
         Arc::make_mut(cell.py.as_mut().unwrap()).output =
-            Some(gridcraft_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
+            Some(iridium_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
     }
     s.execute("formulas.calculateNow", json!({})).unwrap();
     assert_eq!(super::v(&s, "A2"), Value::Number(6.0));
     s.execute("home.mergeCells", json!({"range": "A2:B2"})).unwrap();
-    assert_eq!(super::v(&s, "A1"), Value::Error(gridcraft_core::CellError::Spill), "a merged cell blocks the spill");
+    assert_eq!(super::v(&s, "A1"), Value::Error(iridium_core::CellError::Spill), "a merged cell blocks the spill");
     s.execute("home.unmergeCells", json!({"range": "A2:B2"})).unwrap();
     assert_eq!((super::v(&s, "A1"), super::v(&s, "A2")), (Value::Number(5.0), Value::Number(6.0)), "it spills again");
 }
@@ -380,9 +380,9 @@ pub(super) fn spill_with_a_reader() -> crate::Session {
         let d = s.doc_mut().unwrap();
         let wb = Arc::make_mut(&mut d.wb);
         let cell = wb.sheet_mut(0).unwrap().cells.get_mut(CellRef::parse("A1").unwrap()).unwrap();
-        let value = Value::Array(Arc::new(gridcraft_core::Array::new(2, 1, vec![Value::Number(5.0), Value::Number(6.0)]).unwrap()));
+        let value = Value::Array(Arc::new(iridium_core::Array::new(2, 1, vec![Value::Number(5.0), Value::Number(6.0)]).unwrap()));
         Arc::make_mut(cell.py.as_mut().unwrap()).output =
-            Some(gridcraft_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
+            Some(iridium_model::PyOutput { value, type_name: "list".into(), preview: String::new(), convertible: true });
     }
     s.execute("formulas.calculateNow", json!({})).unwrap();
     s.execute("cell.set", json!({"cell": "B1", "input": "=SUM(A2)"})).unwrap();
@@ -423,7 +423,7 @@ fn clearing_pasting_over_or_blocking_a_python_spill_recalculates_its_readers() {
     assert_eq!(super::v(&s, "B1"), Value::Number(0.0), "paste");
     let mut s = spill_with_a_reader();
     s.execute("home.mergeCells", json!({"range": "A2:A3"})).unwrap();
-    assert_eq!(super::v(&s, "A1"), Value::Error(gridcraft_core::CellError::Spill));
+    assert_eq!(super::v(&s, "A1"), Value::Error(iridium_core::CellError::Spill));
     assert_eq!(super::v(&s, "B1"), Value::Number(0.0), "merge");
     s.execute("edit.undo", json!({})).unwrap();
     assert_eq!(super::v(&s, "B1"), Value::Number(6.0), "undo");
@@ -434,7 +434,7 @@ fn clearing_pasting_over_or_blocking_a_python_spill_recalculates_its_readers() {
 /// `prefix` and a comment padded to the longest code that still fits in one cell.
 fn at_the_limit(prefix: &str) -> String {
     let with = |n: usize| format!("{prefix}\n#{}", "x".repeat(n));
-    let (mut lo, mut hi) = (0, gridcraft_model::python::MAX_FORMULA_CHARS);
+    let (mut lo, mut hi) = (0, iridium_model::python::MAX_FORMULA_CHARS);
     while lo < hi {
         let mid = (lo + hi).div_ceil(2);
         if PyCode::new(&with(mid)).fits() { lo = mid } else { hi = mid - 1 }

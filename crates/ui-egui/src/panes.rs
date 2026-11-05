@@ -3,7 +3,7 @@
 use egui::{Color32, Ui, vec2};
 use serde_json::{Value as Json, json};
 
-use gridcraft_engine::model::{ObjKind, ObjRef};
+use iridium_engine::model::{ObjKind, ObjRef};
 
 use crate::SheetApp;
 use crate::theme::{self, Tokens};
@@ -56,7 +56,7 @@ pub fn show(app: &mut SheetApp, ui: &mut Ui) {
 fn comments(app: &mut SheetApp, ui: &mut Ui) {
     let Some(d) = app.session.active() else { return };
     let Some(sh) = d.wb.active() else { return };
-    let list: Vec<(String, gridcraft_engine::model::Comment)> = sh.comments.iter().map(|(c, m)| (c.a1(), m.clone())).collect();
+    let list: Vec<(String, iridium_engine::model::Comment)> = sh.comments.iter().map(|(c, m)| (c.a1(), m.clone())).collect();
     if list.is_empty() {
         ui.label(egui::RichText::new("No comments on this sheet yet. Select a cell and choose New Comment.").italics());
     }
@@ -115,7 +115,7 @@ fn watch(app: &mut SheetApp, ui: &mut Ui) {
         && let Some(d) = app.session.active()
         && let Some(sh) = d.wb.active()
     {
-        let r = format!("{}!{}", gridcraft_engine::formula::quote_sheet(&sh.name), d.selection.active.a1());
+        let r = format!("{}!{}", iridium_engine::formula::quote_sheet(&sh.name), d.selection.active.a1());
         let _ = app.session.run("formulas.watchWindow", json!({"add": r}));
     }
     let list = app.session.run("formulas.watchWindow", json!({})).unwrap_or(Json::Null);
@@ -179,7 +179,7 @@ fn format_chart(app: &mut SheetApp, ui: &mut Ui) {
     };
     let theme = app.session.active().map(|d| d.wb.theme.clone()).unwrap_or_default();
     ui.collapsing("Chart Title", |ui| {
-        let field = egui::Id::unique(("gridcraft.chart_title", id));
+        let field = egui::Id::unique(("iridium-sheets.chart_title", id));
         if let Some(title) = crate::widgets::committed_text(ui, field, chart.title.as_deref().unwrap_or(""), None) {
             app.run_or_alert("chart.set", json!({"chart": id, "title": title}));
         }
@@ -203,7 +203,7 @@ fn format_chart(app: &mut SheetApp, ui: &mut Ui) {
                 ("Scatter", "scatter", ""),
                 ("Radar", "radar", ""),
             ] {
-                let cur = chart.kind == gridcraft_engine::cmd::insert::chart_kind(k, s);
+                let cur = chart.kind == iridium_engine::cmd::insert::chart_kind(k, s);
                 if ui.selectable_label(cur, l).clicked() {
                     app.run_or_alert("chart.set", json!({"chart": id, "type": k, "subtype": s}));
                 }
@@ -231,14 +231,14 @@ fn format_chart(app: &mut SheetApp, ui: &mut Ui) {
         }
         ui.horizontal(|ui| {
             ui.label("Horizontal axis title:");
-            let field = egui::Id::unique(("gridcraft.chart_x_title", id));
+            let field = egui::Id::unique(("iridium-sheets.chart_x_title", id));
             if let Some(xt) = crate::widgets::committed_text(ui, field, chart.x_title.as_deref().unwrap_or(""), None) {
                 app.run_or_alert("chart.set", json!({"chart": id, "xTitle": if xt.is_empty() { Json::Null } else { json!(xt) }}));
             }
         });
         ui.horizontal(|ui| {
             ui.label("Vertical axis title:");
-            let field = egui::Id::unique(("gridcraft.chart_y_title", id));
+            let field = egui::Id::unique(("iridium-sheets.chart_y_title", id));
             if let Some(yt) = crate::widgets::committed_text(ui, field, chart.y_title.as_deref().unwrap_or(""), None) {
                 app.run_or_alert("chart.set", json!({"chart": id, "yTitle": if yt.is_empty() { Json::Null } else { json!(yt) }}));
             }
@@ -267,7 +267,7 @@ fn format_chart(app: &mut SheetApp, ui: &mut Ui) {
         }
     });
     ui.collapsing("Series", |ui| {
-        let data = app.session.active().map(|d| gridcraft_chart::resolve(&d.wb, d.wb.active_sheet(), &chart));
+        let data = app.session.active().map(|d| iridium_chart::resolve(&d.wb, d.wb.active_sheet(), &chart));
         for (i, s) in chart.series.iter().enumerate() {
             let name = data.as_ref().and_then(|d| d.series.get(i)).map(|x| x.name.clone()).unwrap_or_else(|| format!("Series {}", i + 1));
             let col =
@@ -307,7 +307,7 @@ fn format_chart(app: &mut SheetApp, ui: &mut Ui) {
     });
     ui.collapsing("Size", |ui| {
         // Keep the value being typed or dragged between frames; reloading it from the chart every frame threw the edit away.
-        let draft = egui::Id::unique(("gridcraft.chart_size_draft", id));
+        let draft = egui::Id::unique(("iridium-sheets.chart_size_draft", id));
         let current = (chart.anchor.width, chart.anchor.height);
         let (mut w, mut h) = ui.data_mut(|d| d.get_temp::<(f32, f32)>(draft)).unwrap_or(current);
         // A file can make a chart larger than the 4,000 points a field otherwise reaches. The

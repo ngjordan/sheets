@@ -1,4 +1,4 @@
-use gridcraft_core::{CellRef, Value};
+use iridium_core::{CellRef, Value};
 use serde_json::json;
 
 use crate::Session;

@@ -2,7 +2,7 @@
 //! `PY("…",0|1)` formula of the function's syntax, and the `xl("…")` references inside it). An
 //! xlsx file keeps the code in its Python part instead (see the xlsx crate).
 
-use gridcraft_core::{CellError, Value};
+use iridium_core::{CellError, Value};
 use serde::{Deserialize, Serialize};
 
 /// Excel's limit on the characters of one formula. A Python cell's code must fit in it once it is
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn result_values() {
-        let arr = gridcraft_core::Array::new(2, 1, vec![1.0.into(), 2.0.into()]).map(Value::from).unwrap();
+        let arr = iridium_core::Array::new(2, 1, vec![1.0.into(), 2.0.into()]).map(Value::from).unwrap();
         let out = PyOutput { value: arr.clone(), type_name: "list".into(), preview: "[1, 2]".into(), convertible: true };
         let mut py = PyCode { output: Some(out), ..PyCode::new("[1, 2]") };
         assert_eq!(py.result_value(), Some(arr));

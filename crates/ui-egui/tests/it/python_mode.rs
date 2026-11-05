@@ -3,8 +3,8 @@
 
 use egui::{Event, Key, Modifiers, vec2};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellError, CellRef, Value};
+use iridium_engine::Session;
+use iridium_engine::core::{CellError, CellRef, Value};
 use serde_json::json;
 
 use crate::common::Harness;

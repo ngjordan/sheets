@@ -6,7 +6,7 @@
 //! window's selection and sheet into its workbook. So a draft, a dialog or a message stays in the
 //! window it belongs to.
 
-use gridcraft_engine::core::CellRef;
+use iridium_engine::core::CellRef;
 
 use crate::{Notice, SheetApp, backstage, dialogs, editor, grid, keytips, text_box};
 
@@ -23,14 +23,14 @@ pub struct WindowUi {
     grid: grid::GridState,
     name_box: Option<String>,
     keytips: keytips::KeyTips,
-    selected_object: Option<gridcraft_engine::model::ObjRef>,
+    selected_object: Option<iridium_engine::model::ObjRef>,
     tab_run: Option<(u64, usize, u32, CellRef)>,
     open_switch_windows: bool,
     /// The ribbon tab this window shows. A contextual tab depends on this window's selection, so
     /// another window's frame must not reset it.
     ribbon_tab: String,
     /// The status bar's Ready/Enter/Edit, which follows the window's cell draft.
-    mode: gridcraft_engine::Mode,
+    mode: iridium_engine::Mode,
     /// A key tip's control request waiting for the frame that draws this window's ribbon.
     keytip_invoke_next: Option<&'static str>,
 }

@@ -1,5 +1,5 @@
 //! Iridium Sheets's egui frontend: an Excel-style window (title bar with Quick Access Toolbar,
-//! ribbon, formula bar, grid, sheet tabs, status bar) over `gridcraft-engine`.
+//! ribbon, formula bar, grid, sheet tabs, status bar) over `iridium-engine`.
 //!
 //! The UI is thin: it reads engine state and acts through [`SheetApp::run`] (engine commands by
 //! id). Everything it can do is also reachable over the control channel ([`control`]).
@@ -11,7 +11,7 @@
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     id: "iridium-sheets",
-    name: "Iridium Sheets",
+    name: iridium_core::brand::NAME,
     tagline: "Spreadsheets and data",
     repo: "ngjordan/iridium-sheets",
     former_ids: &[],
@@ -67,8 +67,8 @@ pub use window_ui::WindowUi;
 
 use std::collections::HashMap;
 
-use gridcraft_engine::core::{CellRef, RangeRef};
-use gridcraft_engine::{Session, UiRequest};
+use iridium_engine::core::{CellRef, RangeRef};
+use iridium_engine::{Session, UiRequest};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value as Json, json};
 
@@ -302,7 +302,7 @@ pub struct SheetApp {
     /// current input instead of reusing a stale recorded value.
     pub(crate) capture_geometry_from_raw: bool,
     /// The floating object selected on the sheet (chart, picture, shape, equation or slicer).
-    pub selected_object: Option<gridcraft_engine::model::ObjRef>,
+    pub selected_object: Option<iridium_engine::model::ObjRef>,
     /// The system clipboard's text when Iridium Sheets last copied without publishing to it (a
     /// control-channel or MCP `edit.copy`/`edit.cut`). While the system clipboard still holds this
     /// text, Iridium Sheets's copy is the newer one and Paste uses it.

@@ -1,9 +1,9 @@
 //! Legacy `.xls` (BIFF8) cell formatting: Font, XF, Palette and Style records. Every workbook is
 //! assembled here from the [MS-XLS] structures; no Excel-produced file is used.
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::style::Protection;
-use gridcraft_model::{BorderLine, BorderStyle, Color, Fill, HAlign, PatternType, Style, StyleId, Underline, VAlign, VertAlign, Workbook};
+use iridium_core::{CellRef, Value};
+use iridium_model::style::Protection;
+use iridium_model::{BorderLine, BorderStyle, Color, Fill, HAlign, PatternType, Style, StyleId, Underline, VAlign, VertAlign, Workbook};
 
 use super::xls_tests::compound;
 use crate::tables::INDEXED;

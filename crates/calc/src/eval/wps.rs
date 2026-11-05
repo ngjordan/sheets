@@ -6,7 +6,7 @@
 //!
 //! - <https://bbs.wps.cn/topic/33990> — "WPS又新增两个独有函数"
 
-use gridcraft_core::{Array, CellError, Value};
+use iridium_core::{Array, CellError, Value};
 
 use super::{Ev, Evaluator, Expr, err};
 
@@ -100,7 +100,7 @@ pub(super) fn evaluate(ev: &mut Evaluator, args: &[Expr]) -> Ev {
         None => return err(CellError::Value),
     };
     let body = text.strip_prefix('=').unwrap_or(&text);
-    match gridcraft_formula::parse(body) {
+    match iridium_formula::parse(body) {
         Ok(expr) => {
             let v = ev.eval(&expr);
             match v {

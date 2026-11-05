@@ -1,14 +1,14 @@
 //! Formula text conversion between the model (canonical text, no `=`) and files (`_xlfn.`
 //! prefixes for newer functions).
 
-use gridcraft_formula::Expr;
-use gridcraft_model::Formula;
+use iridium_formula::Expr;
+use iridium_model::Formula;
 
 /// Formula text for a file.
 pub fn to_file(f: &Formula) -> String {
     match f.expr_arc() {
         // Most formulas have nothing the file spells differently: print them without copying.
-        Some(e) if !needs_file_spelling(&e) => gridcraft_formula::print(&e),
+        Some(e) if !needs_file_spelling(&e) => iridium_formula::print(&e),
         Some(e) => expr_to_file(Expr::clone(&e)),
         None => f.text.clone(),
     }
@@ -21,7 +21,7 @@ fn needs_file_spelling(e: &Expr) -> bool {
     e.walk(&mut |x| {
         found |= match x {
             Expr::Call(name, _) => name == "LET" || name == "LAMBDA" || crate::tables::file_function_name(name).is_some(),
-            Expr::Unary(gridcraft_formula::UnOp::Spill | gridcraft_formula::UnOp::At | gridcraft_formula::UnOp::Trim(_), _) => true,
+            Expr::Unary(iridium_formula::UnOp::Spill | iridium_formula::UnOp::At | iridium_formula::UnOp::Trim(_), _) => true,
             Expr::Struct(_) => true,
             _ => false,
         }
@@ -32,7 +32,7 @@ fn needs_file_spelling(e: &Expr) -> bool {
 /// Arbitrary formula text (names, CF, validation) for a file. Unparseable text is kept.
 pub fn text_to_file(text: &str) -> String {
     let body = text.strip_prefix('=').unwrap_or(text);
-    match gridcraft_formula::parse(body) {
+    match iridium_formula::parse(body) {
         Ok(e) => expr_to_file(e),
         Err(_) => body.to_string(),
     }
@@ -109,23 +109,23 @@ fn expr_to_file(e: Expr) -> String {
         },
         // Files have no `#` operator: Excel writes `A1#` as `_xlfn.ANCHORARRAY(A1)`, and a spill
         // reference that became `#REF!` (its cell was deleted) as plain `#REF!`.
-        Expr::Unary(gridcraft_formula::UnOp::Spill, r) if matches!(*r, Expr::Error(_)) => *r,
-        Expr::Unary(gridcraft_formula::UnOp::Spill, r) => Expr::Call("_xlfn.ANCHORARRAY".into(), vec![*r]),
+        Expr::Unary(iridium_formula::UnOp::Spill, r) if matches!(*r, Expr::Error(_)) => *r,
+        Expr::Unary(iridium_formula::UnOp::Spill, r) => Expr::Call("_xlfn.ANCHORARRAY".into(), vec![*r]),
         // Nor an `@` operator: Excel writes `@x` as `_xlfn.SINGLE(x)`.
-        Expr::Unary(gridcraft_formula::UnOp::At, x) => Expr::Call("_xlfn.SINGLE".into(), vec![*x]),
+        Expr::Unary(iridium_formula::UnOp::At, x) => Expr::Call("_xlfn.SINGLE".into(), vec![*x]),
         // Nor the `[@Col]` shorthand: files spell it `[[#This Row],[Col]]`, or Excel repairs
         // the file and drops the table. Carried as a name, which prints verbatim.
-        Expr::Struct(st) => Expr::Name(gridcraft_formula::printer::struct_ref_file(&st)),
+        Expr::Struct(st) => Expr::Name(iridium_formula::printer::struct_ref_file(&st)),
         // Nor trim-reference operators: written as the equivalent `TRIMRANGE(range,n,n)`, which
         // every Excel with trim references reads. (Excel's own file spelling of `A1:.E10` is
         // not publicly documented; the `_xlfn._TRO_*` call forms are accepted on read.)
-        Expr::Unary(gridcraft_formula::UnOp::Trim(mode), x) => {
+        Expr::Unary(iridium_formula::UnOp::Trim(mode), x) => {
             let code = Expr::Number(f64::from(mode.code()));
             Expr::Call("_xlfn.TRIMRANGE".into(), vec![*x, code.clone(), code])
         }
         other => other,
     });
-    gridcraft_formula::print(&e)
+    iridium_formula::print(&e)
 }
 
 /// `_xlpm.x` → `x` (any case, as the parser upper-cases function names).
@@ -139,8 +139,8 @@ fn strip_param_prefix(n: String) -> String {
 /// Formula text read from a file → model text (strips prefixes when it parses).
 pub fn from_file(text: &str) -> String {
     let body = text.strip_prefix('=').unwrap_or(text);
-    match gridcraft_formula::parse(body) {
-        Ok(e) => gridcraft_formula::print(&strip_param_prefixes(e)),
+    match iridium_formula::parse(body) {
+        Ok(e) => iridium_formula::print(&strip_param_prefixes(e)),
         Err(_) => body.to_string(),
     }
 }
@@ -169,9 +169,9 @@ pub(crate) fn unwrap_google_sheets(text: &str, known: &dyn Fn(&str) -> bool) -> 
     if !mentions_dummy_function(text) {
         return None;
     }
-    let e = gridcraft_formula::parse(text.strip_prefix('=').unwrap_or(text)).ok()?;
+    let e = iridium_formula::parse(text.strip_prefix('=').unwrap_or(text)).ok()?;
     let unwrapped = unwrap_dummy_functions(e, known)?;
-    Some(gridcraft_formula::print(&strip_param_prefixes(unwrapped)))
+    Some(iridium_formula::print(&strip_param_prefixes(unwrapped)))
 }
 
 /// The original formula inside Google Sheets' export wrapper
@@ -191,10 +191,10 @@ fn dummy_function_inner(e: &Expr, known: &dyn Fn(&str) -> bool) -> Option<Expr> 
     let [Expr::Text(src)] = inner.as_slice() else { return None };
     // The text came out of a formula within the length limit, so it is within it too; check
     // anyway rather than rely on that.
-    if src.len() > gridcraft_formula::MAX_FORMULA_LEN && src.chars().count() > gridcraft_formula::MAX_FORMULA_LEN {
+    if src.len() > iridium_formula::MAX_FORMULA_LEN && src.chars().count() > iridium_formula::MAX_FORMULA_LEN {
         return None;
     }
-    let parsed = gridcraft_formula::parse(src).ok()?;
+    let parsed = iridium_formula::parse(src).ok()?;
     // A function Iridium Sheets can't calculate would show `#NAME?` where Excel shows the cached
     // value; a wrapper inside the text is one too, so only one level is ever unwrapped.
     let mut all_known = true;
@@ -242,15 +242,15 @@ fn unwrap_dummy_functions(e: Expr, known: &dyn Fn(&str) -> bool) -> Option<Expr>
     if !found {
         return None;
     }
-    gridcraft_formula::parse(&gridcraft_formula::print(&rewritten)).ok()?;
+    iridium_formula::parse(&iridium_formula::print(&rewritten)).ok()?;
     Some(rewritten)
 }
 
-/// What the engine passes as `known` (`gridcraft_calc::is_known_function`), for tests here: the
+/// What the engine passes as `known` (`iridium_calc::is_known_function`), for tests here: the
 /// function library plus the evaluator's own functions the tests use.
 #[cfg(test)]
 pub(crate) fn test_known_function(n: &str) -> bool {
-    gridcraft_functions::lookup(n).is_some() || ["IF", "IFERROR", "ROW", "INDEX", "LET", "LAMBDA"].iter().any(|s| s.eq_ignore_ascii_case(n))
+    iridium_functions::lookup(n).is_some() || ["IF", "IFERROR", "ROW", "INDEX", "LET", "LAMBDA"].iter().any(|s| s.eq_ignore_ascii_case(n))
 }
 
 #[cfg(test)]
@@ -304,7 +304,7 @@ mod tests {
             "{}+My Sheet!A:A+Total",
         ];
         let mut checked = 0;
-        for spec in gridcraft_functions::all() {
+        for spec in iridium_functions::all() {
             let n = spec.min_args.max(1).min(spec.max_args).min(4);
             let args = ["A1", "B2:C3", "1", "\"x\""].get(..n).unwrap_or_default().join(",");
             let call = format!("{}({args})", spec.name);
@@ -316,7 +316,7 @@ mod tests {
                 checked += 1;
             }
         }
-        assert!(checked > gridcraft_functions::all().len() * 10, "only {checked} formulas parsed");
+        assert!(checked > iridium_functions::all().len() * 10, "only {checked} formulas parsed");
     }
 
     #[test]
@@ -326,7 +326,7 @@ mod tests {
         assert_eq!(from_file("SUM(_xlfn.ANCHORARRAY(Sheet1!$D$1))+_xlfn.ANCHORARRAY(B2)"), "SUM(Sheet1!$D$1#)+B2#");
         // Found by the command-sequence fuzzer: deleting the anchor of `H5#` left `=#REF!` in
         // the workbook but `ANCHORARRAY(#REF!)` in the file, which read back differently.
-        let deleted = Formula::from_expr(Expr::Unary(gridcraft_formula::UnOp::Spill, Box::new(Expr::Error(gridcraft_core::CellError::Ref))));
+        let deleted = Formula::from_expr(Expr::Unary(iridium_formula::UnOp::Spill, Box::new(Expr::Error(iridium_core::CellError::Ref))));
         assert_eq!(deleted.text, "#REF!");
         assert_eq!(to_file(&deleted), "#REF!");
     }
@@ -441,21 +441,21 @@ mod tests {
             "IFERROR(_xludf.DUMMYFUNCTION(\"A1\"),5)",
             "__xludf.DUMMYFUNCTION(\"A1\")",
         ] {
-            let kept = gridcraft_formula::print(&gridcraft_formula::parse(file).unwrap());
+            let kept = iridium_formula::print(&iridium_formula::parse(file).unwrap());
             assert_eq!(read(file), kept, "{file}");
             assert_eq!(unwrap_google_sheets(&from_file(file), &test_known_function), None, "{file}");
         }
         // Inner text over the formula length limit.
-        let long = format!("IFERROR(__xludf.DUMMYFUNCTION(\"{}\"),5)", "1".repeat(gridcraft_formula::MAX_FORMULA_LEN + 1));
+        let long = format!("IFERROR(__xludf.DUMMYFUNCTION(\"{}\"),5)", "1".repeat(iridium_formula::MAX_FORMULA_LEN + 1));
         assert!(read(&long).contains("DUMMYFUNCTION"));
         // Nesting that would go past the parser's depth limit once unwrapped is kept as well.
         let deep = |n: usize, mid: &str| format!("{}{mid}{}", "(".repeat(n), ")".repeat(n));
         let inner = deep(200, "1").replace('"', "\"\"");
         let file = deep(200, &format!("1+IFERROR(__xludf.DUMMYFUNCTION(\"{inner}\"),5)"));
-        assert!(gridcraft_formula::parse(&file).is_ok());
+        assert!(iridium_formula::parse(&file).is_ok());
         let read = read(&file);
         assert!(read.contains("DUMMYFUNCTION"));
-        assert!(gridcraft_formula::parse(&read).is_ok());
+        assert!(iridium_formula::parse(&read).is_ok());
     }
 
     #[test]

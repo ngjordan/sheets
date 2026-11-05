@@ -2,8 +2,8 @@
 
 use egui::Shape;
 use egui::epaint::ColorMode;
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 /// The colour of the ink stroke drawn from (40, 40) to (200, 40) sheet points, `width` points

@@ -3,8 +3,8 @@
 //! reads the formula inside when Iridium Sheets calculates every function it calls, keeps the file's
 //! cached value, and saves the real formula.
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::{Formula, Workbook};
+use iridium_core::{CellRef, Value};
+use iridium_model::{Formula, Workbook};
 
 use crate::package::Package;
 use crate::{read_xlsx, read_xlsx_with, write_xlsx};
@@ -53,7 +53,7 @@ fn assert_google_book(wb: &Workbook) {
     assert_eq!(formula(wb, "A1").text, HEBREW_MODEL);
     let e1 = formula(wb, "E1");
     assert_eq!(e1.text, "FILTER(B1:B3,B1:B3>1)");
-    assert_eq!(e1.array, Some(gridcraft_core::RangeRef::parse("E1:E2").unwrap()));
+    assert_eq!(e1.array, Some(iridium_core::RangeRef::parse("E1:E2").unwrap()));
     assert_eq!(formula(wb, "F1").text, "B1*2");
     assert_eq!(formula(wb, "F2").text, "B2*2");
     assert_eq!(formula(wb, "F3").text, "B3*2");

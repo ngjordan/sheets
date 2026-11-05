@@ -50,19 +50,32 @@ pub(super) fn median(v: Vec<f64>) -> R<f64> {
 
 /// Values occurring at least twice, ordered by first occurrence, with their (equal, maximal) count.
 fn modes(v: &[f64]) -> Vec<f64> {
-    let mut counts: Vec<(f64, usize)> = Vec::new();
+    // Counting in a map, not by scanning the counts for every value: a
+    // column of a million distinct values took minutes this way.
+    // Counting in a map, not by scanning the counts for every value: a
+    // column of a million distinct values took minutes this way. The key is
+    // the value's bits, because f64 is not Eq and cannot key a HashMap; zero
+    // is normalised so that 0 and -0 are one value, as `==` says they are.
+    let mut counts: std::collections::HashMap<u64, usize> = std::collections::HashMap::new();
+    let mut order: Vec<(u64, f64)> = Vec::new();
     for &x in v {
-        if let Some(e) = counts.iter_mut().find(|e| e.0 == x) {
-            e.1 += 1;
-        } else {
-            counts.push((x, 1));
+        if x.is_nan() {
+            continue;
+        }
+        let key = if x == 0.0 { 0u64 } else { x.to_bits() };
+        match counts.get_mut(&key) {
+            Some(c) => *c += 1,
+            None => {
+                counts.insert(key, 1);
+                order.push((key, x));
+            }
         }
     }
-    let best = counts.iter().map(|e| e.1).max().unwrap_or(0);
+    let best = counts.values().copied().max().unwrap_or(0);
     if best < 2 {
         return Vec::new();
     }
-    counts.into_iter().filter(|e| e.1 == best).map(|e| e.0).collect()
+    order.into_iter().filter(|(k, _)| counts.get(k).copied().unwrap_or(0) == best).map(|(_, x)| x).collect()
 }
 
 pub(super) fn mode_sngl(v: &[f64]) -> R<f64> {
@@ -270,7 +283,7 @@ pub(super) fn count_impl(a: &[Arg]) -> f64 {
             Value::Number(_) => c += 1,
             _ if x.from_ref => {}
             Value::Bool(_) => c += 1,
-            Value::Text(t) if gridcraft_core::parse::parse_number_text(t).is_some() => c += 1,
+            Value::Text(t) if iridium_core::parse::parse_number_text(t).is_some() => c += 1,
             _ => {}
         }
     }

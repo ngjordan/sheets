@@ -1,8 +1,8 @@
 //! The 100% stacked area chart: `insert.chart` and `chart.set` take type `area` with subtype
 //! `stacked100`.
 
-use gridcraft_engine::Session;
-use gridcraft_model::ChartKind;
+use iridium_engine::Session;
+use iridium_model::ChartKind;
 use serde_json::json;
 
 fn session() -> Session {

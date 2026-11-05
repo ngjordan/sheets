@@ -86,7 +86,7 @@ fn header_sections_split_join_and_field_names() {
 fn header_footer_date_follows_the_workbook_date_system() {
     let mut wb = Workbook::new();
     let date_1900 = hf_date_time(&wb).0;
-    wb.date_system = gridcraft_core::DateSystem::D1904;
+    wb.date_system = iridium_core::DateSystem::D1904;
     assert_eq!(hf_date_time(&wb).0, date_1900);
 }
 
@@ -276,7 +276,7 @@ fn page_order_sets_the_sequence_of_the_pages_as_measured_in_excel() {
 fn page_order_without_breaks_and_with_print_titles() {
     let mut s = s();
     // Every cell shows its own address: 60 rows and 15 columns are two pages tall and two wide.
-    let rows: Vec<Vec<Json>> = (1..=60).map(|r| (0..15).map(|c| json!(format!("{}{r}", gridcraft_core::col_to_letters(c)))).collect()).collect();
+    let rows: Vec<Vec<Json>> = (1..=60).map(|r| (0..15).map(|c| json!(format!("{}{r}", iridium_core::col_to_letters(c)))).collect()).collect();
     s.execute("range.setValues", json!({"range": "A1", "values": rows})).unwrap();
     for titles in [false, true] {
         if titles {
@@ -445,7 +445,7 @@ fn pdf_uses_indexed_number_format_palette_color() {
 fn export_writes_file() {
     let mut s = s();
     s.execute("cell.set", json!({"cell": "B2", "input": "hello"})).unwrap();
-    let dir = std::env::temp_dir().join(format!("gridcraft-print-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("iridium-print-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("out.pdf");
     let r = s.execute("file.exportPdf", json!({"path": path.to_str().unwrap()})).unwrap();
@@ -462,7 +462,7 @@ fn export_writes_file() {
 fn save_as_pdf_writes_a_pdf_and_keeps_the_workbook_file() {
     let mut s = s();
     s.execute("cell.set", json!({"cell": "B2", "input": "hello"})).unwrap();
-    let dir = std::env::temp_dir().join(format!("gridcraft-save-pdf-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("iridium-save-pdf-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("Out.PDF");
     let r = s.execute("file.saveAs", json!({"path": path.to_str().unwrap()})).unwrap();
@@ -508,7 +508,7 @@ fn charts_and_images_are_drawn() {
     let id = wb.next_object_id();
     wb.sheet_mut(0).unwrap().images.push(Image {
         id,
-        anchor: Anchor { cell: CellRef::new(5, 5), dx: 0.0, dy: 0.0, width: 40.0, height: 40.0, mode: gridcraft_model::AnchorMode::MoveAndSize },
+        anchor: Anchor { cell: CellRef::new(5, 5), dx: 0.0, dy: 0.0, width: 40.0, height: 40.0, mode: iridium_model::AnchorMode::MoveAndSize },
         data: png.into(),
         mime: "image/png".into(),
         alt: String::new(),
@@ -690,7 +690,7 @@ fn bands_unit() {
     assert_eq!(bands(0, 1_000_000, |_| 10.0, |_| 5.0, &[], 3).len(), 3);
     let w = wrap_lines("the quick brown fox jumps", Font::Helvetica, 10.0, 50.0);
     assert!(w.len() >= 2);
-    assert!(w.iter().all(|l| gridcraft_pdf::text_width(Font::Helvetica, 10.0, l) <= 50.0 || !l.contains(' ')));
+    assert!(w.iter().all(|l| iridium_pdf::text_width(Font::Helvetica, 10.0, l) <= 50.0 || !l.contains(' ')));
     let w = wrap_lines("Supercalifragilistic", Font::Helvetica, 10.0, 20.0);
     assert!(w.len() > 2);
 }
@@ -798,7 +798,7 @@ fn the_fallback_text_is_clipped_to_the_equation_frame() {
     s.execute("insert.textBox", json!({"at": "B12", "text": "later box"})).unwrap();
     let mut wb = (*s.doc().unwrap().wb).clone();
     if let Some(sh) = wb.sheet_mut(0) {
-        for x in sh.shapes.iter_mut().filter(|x| x.kind == gridcraft_model::ShapeKind::Equation) {
+        for x in sh.shapes.iter_mut().filter(|x| x.kind == iridium_model::ShapeKind::Equation) {
             x.text = format!("frac{{{}", "l".repeat(200));
             x.anchor.width = 40.0;
             x.anchor.height = 100.0;
@@ -839,7 +839,7 @@ fn an_equation_source_of_a_megabyte_prints_a_bounded_excerpt() {
     let took = start.elapsed();
     let text = String::from_utf8_lossy(&pdf);
     let longest = text.split(|c| c != 'l').map(str::len).max().unwrap_or(0);
-    assert_eq!(longest, gridcraft_math::MAX_SOURCE_BYTES, "the run is the excerpt and no more");
+    assert_eq!(longest, iridium_math::MAX_SOURCE_BYTES, "the run is the excerpt and no more");
     assert!(pdf.len() < 64 * 1024, "the PDF holds the excerpt, not the megabyte: {} bytes", pdf.len());
     assert!(took < std::time::Duration::from_secs(5), "{took:?}");
 }

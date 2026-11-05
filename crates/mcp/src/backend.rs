@@ -32,7 +32,7 @@ pub struct Remote {
 
 impl Remote {
     /// Connect to `addr` (`127.0.0.1:7979`), failing fast when nothing is listening. The app
-    /// requires a token (#777): `GRIDCRAFT_CONTROL_TOKEN`, else the file the app wrote for this port.
+    /// requires a token (#777): `IRIDIUM_CONTROL_TOKEN`, else the file the app wrote for this port.
     pub fn connect(addr: &str) -> std::io::Result<Self> {
         let token = crate::control_auth::client_token(addr).map_err(|e| std::io::Error::new(std::io::ErrorKind::PermissionDenied, e))?;
         Self::connect_with_token(addr, token)
@@ -84,7 +84,7 @@ impl Remote {
         } else {
             Err(std::io::Error::new(
                 std::io::ErrorKind::PermissionDenied,
-                "the app refused the control token (is GRIDCRAFT_CONTROL_TOKEN or the app's token file for this port out of date?)",
+                "the app refused the control token (is IRIDIUM_CONTROL_TOKEN or the app's token file for this port out of date?)",
             ))
         }
     }

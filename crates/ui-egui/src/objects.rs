@@ -2,7 +2,7 @@
 //! equations and slicers). Painting and hit-testing live in `chartview`.
 
 use egui::{CursorIcon, Pos2, Rect, Vec2};
-use gridcraft_engine::model::{ObjKind, ObjRef, ShapeKind, Sheet};
+use iridium_engine::model::{ObjKind, ObjRef, ShapeKind, Sheet};
 use serde_json::json;
 
 use crate::SheetApp;

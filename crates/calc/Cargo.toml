@@ -1,5 +1,5 @@
 [package]
-name = "gridcraft-calc"
+name = "iridium-calc"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,9 +9,9 @@ description = "Iridium Sheets calculation engine: dependency graph, recalculatio
 workspace = true
 
 [dependencies]
-gridcraft-core = { workspace = true }
-gridcraft-formula = { workspace = true }
-gridcraft-functions = { workspace = true }
-gridcraft-numfmt = { workspace = true }
-gridcraft-model = { workspace = true }
+iridium-core = { workspace = true }
+iridium-formula = { workspace = true }
+iridium-functions = { workspace = true }
+iridium-numfmt = { workspace = true }
+iridium-model = { workspace = true }
 log = { workspace = true }

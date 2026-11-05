@@ -4,8 +4,8 @@
 
 use std::sync::Arc;
 
-use gridcraft_core::{CellRef, Value};
-use gridcraft_model::{Cell, PyCode, python::MAX_FORMULA_CHARS};
+use iridium_core::{CellRef, Value};
+use iridium_model::{Cell, PyCode, python::MAX_FORMULA_CHARS};
 use serde_json::{Value as Json, json};
 
 use super::{CommandSpec, bad, cell_param_on, cmd, edit, has_doc, str_param, target_sheet};
@@ -103,7 +103,7 @@ fn store(s: &mut Session, cmd: &str, sheet: usize, at: CellRef, mut py: PyCode, 
             py.stale = o.stale;
             None
         }
-        None => Some(gridcraft_model::python::BLOCKED),
+        None => Some(iridium_model::python::BLOCKED),
     };
     edit(s, |cx| {
         let sh = cx.sheet_mut(sheet)?;

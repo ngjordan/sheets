@@ -21,9 +21,9 @@
 use std::collections::{BTreeSet, HashMap};
 use std::sync::Arc;
 
-use gridcraft_core::{CellRef, RangeRef, Value};
-use gridcraft_formula::adjust::Edit;
-use gridcraft_model::{Cell, CompareOp, InputKind, Macro, OnConflict, RepeatOf, Sheet, Step, StepKind, Workbook};
+use iridium_core::{CellRef, RangeRef, Value};
+use iridium_formula::adjust::Edit;
+use iridium_model::{Cell, CompareOp, InputKind, Macro, OnConflict, RepeatOf, Sheet, Step, StepKind, Workbook};
 use serde::Serialize;
 use serde_json::{Value as Json, json};
 
@@ -282,7 +282,7 @@ fn trim(wb: &Workbook, p: Place) -> Place {
 }
 
 /// What is wrong with `place` as `input`, one sentence each.
-fn check_input(wb: &Workbook, input: &gridcraft_model::NamedInput, place: Place) -> Vec<String> {
+fn check_input(wb: &Workbook, input: &iridium_model::NamedInput, place: Place) -> Vec<String> {
     let mut out = Vec::new();
     let r = place.range;
     let name = &input.name;
@@ -331,11 +331,11 @@ fn check_input(wb: &Workbook, input: &gridcraft_model::NamedInput, place: Place)
             }
             let date = || wb.styles.get(sh.style_id(c)).num_fmt.as_str().to_string();
             let ok = match ty {
-                gridcraft_model::ColType::Any => true,
-                gridcraft_model::ColType::Number => v.is_number(),
-                gridcraft_model::ColType::Text => v.is_text(),
-                gridcraft_model::ColType::Bool => matches!(v, Value::Bool(_)),
-                gridcraft_model::ColType::Date => v.is_number() && crate::display::number_format(&date()).is_date(),
+                iridium_model::ColType::Any => true,
+                iridium_model::ColType::Number => v.is_number(),
+                iridium_model::ColType::Text => v.is_text(),
+                iridium_model::ColType::Bool => matches!(v, Value::Bool(_)),
+                iridium_model::ColType::Date => v.is_number() && crate::display::number_format(&date()).is_date(),
             };
             if !ok {
                 wrong.push((c, holds(&v, ty)));
@@ -364,9 +364,9 @@ fn check_input(wb: &Workbook, input: &gridcraft_model::NamedInput, place: Place)
 }
 
 /// What a cell holds, for "C7 holds text".
-fn holds(v: &Value, wanted: gridcraft_model::ColType) -> &'static str {
+fn holds(v: &Value, wanted: iridium_model::ColType) -> &'static str {
     match v {
-        Value::Number(_) if wanted == gridcraft_model::ColType::Date => "a number that isn't a date",
+        Value::Number(_) if wanted == iridium_model::ColType::Date => "a number that isn't a date",
         Value::Number(_) => "a number",
         Value::Text(_) => "text",
         Value::Bool(_) => "TRUE or FALSE",
@@ -893,8 +893,8 @@ fn follow_place(before: &Workbook, after: &Workbook, pairs: &[(usize, Option<usi
         if target != &name && target != old_name {
             continue;
         }
-        let expr = gridcraft_formula::parse(&text).ok()?;
-        text = gridcraft_formula::print(&gridcraft_formula::adjust::adjust(expr, target, target, e));
+        let expr = iridium_formula::parse(&text).ok()?;
+        text = iridium_formula::print(&iridium_formula::adjust::adjust(expr, target, target, e));
         if text.contains("#REF!") {
             return None;
         }
@@ -934,7 +934,7 @@ fn compare(v: &Value, op: CompareOp, want: &Json) -> bool {
                 Some(if e.as_str().eq_ignore_ascii_case(t.trim()) { std::cmp::Ordering::Equal } else { std::cmp::Ordering::Less })
             }
             (Value::Error(_), _) | (_, Value::Error(_)) | (Value::Array(_), _) => None,
-            _ => Some(gridcraft_core::value::compare(v, &w)),
+            _ => Some(iridium_core::value::compare(v, &w)),
         }
     };
     use std::cmp::Ordering::*;

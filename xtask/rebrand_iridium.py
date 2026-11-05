@@ -168,7 +168,7 @@ def main():
     # ------------------------------------------------------------------
     # 4. the icon artwork
     # ------------------------------------------------------------------
-    icon = ROOT / "assets" / "app-icon" / "gridcraft.svg"
+    icon = ROOT / "assets" / "app-icon" / "iridium-sheets.svg"
     if icon.exists() and not args.check:
         svg = icon.read_text(encoding="utf-8")
         # The upstream grid glyph becomes an "I" on a ledger page, matching
@@ -184,13 +184,13 @@ def main():
             "       Palette: ink #0b0b0c, paper #efe9dc,\n"
             f"       app colour {IRIDIUM_GREEN}.")
         icon.write_text(svg, encoding="utf-8")
-        CHANGES.append(("assets/app-icon/gridcraft.svg", "gridcraft.svg",
+        CHANGES.append(("assets/app-icon/iridium-sheets.svg", "iridium-sheets.svg",
                         "iridium-sheets.svg", 1, "icon"))
-        rename_path("assets/app-icon/gridcraft.svg", "assets/app-icon/iridium-sheets.svg")
-        for old, new in (("gridcraft-1024.png", "iridium-sheets-1024.png"),
-                         ("gridcraft-macos-512.png", "iridium-sheets-macos-512.png"),
-                         ("gridcraft.ico", "iridium-sheets.ico"),
-                         ("gridcraft.icns", "iridium-sheets.icns")):
+        rename_path("assets/app-icon/iridium-sheets.svg", "assets/app-icon/iridium-sheets.svg")
+        for old, new in (("iridium-1024.png", "iridium-sheets-1024.png"),
+                         ("iridium-macos-512.png", "iridium-sheets-macos-512.png"),
+                         ("iridium-sheets.ico", "iridium-sheets.ico"),
+                         ("iridium-sheets.icns", "iridium-sheets.icns")):
             rename_path(f"assets/app-icon/{old}", f"assets/app-icon/{new}")
 
     # ------------------------------------------------------------------
@@ -260,8 +260,8 @@ def main():
             'ui.label("A clean-room, open-source, Rust-native spreadsheet. Part of ArtCraft.");',
             'ui.label("A clean-room, Rust-native spreadsheet by Iridium Technologies, Inc.");')
         t = t.replace(
-            'ui.hyperlink_to("getartcraft.com/apps/gridcraft", "https://getartcraft.com/apps/gridcraft");',
-            'ui.hyperlink_to("iridium.ph", "https://iridium.ph");')
+            'ui.hyperlink_to("getartcraft.com/apps/iridium-sheets", "https://getartcraft.com/apps/iridium-sheets");',
+            'ui.hyperlink_to("iridium-sheets.ph", "https://iridium-sheets.ph");')
         t = t.replace(
             'ui.hyperlink_to("Join the ArtCraft Discord", "https://discord.gg/artcraft");',
             'ui.label("Based on GridCraft by the ArtCraft team. MIT OR Apache-2.0.");')

@@ -1,6 +1,6 @@
 //! Regression tests for the default author of newly created workbooks.
 
-use gridcraft_engine::{DocState, Session, Trust, io, model::Workbook};
+use iridium_engine::{DocState, Session, Trust, io, model::Workbook};
 
 #[test]
 fn new_workbook_stamps_the_configured_user_name_at_creation() {

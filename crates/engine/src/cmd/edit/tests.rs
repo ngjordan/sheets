@@ -18,7 +18,7 @@ fn go_to_workbook() -> Session {
     define(&mut s, "Rate", "=0.07", "Workbook");
     define(&mut s, "Total", "=SUM(Sheet1!$B$2:$B$5)", "Workbook");
     let wb = std::sync::Arc::make_mut(&mut s.doc_mut().unwrap().wb);
-    wb.names.push(gridcraft_model::DefinedName {
+    wb.names.push(iridium_model::DefinedName {
         name: "Secret".into(),
         scope: None,
         formula: "Sheet1!$Z$9".into(),
@@ -192,8 +192,20 @@ fn set_values_can_store_strings_as_the_text_they_are() {
     assert!(d.wb.styles.get(sh.style_id(CellRef::parse("A9").unwrap())).align.wrap);
 }
 
-/// The result names the strings typed input read as something else, so a script notices without
-/// reading the file back (#2255). A formula and a leading apostrophe are not conversions.
+#[test]
+fn a_literal_write_keeps_a_formula_as_text() {
+    // A caller that writes what a server sent wants the text, not a formula:
+    // a pulled row of "=A1" must not become a formula that reads the workbook.
+    let mut s = Session::new();
+    s.new_workbook();
+    s.execute("cell.set", json!({"cell": "A1", "input": "secret"})).unwrap();
+    s.execute("range.setValues", json!({"range": "B1", "literal": true, "values": [["=A1"]]})).unwrap();
+    // The cell holds the text, and it is not a formula.
+    let got = s.execute("cell.get", json!({"cell": "B1"})).unwrap();
+    assert_eq!(got["value"], json!("=A1"), "{got}");
+    assert!(got["formula"].is_null(), "{got}");
+}
+
 #[test]
 fn set_values_reports_the_strings_typed_input_read() {
     let mut s = Session::new();

@@ -1,6 +1,6 @@
 //! Equations: insert, edit, the layout cache and its rebuild on load.
 
-use gridcraft_model::{Color, Shape, ShapeKind};
+use iridium_model::{Color, Shape, ShapeKind};
 use serde_json::json;
 
 use super::s;
@@ -102,7 +102,7 @@ fn edit_keeps_the_scale_and_fits_the_frame() {
 #[test]
 fn the_source_excerpt_is_at_most_the_cap_and_whole_chars() {
     use crate::cmd::equation::source_excerpt;
-    use gridcraft_math::MAX_SOURCE_BYTES as CAP;
+    use iridium_math::MAX_SOURCE_BYTES as CAP;
     assert_eq!(source_excerpt(""), "");
     assert_eq!(source_excerpt("x+y"), "x+y");
     let at = "x".repeat(CAP);
@@ -170,7 +170,7 @@ fn a_file_with_too_many_equations_lays_out_a_bounded_amount() {
     // About 1 KB each: past the budget, equations are refused without running the layout engine,
     // so opening the file takes bounded time.
     let source = format!("x{}", "+x".repeat(500));
-    let count = gridcraft_model::MAX_EQUATION_LAYOUT_BYTES / source.len() + 40;
+    let count = iridium_model::MAX_EQUATION_LAYOUT_BYTES / source.len() + 40;
     let mut s = s();
     let first = insert(&mut s, json!({"latex": "x", "cell": "A1"}));
     let mut wb = (*s.doc().unwrap().wb).clone();
@@ -190,9 +190,9 @@ fn a_file_with_too_many_equations_lays_out_a_bounded_amount() {
     let shapes = t.doc().unwrap().wb.active().unwrap().shapes.clone();
     let laid = shapes.iter().filter(|x| matches!(x.math.get(&x.text), Some(Ok(_)))).count();
     let refused: Vec<&Shape> =
-        shapes.iter().filter(|x| matches!(x.math.get(&x.text), Some(Err(e)) if e.message == gridcraft_model::EQUATION_BUDGET_MESSAGE)).collect();
+        shapes.iter().filter(|x| matches!(x.math.get(&x.text), Some(Err(e)) if e.message == iridium_model::EQUATION_BUDGET_MESSAGE)).collect();
     assert_eq!(laid + refused.len(), count, "every equation has a layout or the budget's error");
-    assert!(laid * source.len() <= gridcraft_model::MAX_EQUATION_LAYOUT_BYTES, "{laid} laid out");
+    assert!(laid * source.len() <= iridium_model::MAX_EQUATION_LAYOUT_BYTES, "{laid} laid out");
     assert!(refused.len() >= 40, "{} refused", refused.len());
     // A later edit does not retry them all, and OK on one, unchanged, lays it out.
     let id = refused[0].id;

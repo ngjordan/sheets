@@ -6,9 +6,9 @@ use std::rc::Rc;
 use egui::accesskit::Role;
 use egui::{Event, Modifiers, OutputCommand, PointerButton};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_ui_egui::{Services, SheetApp, grid};
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_ui_egui::{Services, SheetApp, grid};
 use serde_json::json;
 
 fn harness(services: Services) -> egui_kittest::Harness<'static, SheetApp> {
@@ -97,8 +97,8 @@ fn pasting_reads_the_clipboard_html_for_the_numbers_behind_the_text() {
     h.state_mut().run("selection.set", json!({"cell": "D5"})).unwrap();
     h.input_mut().events.push(Event::Paste("Rp10,000.00".into()));
     h.run_steps(2);
-    let value = h.state().session.active().and_then(|d| d.wb.active().map(|s| s.value(gridcraft_engine::core::CellRef::new(4, 3))));
-    assert_eq!(value, Some(gridcraft_engine::core::Value::number(10000.0)));
+    let value = h.state().session.active().and_then(|d| d.wb.active().map(|s| s.value(iridium_engine::core::CellRef::new(4, 3))));
+    assert_eq!(value, Some(iridium_engine::core::Value::number(10000.0)));
 }
 
 #[test]
@@ -129,9 +129,9 @@ fn enter_pastes_the_copied_cells_and_ends_copy_mode() {
     h.state_mut().run("selection.set", json!({"cell": "D5"})).unwrap();
     h.key_press(egui::Key::Enter);
     h.run_steps(2);
-    let value = |r, c| h.state().session.active().and_then(|d| d.wb.active().map(|s| s.value(gridcraft_engine::core::CellRef::new(r, c))));
-    assert_eq!(value(4, 3), Some(gridcraft_engine::core::Value::text("Name")));
-    assert_eq!(value(5, 4), Some(gridcraft_engine::core::Value::number(42.0)));
+    let value = |r, c| h.state().session.active().and_then(|d| d.wb.active().map(|s| s.value(iridium_engine::core::CellRef::new(r, c))));
+    assert_eq!(value(4, 3), Some(iridium_engine::core::Value::text("Name")));
+    assert_eq!(value(5, 4), Some(iridium_engine::core::Value::number(42.0)));
     assert!(h.state().session.clipboard.is_none(), "the marching ants are gone");
     assert_eq!(h.state().session.active().map(|d| d.selection.active.a1()), Some("D5".to_string()), "Enter does not also move down");
 
@@ -182,7 +182,7 @@ fn clicking_the_ribbon_paste_button_or_its_menu_does_not_freeze() {
 type Harness = egui_kittest::Harness<'static, SheetApp>;
 
 fn value_at(h: &Harness, a1: &str) -> Option<Value> {
-    let at = gridcraft_engine::core::CellRef::parse(a1).unwrap();
+    let at = iridium_engine::core::CellRef::parse(a1).unwrap();
     h.state().session.active().and_then(|d| d.wb.active().map(|s| s.value(at)))
 }
 

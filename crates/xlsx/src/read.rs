@@ -3,8 +3,8 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use gridcraft_core::{DateSystem, RangeRef};
-use gridcraft_model::{
+use iridium_core::{DateSystem, RangeRef};
+use iridium_model::{
     CalcMode, CellPicture, DefinedName, PhoneticString, Sheet, ShowObjects, Style, StyleId, StyleTable, Visibility, Workbook, WorkbookView,
 };
 
@@ -523,10 +523,10 @@ pub fn parse_print_titles(text: &str) -> (TitleSpan, TitleSpan) {
         let p = strip_sheet(part.trim()).replace('$', "");
         let Some((a, b)) = p.split_once(':') else { continue };
         if let (Ok(r0), Ok(r1)) = (a.parse::<u32>(), b.parse::<u32>()) {
-            if r0 >= 1 && r1 >= r0 && r1 <= gridcraft_core::MAX_ROWS {
+            if r0 >= 1 && r1 >= r0 && r1 <= iridium_core::MAX_ROWS {
                 rows = Some((r0 - 1, r1 - 1));
             }
-        } else if let (Some(c0), Some(c1)) = (gridcraft_core::letters_to_col(a), gridcraft_core::letters_to_col(b))
+        } else if let (Some(c0), Some(c1)) = (iridium_core::letters_to_col(a), iridium_core::letters_to_col(b))
             && c1 >= c0
         {
             cols = Some((c0, c1));

@@ -17,8 +17,8 @@
 //! It is implemented here rather than in the function crate because it needs
 //! the workbook: the pivot's report and the cells it wrote.
 
-use gridcraft_core::{CellError, CellRef, RangeRef, Value};
-use gridcraft_model::Workbook;
+use iridium_core::{CellError, CellRef, RangeRef, Value};
+use iridium_model::Workbook;
 
 use super::{Ev, Evaluator, Expr, err};
 

@@ -70,7 +70,7 @@ pub(super) fn add_element(s: &mut Session, p: &Json) -> Result<Json> {
                 }
                 let t = trendline_param(p)?;
                 let eligible: Vec<usize> =
-                    targets.into_iter().filter(|i| gridcraft_chart::supports_trendline(gridcraft_chart::series_plot_kind(c, *i))).collect();
+                    targets.into_iter().filter(|i| iridium_chart::supports_trendline(iridium_chart::series_plot_kind(c, *i))).collect();
                 if eligible.is_empty() {
                     return Err(bad("chart.addElement", "trendlines need a 2-D column, bar, line, area, scatter or bubble series"));
                 }
@@ -181,7 +181,7 @@ pub(super) fn select_data(s: &mut Session, p: &Json) -> Result<Json> {
             let src = d.wb.sheet(src_si).ok_or(EngineError::NoDocument)?;
             let by_rows = bool_param(p, "byRows").unwrap_or(r.width() > r.height() + 1);
             let series = crate::cmd::insert::series_from_range(src, r, by_rows);
-            Some((series, format!("{}!{}", gridcraft_formula::quote_sheet(&src.name), r.a1()), by_rows))
+            Some((series, format!("{}!{}", iridium_formula::quote_sheet(&src.name), r.a1()), by_rows))
         }
         None => None,
     };
@@ -198,8 +198,8 @@ pub(super) fn select_data(s: &mut Session, p: &Json) -> Result<Json> {
             };
             let r = RangeRef::parse(body).ok_or_else(|| bad("chart.selectData", "`categories` is not a range"))?;
             let name = d.wb.sheet(si).map(|sh| sh.name.clone()).ok_or(EngineError::NoDocument)?;
-            let abs = |c: CellRef| format!("${}${}", gridcraft_core::col_to_letters(c.col), c.row + 1);
-            Some(Some(format!("{}!{}:{}", gridcraft_formula::quote_sheet(&name), abs(r.start), abs(r.end))))
+            let abs = |c: CellRef| format!("${}${}", iridium_core::col_to_letters(c.col), c.row + 1);
+            Some(Some(format!("{}!{}:{}", iridium_formula::quote_sheet(&name), abs(r.start), abs(r.end))))
         }
     };
     let mut remove: Vec<usize> = p

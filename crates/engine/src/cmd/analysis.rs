@@ -9,8 +9,8 @@
 
 use std::collections::{BTreeMap, HashMap};
 
-use gridcraft_core::{CellError, CellRef, DateSystem, MAX_COLS, MAX_ROWS, RangeRef, Value};
-use gridcraft_model::{Cell, NumFmt, Sheet};
+use iridium_core::{CellError, CellRef, DateSystem, MAX_COLS, MAX_ROWS, RangeRef, Value};
+use iridium_model::{Cell, NumFmt, Sheet};
 use serde_json::{Value as Json, json};
 
 use super::whatif::parse_range;
@@ -234,7 +234,7 @@ fn n_or_div0(x: f64) -> Value {
 /// Host services for calling worksheet functions directly.
 struct FnHost;
 
-impl gridcraft_functions::Ctx for FnHost {
+impl iridium_functions::Ctx for FnHost {
     fn date_system(&self) -> DateSystem {
         DateSystem::D1900
     }
@@ -248,12 +248,12 @@ impl gridcraft_functions::Ctx for FnHost {
 
 /// Calls a worksheet function on numeric arguments (and `cumulative` flags as booleans).
 fn call(name: &str, args: &[Value]) -> Value {
-    let Some(spec) = gridcraft_functions::lookup(name) else { return Value::Error(CellError::Name) };
+    let Some(spec) = iridium_functions::lookup(name) else { return Value::Error(CellError::Name) };
     if args.iter().any(|a| a.as_f64().is_some_and(|v| !v.is_finite())) {
         return Value::Error(CellError::Num);
     }
-    let a: Vec<gridcraft_functions::Arg> = args.iter().cloned().map(gridcraft_functions::Arg::val).collect();
-    gridcraft_functions::call(spec, &a, &mut FnHost)
+    let a: Vec<iridium_functions::Arg> = args.iter().cloned().map(iridium_functions::Arg::val).collect();
+    iridium_functions::call(spec, &a, &mut FnHost)
 }
 
 fn callf(name: &str, args: &[f64]) -> Value {
@@ -1458,7 +1458,7 @@ fn seed_of(p: &Json) -> Result<u64> {
         _ => true,
     });
     if !given {
-        let ms = gridcraft_core::date::unix_now_ms().unwrap_or(0.0);
+        let ms = iridium_core::date::unix_now_ms().unwrap_or(0.0);
         return Ok((ms * 1000.0) as u64 & MAX_SEED);
     }
     match num(p, "seed") {
@@ -1807,11 +1807,11 @@ fn write_report(s: &mut Session, p: &Json, tool: &str, g: Grid) -> Result<Json> 
             cx.wb.sheets.push(std::sync::Arc::new(Sheet::new(name.clone())));
             cx.structural = true;
         }
-        let pct_styles: Vec<(CellRef, gridcraft_model::StyleId)> = {
+        let pct_styles: Vec<(CellRef, iridium_model::StyleId)> = {
             let sh = cx.wb.sheet(si).ok_or(EngineError::NoDocument)?;
             g.pct.iter().map(|(r, c)| CellRef::new(at.row + r, at.col + c)).map(|c| (c, sh.style_id(c))).collect()
         };
-        let pct_styles: HashMap<CellRef, gridcraft_model::StyleId> =
+        let pct_styles: HashMap<CellRef, iridium_model::StyleId> =
             pct_styles.into_iter().map(|(c, st)| (c, cx.wb.styles.derive(st, |s| s.num_fmt = pct_fmt.clone()))).collect();
         let sh = cx.sheet_mut(si)?;
         for c in &occupied {
@@ -1883,7 +1883,7 @@ fn run(s: &mut Session, p: &Json) -> Result<Json> {
 
 #[cfg(test)]
 mod tests {
-    use gridcraft_core::{CellRef, Value};
+    use iridium_core::{CellRef, Value};
     use serde_json::{Value as Json, json};
 
     use super::{MAX_OUTCOMES, call, f64_of, pmf_table};
@@ -1927,7 +1927,7 @@ mod tests {
                 }
                 Some((acc / w as f64).sqrt())
             });
-            v.map(Value::number).unwrap_or(Value::Error(gridcraft_core::CellError::NA))
+            v.map(Value::number).unwrap_or(Value::Error(iridium_core::CellError::NA))
         };
         for w in 1..=5 {
             let g = super::forecast_grid(&x, &f, w, &json!({"standardErrors": true}));
@@ -1941,7 +1941,7 @@ mod tests {
         }
         // Row 3 has no forecast: windows through it are #N/A, the next full window after it is not.
         let g = super::forecast_grid(&x, &f, 3, &json!({"standardErrors": true}));
-        assert_eq!(g.cells.get(&(5, 1)), Some(&Value::Error(gridcraft_core::CellError::NA)));
+        assert_eq!(g.cells.get(&(5, 1)), Some(&Value::Error(iridium_core::CellError::NA)));
         assert!(g.cells.get(&(6, 1)).and_then(Value::as_f64).is_some());
     }
 
@@ -1959,7 +1959,7 @@ mod tests {
         assert_eq!(n(&s, "D3"), 3.0);
         assert!(close(n(&s, "D4"), (2.5f64 / 5.0).sqrt(), 1e-12));
         assert_eq!(n(&s, "D5"), 3.0);
-        assert_eq!(v(&s, "D6"), Value::Error(gridcraft_core::CellError::NA));
+        assert_eq!(v(&s, "D6"), Value::Error(iridium_core::CellError::NA));
         assert!(close(n(&s, "D7"), 2.5f64.sqrt(), 1e-12));
         assert_eq!(n(&s, "D8"), 2.5);
         assert!(close(n(&s, "D9"), -1.2, 1e-12));
@@ -2074,10 +2074,10 @@ mod tests {
         assert!(close(n(&s, "N11"), eval(&mut s, "=VAR.P(J1:J5)"), 1e-12));
         // Moving average of 3 and exponential smoothing with damping 0.3.
         s.execute("data.analysisToolPak", json!({"tool": "movingAverage", "range": "K1:K5", "output": "Q1", "standardErrors": true})).unwrap();
-        assert_eq!(v(&s, "Q2"), Value::Error(gridcraft_core::CellError::NA));
+        assert_eq!(v(&s, "Q2"), Value::Error(iridium_core::CellError::NA));
         assert!(close(n(&s, "Q3"), 11.0 / 3.0, 1e-12));
         assert!(close(n(&s, "Q5"), 14.0 / 3.0, 1e-12));
-        assert_eq!(v(&s, "R4"), Value::Error(gridcraft_core::CellError::NA));
+        assert_eq!(v(&s, "R4"), Value::Error(iridium_core::CellError::NA));
         assert!(n(&s, "R5").is_finite());
         s.execute("data.analysisToolPak", json!({"tool": "exponentialSmoothing", "range": "K1:K5", "output": "S1"})).unwrap();
         assert_eq!(n(&s, "S2"), 2.0);
@@ -2584,6 +2584,6 @@ mod tests {
         // Constant data gives #DIV/0! cells, not a crash.
         s.execute("range.setValues", json!({"range": "H1", "values": [[4], [4], [4]]})).unwrap();
         s.execute("data.analysisToolPak", json!({"tool": "descriptive", "range": "H1:H3", "output": "J1"})).unwrap();
-        assert_eq!(v(&s, "K9"), Value::Error(gridcraft_core::CellError::Div0));
+        assert_eq!(v(&s, "K9"), Value::Error(iridium_core::CellError::Div0));
     }
 }

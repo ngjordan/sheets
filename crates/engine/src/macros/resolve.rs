@@ -22,8 +22,8 @@
 //! references in steps are absolute: they don't follow row inserts (as in VBA); a `Name:` anchor
 //! does.
 
-use gridcraft_core::{CellRef, MAX_COLS, MAX_ROWS, RangeRef};
-use gridcraft_model::{RepeatOf, Workbook};
+use iridium_core::{CellRef, MAX_COLS, MAX_ROWS, RangeRef};
+use iridium_model::{RepeatOf, Workbook};
 use serde_json::{Map, Value as Json};
 
 /// A resolved reference: a block of cells on a sheet.
@@ -495,7 +495,7 @@ pub fn a1(place: Place, env: &Env) -> String {
 pub fn quote_sheet(name: &str) -> String {
     // The engine's one rule: a name that reads as a cell reference, an R1C1 token or a boolean
     // is quoted too, or `Q1!A1` would be read as a reference to cell Q1.
-    gridcraft_core::quote_sheet(name)
+    iridium_core::quote_sheet(name)
 }
 
 /// Step parameters with every token replaced by A1 text.
@@ -574,19 +574,19 @@ mod tests {
 
     fn wb() -> Workbook {
         let mut wb = Workbook::new();
-        wb.sheets.push(std::sync::Arc::new(gridcraft_model::Sheet::new("My Data")));
+        wb.sheets.push(std::sync::Arc::new(iridium_model::Sheet::new("My Data")));
         let sh = wb.sheet_mut(0).unwrap();
         for (i, h) in ["Name", "Amount", "Date"].iter().enumerate() {
-            sh.set_value(CellRef::new(1, 1 + i as u32), gridcraft_core::Value::text(*h));
+            sh.set_value(CellRef::new(1, 1 + i as u32), iridium_core::Value::text(*h));
         }
-        wb.names.push(gridcraft_model::DefinedName {
+        wb.names.push(iridium_model::DefinedName {
             name: "Total".into(),
             scope: None,
             formula: "Sheet1!$F$20".into(),
             comment: String::new(),
             hidden: false,
         });
-        wb.names.push(gridcraft_model::DefinedName {
+        wb.names.push(iridium_model::DefinedName {
             name: "Rates".into(),
             scope: None,
             formula: "'My Data'!$A$1:$A$5".into(),
@@ -613,10 +613,10 @@ mod tests {
         // Formulas is on, so `col("Amount")` found no column headed by a formula.
         let mut wb = wb();
         let sh = wb.sheet_mut(0).unwrap();
-        let formula = Some(std::sync::Arc::new(gridcraft_model::Formula::new("\"Amo\"&\"unt\"")));
+        let formula = Some(std::sync::Arc::new(iridium_model::Formula::new("\"Amo\"&\"unt\"")));
         sh.set_cell(
             CellRef::new(1, 2),
-            gridcraft_model::Cell { value: gridcraft_core::Value::text("Amount"), formula, style: Default::default(), py: None },
+            iridium_model::Cell { value: iridium_core::Value::text("Amount"), formula, style: Default::default(), py: None },
         );
         sh.show_formulas = true;
         let inputs = vec![("Input".to_string(), place("B2:D11"), true)];
@@ -767,7 +767,7 @@ mod tests {
         // sheet Output, in a reference key, in `$ref` and in `{{…}}`.
         let mut wb = Workbook::new();
         for name in ["Output", "Row", "Column", "Input", "Rates"] {
-            wb.sheets.push(std::sync::Arc::new(gridcraft_model::Sheet::new(name)));
+            wb.sheets.push(std::sync::Arc::new(iridium_model::Sheet::new(name)));
         }
         let inputs = vec![("Input".to_string(), place("B2:D11"), true), ("Rates".to_string(), place("F2:F5"), false)];
         for output in [None, Some(place("H2"))] {
@@ -797,7 +797,7 @@ mod tests {
         // a method. The longest name that exists is used, and methods follow it.
         let mut wb = wb();
         for (name, formula) in [("Sales", "Sheet1!$A$1"), ("Sales.Q1", "Sheet1!$B$2:$C$5"), ("Data.row", "'My Data'!$E$1:$E$3")] {
-            wb.names.push(gridcraft_model::DefinedName {
+            wb.names.push(iridium_model::DefinedName {
                 name: name.into(),
                 scope: None,
                 formula: formula.into(),
@@ -888,7 +888,7 @@ mod tests {
     fn a_header_row_alone_and_a_table_without_data_rows_are_refused() {
         let mut wb = wb();
         let sh = wb.sheet_mut(0).unwrap();
-        sh.tables.push(gridcraft_model::Table {
+        sh.tables.push(iridium_model::Table {
             id: 1,
             name: "Empty".into(),
             range: RangeRef::parse("H1:J1").unwrap(),
@@ -943,8 +943,8 @@ mod tests {
     #[test]
     fn a_defined_name_on_a_sheet_with_a_dollar_sign_resolves() {
         let mut wb = wb();
-        wb.sheets.push(std::sync::Arc::new(gridcraft_model::Sheet::new("US$")));
-        wb.names.push(gridcraft_model::DefinedName {
+        wb.sheets.push(std::sync::Arc::new(iridium_model::Sheet::new("US$")));
+        wb.names.push(iridium_model::DefinedName {
             name: "Dollars".into(),
             scope: None,
             formula: "'US$'!$F$20".into(),

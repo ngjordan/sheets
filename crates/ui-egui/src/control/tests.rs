@@ -23,7 +23,7 @@ fn search_filters_case_insensitively() {
 }
 
 fn test_app() -> SheetApp {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     SheetApp::new(session, crate::Services::default())
 }
@@ -52,7 +52,7 @@ fn oversized_pointer_requests_are_refused_and_leave_the_queue_alone() {
 
 #[test]
 fn print_command_discovery_documents_settings_and_submission() {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     let mut app = SheetApp::new(session, crate::Services::default());
     let Outcome::Done(reply) = handle(&mut app, &egui::Context::default(), "engine.commands", &json!({"search":"print"})) else {
@@ -77,7 +77,7 @@ fn print_command_discovery_documents_settings_and_submission() {
 
 #[test]
 fn language_command_docs_list_every_language() {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     let mut app = SheetApp::new(session, crate::Services::default());
     let Outcome::Done(reply) = handle(&mut app, &egui::Context::default(), "engine.commands", &json!({"search":"language"})) else {
@@ -140,7 +140,7 @@ fn issue_with(ctx: &egui::Context, app: &mut SheetApp, raw: egui::RawInput) -> V
 
 /// Returns a per-process temporary PNG path after removing any stale file at that path.
 fn temp_png(name: &str) -> std::path::PathBuf {
-    let path = std::env::temp_dir().join(format!("gridcraft-shot-{name}-{}.png", std::process::id()));
+    let path = std::env::temp_dir().join(format!("iridium-shot-{name}-{}.png", std::process::id()));
     let _ = std::fs::remove_file(&path);
     path
 }
@@ -980,7 +980,7 @@ fn synthetic_text_key_and_move_producers_honour_the_queue_budget() {
 
 #[test]
 fn python_ui_commands_are_listed() {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     let mut app = SheetApp::new(session, crate::Services::default());
     let Outcome::Done(reply) = handle(&mut app, &egui::Context::default(), "engine.commands", &json!({"search": "python"})) else {
@@ -1010,7 +1010,7 @@ fn inspected(app: &mut SheetApp, ctx: &egui::Context) -> Json {
 
 #[test]
 fn a_python_draft_on_code_hidden_in_the_same_batch_shows_no_code() {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     session.execute("python.set", json!({"cell": "B2", "code": "secret = 41\nsecret + 1"})).unwrap();
     session.execute("home.formatCells", json!({"range": "B2", "style": {"protection": {"hidden": true}}})).unwrap();
@@ -1047,7 +1047,7 @@ fn call(app: &mut SheetApp, ctx: &egui::Context, method: &str, params: Json) {
 /// A Python draft of hidden code at B2 on Sheet1, protected after the draft opened, with an
 /// unprotected sheet `Other` after it when `other` is set.
 fn hidden_python_draft(other: bool) -> (SheetApp, egui::Context) {
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     session.execute("python.set", json!({"cell": "B2", "code": "secret = 41\nsecret + 1"})).unwrap();
     session.execute("home.formatCells", json!({"range": "B2", "style": {"protection": {"hidden": true}}})).unwrap();
@@ -1098,7 +1098,7 @@ fn a_python_draft_shows_no_code_once_its_sheet_is_deleted_in_the_same_batch() {
 fn a1(app: &SheetApp, name: &str) -> Option<(String, bool)> {
     let d = app.session.active()?;
     let sh = d.wb.sheet(d.wb.sheet_index(name)?)?;
-    sh.cell(gridcraft_engine::core::CellRef::new(0, 0)).map(|c| (c.input_text(), c.py.is_some()))
+    sh.cell(iridium_engine::core::CellRef::new(0, 0)).map(|c| (c.input_text(), c.py.is_some()))
 }
 
 #[test]
@@ -1159,7 +1159,7 @@ fn an_open_draft_follows_its_sheet_when_a_sheet_is_inserted_before_it() {
             call(&mut app, &ctx, "ui.edit.begin", json!({"text": "=SUM("}));
         }
         if let Some(ed) = app.editor.as_mut() {
-            ed.point_anchor = Some((0, gridcraft_engine::core::CellRef::parse("C3").unwrap()));
+            ed.point_anchor = Some((0, iridium_engine::core::CellRef::parse("C3").unwrap()));
         }
         execute(&mut app, &ctx, "home.insertSheet", json!({"name": "Before", "before": 0}));
         let ed = app.editor.as_ref().expect("the draft stays open");
@@ -1167,7 +1167,7 @@ fn an_open_draft_follows_its_sheet_when_a_sheet_is_inserted_before_it() {
         assert_eq!(ed.point_anchor, None, "python {python}: the anchor's sheet index no longer names its sheet");
         // A rename changes no index: nothing is let go.
         if let Some(ed) = app.editor.as_mut() {
-            ed.point_anchor = Some((1, gridcraft_engine::core::CellRef::parse("C3").unwrap()));
+            ed.point_anchor = Some((1, iridium_engine::core::CellRef::parse("C3").unwrap()));
         }
         execute(&mut app, &ctx, "sheet.rename", json!({"sheet": "Before", "name": "First"}));
         assert!(app.editor.as_ref().is_some_and(|e| e.sheet == 1 && e.point_anchor.is_some()), "python {python}");
@@ -1178,7 +1178,7 @@ fn an_open_draft_follows_its_sheet_when_a_sheet_is_inserted_before_it() {
 fn a_draft_of_python_code_that_protection_hides_is_dropped_with_a_message() {
     // In Python mode, and after leaving it (an ordinary draft of a Python cell's code).
     for leave in [false, true] {
-        let mut session = gridcraft_engine::Session::new();
+        let mut session = iridium_engine::Session::new();
         session.new_workbook();
         session.execute("python.set", json!({"cell": "B2", "code": "secret = 41"})).unwrap();
         session.execute("cell.set", json!({"cell": "C2", "input": "=1+1"})).unwrap();
@@ -1197,7 +1197,7 @@ fn a_draft_of_python_code_that_protection_hides_is_dropped_with_a_message() {
         assert!(!inspected(&mut app, &ctx).to_string().contains("secret"));
     }
     // An ordinary formula draft on a hidden cell stays open, as on main.
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     session.execute("cell.set", json!({"cell": "C2", "input": "=1+1"})).unwrap();
     session.execute("home.formatCells", json!({"range": "C2", "style": {"protection": {"hidden": true, "locked": false}}})).unwrap();
@@ -1213,7 +1213,7 @@ fn a_draft_of_python_code_that_protection_hides_is_dropped_with_a_message() {
 fn a_draft_typed_over_a_hidden_python_cell_stays_open_through_commands() {
     // An unlocked, hidden Python cell on a protected sheet: typing replaces it, as in Excel. The
     // draft holds only what was typed, so a command neither drops it nor hides it from ui.inspect.
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     session.execute("python.set", json!({"cell": "B2", "code": "secret = 41"})).unwrap();
     session.execute("home.formatCells", json!({"range": "B2", "style": {"protection": {"hidden": true, "locked": false}}})).unwrap();
@@ -1229,7 +1229,7 @@ fn a_draft_typed_over_a_hidden_python_cell_stays_open_through_commands() {
     assert_eq!(after["editor"]["text"], "7");
     assert_eq!(after["editor"]["hidden"], false);
     call(&mut app, &ctx, "ui.edit.commit", json!({"move": "none"}));
-    let b2 = app.session.active().and_then(|d| d.wb.sheet(0)).and_then(|sh| sh.cell(gridcraft_engine::core::CellRef::new(1, 1)).cloned());
+    let b2 = app.session.active().and_then(|d| d.wb.sheet(0)).and_then(|sh| sh.cell(iridium_engine::core::CellRef::new(1, 1)).cloned());
     assert_eq!(b2.map(|c| (c.input_text(), c.py.is_some())), Some(("7".to_string(), false)), "the typed entry replaces the Python cell");
 }
 
@@ -1238,7 +1238,7 @@ fn python_mode_does_not_start_on_a_draft_typed_inside_a_spill() {
     // Typing on a spill child is an ordinary entry; switching that draft to Python mode would let
     // Ctrl+Enter write code into a cell another cell's result spills over, which every other way
     // into Python mode refuses.
-    let mut session = gridcraft_engine::Session::new();
+    let mut session = iridium_engine::Session::new();
     session.new_workbook();
     session.execute("cell.set", json!({"cell": "A1", "input": "=SEQUENCE(3)"})).unwrap();
     session.execute("selection.set", json!({"cell": "A2"})).unwrap();
@@ -1251,6 +1251,6 @@ fn python_mode_does_not_start_on_a_draft_typed_inside_a_spill() {
     assert_eq!(reply["ok"], false, "the start is refused: {reply}");
     assert!(app.editor.as_ref().is_some_and(|e| !e.python && e.text == "5"), "the draft stays an ordinary entry");
     call(&mut app, &ctx, "ui.edit.commit", json!({"move": "none"}));
-    let a2 = app.session.active().and_then(|d| d.wb.sheet(0)).and_then(|sh| sh.cell(gridcraft_engine::core::CellRef::new(1, 0)).cloned());
+    let a2 = app.session.active().and_then(|d| d.wb.sheet(0)).and_then(|sh| sh.cell(iridium_engine::core::CellRef::new(1, 0)).cloned());
     assert_eq!(a2.map(|c| (c.input_text(), c.py.is_some())), Some(("5".to_string(), false)));
 }

@@ -3,7 +3,7 @@
 
 The parts that need Google (OAuth, export, batchUpdate) are thin wrappers
 around the Sheets API. The parts that carry our logic - reading a workbook
-with gridcraft-cli, picking the sheet, turning the used range into an A1
+with iridium-sheets-cli, picking the sheet, turning the used range into an A1
 range - are all exercised here against a real workbook.
 
     python3 tools/test_gsheets.py
@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))
 
 import gsheets  # noqa: E402
 
-CLI = Path(os.environ.get("GRIDCRAFT_CLI", "gridcraft-cli")).resolve()
+CLI = Path(os.environ.get("IRIDIUM_CLI", "iridium-sheets-cli")).resolve()
 
 
 def check(label: str, got, want) -> None:
@@ -35,8 +35,8 @@ def check(label: str, got, want) -> None:
 
 def main() -> int:
     if not CLI.exists():
-        print(f"FAIL gridcraft-cli not found at {CLI}")
-        print("  build it: cargo build --release -p gridcraft-cli")
+        print(f"FAIL iridium-sheets-cli not found at {CLI}")
+        print("  build it: cargo build --release -p iridium-sheets-cli")
         return 1
 
     gsheets.CLI = CLI

@@ -4,9 +4,9 @@
 
 use egui::{Event, Key, Modifiers};
 use egui_kittest::kittest::Queryable as _;
-use gridcraft_engine::Session;
-use gridcraft_engine::core::{CellRef, Value};
-use gridcraft_ui_egui::SheetApp;
+use iridium_engine::Session;
+use iridium_engine::core::{CellRef, Value};
+use iridium_ui_egui::SheetApp;
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -107,7 +107,7 @@ fn the_macros_dialog_runs_the_selected_macro() {
 fn the_macros_dialog_lists_scripts_and_the_vba_project_beside_macros() {
     let mut s = Session::new();
     s.new_workbook();
-    let mut wb = gridcraft_engine::model::Workbook::new();
+    let mut wb = iridium_engine::model::Workbook::new();
     wb.vba_project = Some(std::sync::Arc::new(vec![0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]));
     s.active_mut().unwrap().wb = std::sync::Arc::new(wb);
     s.execute("automate.newScript", json!({"name": "Mark", "commands": [{"command": "cell.set", "params": {"cell": "D4", "input": "script"}}]}))
@@ -159,7 +159,7 @@ fn options_set_a_shortcut_that_runs_the_macro() {
         &mut h,
         json!({"name": "Stamp", "output": {"onConflict": "overwrite"}, "steps": [{"command": "cell.set", "params": {"cell": "B2", "input": "stamped"}}]}),
     );
-    assert!(gridcraft_ui_egui::macro_ui::save_options(h.state_mut(), "Stamp", Some('m'), "Stamps B2"));
+    assert!(iridium_ui_egui::macro_ui::save_options(h.state_mut(), "Stamp", Some('m'), "Stamps B2"));
     let m = h.state().session.active().unwrap().wb.macros[0].clone();
     assert_eq!((m.shortcut.as_deref(), m.description.as_str()), (Some("Ctrl+Shift+M"), "Stamps B2"));
     let mods = Modifiers::COMMAND | Modifiers::SHIFT;
@@ -170,12 +170,12 @@ fn options_set_a_shortcut_that_runs_the_macro() {
 }
 
 #[test]
-fn a_shortcut_gridcraft_uses_does_not_run_a_macro() {
+fn a_shortcut_iridium_uses_does_not_run_a_macro() {
     let mut h = harness("Home");
     // A file can bring any letter; Ctrl+Shift+Z stays Redo.
-    let m = gridcraft_engine::model::Macro { name: "Z".into(), shortcut: Some("Ctrl+Shift+Z".into()), ..Default::default() };
+    let m = iridium_engine::model::Macro { name: "Z".into(), shortcut: Some("Ctrl+Shift+Z".into()), ..Default::default() };
     std::sync::Arc::make_mut(&mut h.state_mut().session.active_mut().unwrap().wb).macros.push(m);
-    assert_eq!(gridcraft_ui_egui::macro_ui::shortcut_macro(h.state(), Key::Z), None);
+    assert_eq!(iridium_ui_egui::macro_ui::shortcut_macro(h.state(), Key::Z), None);
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn a_macro_whose_output_lands_on_data_asks_and_can_shift_it_down() {
     let mut h = harness("Automate");
     h.state_mut().run("cell.set", json!({"cell": "B1", "input": "old"})).unwrap();
     save(&mut h, json!({"name": "Put", "steps": [{"command": "cell.set", "params": {"cell": "B1", "input": "new"}}]}));
-    gridcraft_ui_egui::macro_ui::run_macro(h.state_mut(), "Put");
+    iridium_ui_egui::macro_ui::run_macro(h.state_mut(), "Put");
     h.run_steps(2);
     let q = h.state().macros.question.clone().expect("a question");
     assert_eq!(q.choices.iter().map(|c| c.0.as_str()).collect::<Vec<_>>(), ["Overwrite", "Shift Down", "Shift Right"]);

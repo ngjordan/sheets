@@ -1,9 +1,9 @@
 //! Ctrl+Shift+U (Control+Shift+U in Excel for Mac) expands and collapses the formula bar.
 
 use egui::{Event, Key, Modifiers, vec2};
-use gridcraft_engine::Session;
-use gridcraft_ui_egui::SheetApp;
-use gridcraft_ui_egui::keymap::{Shortcut, lookup};
+use iridium_engine::Session;
+use iridium_ui_egui::SheetApp;
+use iridium_ui_egui::keymap::{Shortcut, lookup};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, SheetApp>;
@@ -100,8 +100,8 @@ fn drag(h: &mut Harness, from: egui::Pos2, to: egui::Pos2) {
     h.run_steps(20);
 }
 
-fn bar(h: &Harness) -> gridcraft_ui_egui::formula_bar::BarLayout {
-    gridcraft_ui_egui::formula_bar::BarLayout::get(&h.ctx)
+fn bar(h: &Harness) -> iridium_ui_egui::formula_bar::BarLayout {
+    iridium_ui_egui::formula_bar::BarLayout::get(&h.ctx)
 }
 
 #[test]

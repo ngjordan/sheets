@@ -1,7 +1,7 @@
 //! Cell selection: one or more ranges with an active cell.
 
-use gridcraft_core::{CellRef, MAX_COLS, MAX_ROWS, RangeRef};
-use gridcraft_model::Sheet;
+use iridium_core::{CellRef, MAX_COLS, MAX_ROWS, RangeRef};
+use iridium_model::Sheet;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -216,7 +216,7 @@ pub fn jump(sheet: &Sheet, from: CellRef, dr: i64, dc: i64) -> CellRef {
 
 /// The contiguous data region around `c` (Ctrl+A / Ctrl+Shift+8, AutoSum, sort, tables).
 pub fn current_region(sheet: &Sheet, c: CellRef) -> RangeRef {
-    let filled = |c: CellRef| sheet.cell(c).is_some_and(gridcraft_model::Cell::has_content) || sheet.spill.contains_key(&c);
+    let filled = |c: CellRef| sheet.cell(c).is_some_and(iridium_model::Cell::has_content) || sheet.spill.contains_key(&c);
     // Whether a row (or column) has a filled cell between two columns (rows), inclusive.
     let row_has = |row: u32, a: u32, b: u32| (a..=b).any(|col| filled(CellRef::new(row, col)));
     let col_has = |col: u32, a: u32, b: u32| (a..=b).any(|row| filled(CellRef::new(row, col)));
@@ -249,7 +249,7 @@ pub fn current_region(sheet: &Sheet, c: CellRef) -> RangeRef {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use gridcraft_core::Value;
+    use iridium_core::Value;
 
     #[test]
     fn jumps() {

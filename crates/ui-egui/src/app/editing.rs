@@ -25,7 +25,7 @@ impl SheetApp {
         // refuses `cell.set` anyway): refuse before a draft exists, rather than leaving one that
         // can never be committed and blocks Save (#2945).
         if let Some(m) = self.session.locked_cell_message(d.wb.active_sheet(), at) {
-            self.message = Some(("Iridium Sheets".into(), m));
+            self.message = Some((iridium_core::brand::NAME.into(), m));
             return;
         }
         // A picture has no editable scalar text. Selecting it, F2, or clicking
@@ -40,14 +40,14 @@ impl SheetApp {
         {
             // Code hidden on a protected sheet isn't loaded into an edit, and a blank edit would
             // write over it on commit: no edit starts. Typing still replaces the cell.
-            if gridcraft_engine::display::formula_hidden(&d.wb, sh, at) {
+            if iridium_engine::display::formula_hidden(&d.wb, sh, at) {
                 return;
             }
             let mut ed = editor::EditState::python(d.uid, d.wb.active_sheet(), at, py.code.clone()).on_sheet(&d.wb);
             ed.py_cell = true;
             ed.window = self.session.active_window();
             self.editor = Some(ed);
-            self.session.mode = gridcraft_engine::Mode::Edit;
+            self.session.mode = iridium_engine::Mode::Edit;
             return;
         }
         let locale = self.ui.language.formula_locale();
@@ -56,7 +56,7 @@ impl SheetApp {
         } else {
             match sh.cell(at) {
                 Some(c) if c.formula.is_some() => formula_locale::display(&c.input_text(), locale, &d.wb, d.wb.active_sheet()),
-                _ => gridcraft_engine::display::edit_text(&d.wb, sh, at),
+                _ => iridium_engine::display::edit_text(&d.wb, sh, at),
             }
         };
         let (text, replace) = match text {
@@ -70,7 +70,7 @@ impl SheetApp {
             ed.completion = editor::column_completion(sh, at, &ed.text);
         }
         self.editor = Some(ed);
-        self.session.mode = if replace { gridcraft_engine::Mode::Enter } else { gridcraft_engine::Mode::Edit };
+        self.session.mode = if replace { iridium_engine::Mode::Enter } else { iridium_engine::Mode::Edit };
     }
 
     /// Commits the edit; `then` moves the selection (dr, dc) afterwards.
@@ -128,7 +128,7 @@ impl SheetApp {
             return ok;
         }
         let Some(mut ed) = self.editor.take() else { return true };
-        self.session.mode = gridcraft_engine::Mode::Ready;
+        self.session.mode = iridium_engine::Mode::Ready;
         if !self.follow_draft_sheet(&mut ed) {
             return true;
         }
@@ -148,28 +148,28 @@ impl SheetApp {
         // open) can't be entered: drop it with the warning instead of keeping it, which would
         // block Save with a draft that can never be committed (#2945).
         if let Some(m) = self.session.locked_cell_message(ed.sheet, ed.cell) {
-            self.message = Some(("Iridium Sheets".into(), m));
+            self.message = Some((iridium_core::brand::NAME.into(), m));
             return true;
         }
         let text = match self.session.active().map(|d| formula_locale::canonical(&text, ed.locale, &d.wb, ed.sheet, ed.cell)) {
             Some(Ok(text)) => text,
             Some(Err(error)) => {
-                self.message = Some(("Iridium Sheets".into(), error.to_string()));
+                self.message = Some((iridium_core::brand::NAME.into(), error.to_string()));
                 self.editor = Some(ed);
-                self.session.mode = gridcraft_engine::Mode::Edit;
+                self.session.mode = iridium_engine::Mode::Edit;
                 return false;
             }
             None => text,
         };
         // Data validation.
         if let Some(d) = self.session.active()
-            && let Some((dv, msg)) = gridcraft_engine::cmd::data::check_validation(&d.wb, ed.sheet, ed.cell, &text)
+            && let Some((dv, msg)) = iridium_engine::cmd::data::check_validation(&d.wb, ed.sheet, ed.cell, &text)
         {
-            if dv.error_style == gridcraft_engine::model::ErrorStyle::Stop {
-                let title = if dv.error_title.is_empty() { "Iridium Sheets".to_string() } else { dv.error_title.clone() };
+            if dv.error_style == iridium_engine::model::ErrorStyle::Stop {
+                let title = if dv.error_title.is_empty() { iridium_core::brand::NAME.to_string() } else { dv.error_title.clone() };
                 self.message = Some((title, msg));
                 self.editor = Some(ed);
-                self.session.mode = gridcraft_engine::Mode::Edit;
+                self.session.mode = iridium_engine::Mode::Edit;
                 return false;
             }
             self.toast = Some((msg, now_ms()));
@@ -178,9 +178,9 @@ impl SheetApp {
         if self.session.active().is_some_and(|d| d.wb.active_sheet() != ed.sheet)
             && let Err(e) = self.session.run("sheet.activate", json!({"sheet": ed.sheet}))
         {
-            self.message = Some(("Iridium Sheets".into(), clean_error(&e)));
+            self.message = Some((iridium_core::brand::NAME.into(), clean_error(&e)));
             self.editor = Some(ed);
-            self.session.mode = gridcraft_engine::Mode::Edit;
+            self.session.mode = iridium_engine::Mode::Edit;
             return false;
         }
         // Committing nothing into an empty cell changes nothing: no undo step (#1855, Backspace has
@@ -189,7 +189,7 @@ impl SheetApp {
             && !array
             && text.is_empty()
             && self.session.active().and_then(|d| d.wb.sheet(ed.sheet)).is_some_and(|sh| {
-                sh.cell(ed.cell).is_none_or(|c| c.formula.is_none() && c.py.is_none() && c.value == gridcraft_engine::core::Value::Empty)
+                sh.cell(ed.cell).is_none_or(|c| c.formula.is_none() && c.py.is_none() && c.value == iridium_engine::core::Value::Empty)
             });
         let r = if unchanged {
             Ok(json!({}))
@@ -207,9 +207,9 @@ impl SheetApp {
                 true
             }
             Err(e) => {
-                self.message = Some(("Iridium Sheets".into(), clean_error(&e)));
+                self.message = Some((iridium_core::brand::NAME.into(), clean_error(&e)));
                 self.editor = Some(ed);
-                self.session.mode = gridcraft_engine::Mode::Edit;
+                self.session.mode = iridium_engine::Mode::Edit;
                 false
             }
         }
@@ -231,7 +231,7 @@ impl SheetApp {
         let found = if moved { ed.sheet_in(&d.wb) } else { Some(ed.sheet) };
         let hidden = found
             .and_then(|i| d.wb.sheet(i))
-            .is_some_and(|sh| (ed.python || ed.py_cell) && gridcraft_engine::display::formula_hidden(&d.wb, sh, ed.cell));
+            .is_some_and(|sh| (ed.python || ed.py_cell) && iridium_engine::display::formula_hidden(&d.wb, sh, ed.cell));
         let why = match found {
             None => Some(DRAFT_SHEET_GONE),
             Some(_) if hidden => Some(DRAFT_CODE_HIDDEN),
@@ -239,8 +239,8 @@ impl SheetApp {
         };
         if let Some(why) = why {
             self.editor = None;
-            self.session.mode = gridcraft_engine::Mode::Ready;
-            self.message = Some(("Iridium Sheets".into(), why.into()));
+            self.session.mode = iridium_engine::Mode::Ready;
+            self.message = Some((iridium_core::brand::NAME.into(), why.into()));
             return;
         }
         if let (true, Some(sheet), Some(ed)) = (moved, found, self.editor.as_mut()) {
@@ -263,7 +263,7 @@ impl SheetApp {
                 true
             }
             None => {
-                self.message = Some(("Iridium Sheets".into(), DRAFT_SHEET_GONE.into()));
+                self.message = Some((iridium_core::brand::NAME.into(), DRAFT_SHEET_GONE.into()));
                 false
             }
         }
@@ -280,7 +280,7 @@ impl SheetApp {
 
     pub fn cancel_edit(&mut self) {
         self.editor = None;
-        self.session.mode = gridcraft_engine::Mode::Ready;
+        self.session.mode = iridium_engine::Mode::Ready;
     }
 
     /// Starts editing the active cell in Python mode, in the formula bar: its code, or no code
@@ -300,13 +300,13 @@ impl SheetApp {
         // A locked cell on a protected sheet is refused before a draft exists, as `begin_edit`
         // refuses it (#2945).
         if let Some(m) = self.session.locked_cell_message(d.wb.active_sheet(), at) {
-            self.message = Some(("Iridium Sheets".into(), m));
+            self.message = Some((iridium_core::brand::NAME.into(), m));
             return;
         }
         let py = sh.cell(at).and_then(|c| c.py.as_deref());
         // A Python cell's code hidden on a protected sheet stays out of view, and Python mode
         // doesn't start on it with no code, which a commit would write over the hidden code.
-        if py.is_some() && gridcraft_engine::display::formula_hidden(&d.wb, sh, at) {
+        if py.is_some() && iridium_engine::display::formula_hidden(&d.wb, sh, at) {
             return;
         }
         let code = py.map(|py| py.code.clone()).unwrap_or_default();
@@ -315,7 +315,7 @@ impl SheetApp {
         ed.py_cell = py.is_some();
         ed.window = self.session.active_window();
         self.editor = Some(ed);
-        self.session.mode = gridcraft_engine::Mode::Edit;
+        self.session.mode = iridium_engine::Mode::Edit;
     }
 
     /// Ctrl+Alt+Shift+P (and the PY badge): Python mode on or off. An edit in progress keeps its
@@ -329,7 +329,7 @@ impl SheetApp {
             Some(ed) => ed.enter_python(),
             None => return self.begin_python_edit(),
         }
-        self.session.mode = gridcraft_engine::Mode::Edit;
+        self.session.mode = iridium_engine::Mode::Edit;
     }
 
     /// Whether a draft's cell lies inside another cell's spill. A draft typed there stays an
@@ -363,13 +363,13 @@ impl SheetApp {
     /// typed.
     pub fn commit_python_edit(&mut self) -> bool {
         let Some(mut ed) = self.editor.take() else { return true };
-        self.session.mode = gridcraft_engine::Mode::Ready;
+        self.session.mode = iridium_engine::Mode::Ready;
         if !self.follow_draft_sheet(&mut ed) {
             return true;
         }
         // The code of a Python cell committed unchanged: nothing to write (no undo step, the
         // workbook stays clean), as with F2 then Enter on any other cell.
-        let code = gridcraft_engine::model::python::normalize_code(&ed.text);
+        let code = iridium_engine::model::python::normalize_code(&ed.text);
         let old = self.session.active().and_then(|d| d.wb.sheet(ed.sheet)).and_then(|sh| sh.cell(ed.cell)).and_then(|c| c.py.as_deref());
         let python_cell = old.is_some();
         if old.is_some_and(|py| py.code == code) {
@@ -378,7 +378,7 @@ impl SheetApp {
         // A draft on a cell sheet protection now locks can never be entered: it is dropped with
         // the warning, as `commit_edit_here` drops an ordinary one (#2945).
         if let Some(m) = self.session.locked_cell_message(ed.sheet, ed.cell) {
-            self.message = Some(("Iridium Sheets".into(), m));
+            self.message = Some((iridium_core::brand::NAME.into(), m));
             return true;
         }
         // No code at all: a Python cell is cleared through cell.set, as an empty entry clears any
@@ -394,9 +394,9 @@ impl SheetApp {
                 true
             }
             Err(e) => {
-                self.message = Some(("Iridium Sheets".into(), clean_error(&e)));
+                self.message = Some((iridium_core::brand::NAME.into(), clean_error(&e)));
                 self.editor = Some(ed);
-                self.session.mode = gridcraft_engine::Mode::Edit;
+                self.session.mode = iridium_engine::Mode::Edit;
                 false
             }
         }
@@ -433,8 +433,8 @@ impl SheetApp {
 #[cfg(test)]
 mod protected_cell_tests {
     use super::*;
-    use gridcraft_engine::Session;
-    use gridcraft_engine::core::{CellRef, Value};
+    use iridium_engine::Session;
+    use iridium_engine::core::{CellRef, Value};
 
     /// A protected sheet whose C2 is unlocked; C2 holds "keep" as the last undo step.
     fn protected_book() -> SheetApp {

@@ -9,7 +9,7 @@ Google offers, and Iridium Sheets' own OOXML reader consumes it directly.
     gsheets.py push  <spreadsheet-id> <FILE.xlsx> [--sheet NAME]
     gsheets.py info  <spreadsheet-id>
 
-The local side shells out to ``gridcraft-cli`` so there is exactly one OOXML
+The local side shells out to ``iridium-sheets-cli`` so there is exactly one OOXML
 implementation in the product, not two.
 """
 
@@ -26,7 +26,7 @@ from pathlib import Path
 
 HOME = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
 TOKEN = HOME / "google_token.json"
-CLI = Path(os.environ.get("GRIDCRAFT_CLI", "gridcraft-cli"))
+CLI = Path(os.environ.get("IRIDIUM_CLI", "iridium-sheets-cli"))
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -52,10 +52,10 @@ def credentials():
 
 
 def cli(*args: str) -> str:
-    """Run gridcraft-cli and return stdout."""
+    """Run iridium-sheets-cli and return stdout."""
     proc = subprocess.run([str(CLI), *args], capture_output=True, text=True, timeout=300)
     if proc.returncode != 0:
-        die(f"gridcraft-cli {' '.join(args)} failed:\n{proc.stderr.strip()}")
+        die(f"iridium-sheets-cli {' '.join(args)} failed:\n{proc.stderr.strip()}")
     return proc.stdout
 
 
@@ -76,7 +76,7 @@ def local_sheets(path: Path) -> list[dict]:
 
 
 def a1_to_a1(used_range: str) -> tuple[str, str]:
-    """Turn gridcraft's 'B2:F15' into the A1 range Google wants."""
+    """Turn iridium-sheets's 'B2:F15' into the A1 range Google wants."""
     if not used_range or ":" not in used_range:
         return "A1", "A1"
     start, end = used_range.split(":", 1)
