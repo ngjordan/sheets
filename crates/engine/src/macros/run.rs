@@ -183,6 +183,11 @@ pub fn approve(s: &mut Session, m: &Macro, doc: u64, asks: &[String], approve: b
         return Ok(());
     }
     if approve {
+        if s.is_programmatic() {
+            // An agent (or the CLI) is not the person. It must not grant its own
+            // permission to run a macro that came with a workbook.
+            return Err(EngineError::Approve(format!("Macro '{}' needs the person's approval, and a programmatic call can't give it", m.name)));
+        }
         s.macro_approvals.insert(key);
         return Ok(());
     }

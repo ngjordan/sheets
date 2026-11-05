@@ -99,7 +99,11 @@ fn wrap(r: Result<Json, String>) -> Outcome {
 /// Runs a command for an agent. Commands that move the selection scroll the active cell into
 /// view, as the Go To dialog, the Name Box and the arrow keys do.
 fn run(app: &mut SheetApp, id: &str, params: Json) -> Result<Json, String> {
+    // An agent's call is not the person: while it runs, it cannot answer the
+    // approval question a document-supplied macro asks.
+    app.session.begin_programmatic();
     let r = app.run(id, params);
+    app.session.end_programmatic();
     if r.is_ok() && matches!(id, "edit.goTo" | "edit.goToSpecial" | "selection.set" | "selection.move") {
         app.grid.ensure_visible = true;
     }

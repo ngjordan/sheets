@@ -501,6 +501,11 @@ pub struct Session {
     /// Macros the person allowed to run in this session: (document uid, the macro's content as
     /// canonical JSON, from [`macros::fingerprint`]).
     pub macro_approvals: std::collections::HashSet<(u64, String)>,
+    /// How many programmatic (agent, CLI, MCP) calls are running. A programmatic
+    /// call is not the person: it must not answer the person's approval
+    /// question, so it cannot grant its own permission to run a macro that came
+    /// with a workbook.
+    programmatic: u32,
     /// The macro being debugged, between debugger actions.
     pub macro_debug: Option<macros::debug::Debugger>,
     /// Where the macro recorder started (beside `recorder`, its buffer).
@@ -533,6 +538,19 @@ pub struct Session {
 impl Session {
     pub fn new() -> Session {
         Session::default()
+    }
+    /// Marks a programmatic (agent, CLI, MCP) call. While one runs, it cannot
+    /// answer the person's approval question.
+    pub fn begin_programmatic(&mut self) {
+        self.programmatic = self.programmatic.saturating_add(1);
+    }
+    /// Ends a programmatic call (see [`Session::begin_programmatic`]).
+    pub fn end_programmatic(&mut self) {
+        self.programmatic = self.programmatic.saturating_sub(1);
+    }
+    /// Whether a programmatic (agent, CLI, MCP) call is running.
+    pub fn is_programmatic(&self) -> bool {
+        self.programmatic > 0
     }
     pub fn documents(&self) -> &[DocState] {
         &self.docs
@@ -1102,7 +1120,11 @@ impl Session {
     /// queued a file dialog because it got no file (`file.open`, `file.saveAs`, `file.save` on a workbook with no
     /// file yet, `data.getData`) is an error instead of a silent success.
     pub fn execute_headless(&mut self, id: &str, params: Json) -> Result<Json> {
+        // A programmatic call is not the person: while it runs, it cannot answer
+        // the approval question a document-supplied macro asks.
+        self.begin_programmatic();
         let r = self.execute(id, params);
+        self.end_programmatic();
         let requests = self.take_ui_requests();
         let asked_for_file = requests.iter().any(|q| matches!(q, UiRequest::Dialog(name, _) if name == "open" || name == "saveAs"));
         // A call that only opened a dialog is not recorded (see `execute`), so the recording

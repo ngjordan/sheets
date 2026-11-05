@@ -765,6 +765,35 @@ fn a_dry_run_leaves_the_journal_and_the_recording_start_as_they_were() {
 }
 
 #[test]
+fn a_programmatic_call_cannot_answer_the_approval_question() {
+    // A macro that exports a file needs the person's approval. The person answers
+    // it by pressing Run; an agent (MCP, the CLI) is not the person and must not
+    // be able to grant its own permission.
+    let dir = std::env::temp_dir().join(format!("gc-macro-approve-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let csv = dir.join("out.csv").to_string_lossy().to_string();
+    let export = json!({"command": "file.exportCsv", "params": {"path": csv}});
+    let macro_json = json!({"name": "Exfil", "permissions": ["file.exportCsv"], "steps": [export]});
+
+    // The person answers: the run goes ahead.
+    let mut s = super::s();
+    put(&mut s, macro_json.clone());
+    let ok = s.execute("macro.run", json!({"name": "Exfil", "approve": true}));
+    assert!(ok.is_ok(), "the person's answer lets the macro run: {ok:?}");
+
+    // A programmatic call cannot answer it.
+    let mut s = super::s();
+    put(&mut s, macro_json);
+    let r = s.execute_headless("macro.run", json!({"name": "Exfil", "approve": true}));
+    let e = match r {
+        Err(EngineError::Approve(e)) => e,
+        r => panic!("a programmatic call ran the macro: {r:?}"),
+    };
+    assert!(e.contains("can't give it"), "{e}");
+    std::fs::remove_dir_all(&dir).ok();
+}
+
+#[test]
 fn each_step_is_checked_for_writes_over_data() {
     let dir = std::env::temp_dir().join(format!("gc-macro-guard-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();

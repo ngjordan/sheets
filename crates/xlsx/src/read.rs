@@ -13,6 +13,14 @@ use crate::styles::{StylesIn, read_styles};
 use crate::xml::{self, El};
 use crate::{IoError, ReadReport};
 
+/// How many shared strings a workbook may hold. The part is streamed, so nothing
+/// else bounds them: a compact file could declare millions.
+pub(crate) const MAX_SHARED_STRINGS: usize = 1_000_000;
+
+/// How many cells a workbook may hold. The sheet's cells are streamed too, so the
+/// XML element cap does not count them: a compact file could declare millions.
+pub(crate) const MAX_CELLS: usize = 2_000_000;
+
 /// State shared while reading one package.
 pub struct Ctx<'a> {
     pub pkg: Package<'a>,
@@ -40,6 +48,8 @@ pub struct Ctx<'a> {
     pub known_function: Option<&'a dyn Fn(&str) -> bool>,
     /// The code of the workbook's Python cells, from its Python part.
     pub python: crate::python_part::ScriptsIn,
+    /// Cells read so far in this workbook, against [`MAX_CELLS`].
+    pub cells: usize,
 }
 
 impl Ctx<'_> {
@@ -114,6 +124,13 @@ fn read_shared_strings(cx: &mut Ctx<'_>, wb_rels: &[Rel]) -> Result<(), IoError>
                 let mut phonetics = Vec::new();
                 let mut dropped = 0usize;
                 let res = xml::parse_streaming(&b, &["si"], &mut |si| {
+                    // The part is streamed, so the XML element cap never sees these
+                    // strings: a compact file could declare millions of them. Past
+                    // the cap the workbook is refused, not truncated: a cell that
+                    // points at a missing string would show the wrong text.
+                    if sst.len() >= MAX_SHARED_STRINGS {
+                        return Err(IoError::TooLarge(format!("the workbook has more than {MAX_SHARED_STRINGS} shared strings")));
+                    }
                     let text = xml::rich_text(&si);
                     let raw = si.kids("rPh").count();
                     let (runs, props) = xml::phonetic_data(&si, &text);
@@ -125,6 +142,9 @@ fn read_shared_strings(cx: &mut Ctx<'_>, wb_rels: &[Rel]) -> Result<(), IoError>
                     Ok(())
                 });
                 if let Err(e) = res {
+                    if matches!(e, IoError::TooLarge(_)) {
+                        return Err(e);
+                    }
                     cx.warn(format!("shared strings are damaged ({e}); kept {} strings", sst.len()));
                 }
                 if dropped > 0 {
@@ -257,6 +277,7 @@ pub fn read_xlsx<'a>(bytes: &'a [u8], known_function: Option<&'a dyn Fn(&str) ->
         cf_ext_ids: vec![],
         known_function,
         python: Default::default(),
+        cells: 0,
     };
     let root_rels = cx.pkg.rels("")?;
     let wb_part = find_rel(&root_rels, "officeDocument").map(|r| r.target.clone()).unwrap_or_else(|| "xl/workbook.xml".into());

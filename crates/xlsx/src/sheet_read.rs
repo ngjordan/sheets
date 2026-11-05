@@ -174,7 +174,11 @@ pub fn read_sheet(cx: &mut Ctx<'_>, part: &str, name: &str) -> Result<Sheet, IoE
         }
     };
     if st.dropped > 0 {
-        cx.warn(format!("sheet \"{name}\": {} cells or rows outside the 1,048,576 × 16,384 grid were dropped", st.dropped));
+        cx.warn(format!(
+            "sheet \"{name}\": {} cells or rows were dropped (outside the 1,048,576 × 16,384 grid, or over the {} cell budget)",
+            st.dropped,
+            crate::read::MAX_CELLS
+        ));
     }
     settle_python_spills_past_budget(&st, &mut sheet);
     drop(bytes);
@@ -488,6 +492,14 @@ fn read_row(cx: &mut Ctx<'_>, sheet: &mut Sheet, st: &mut RowState, row: &El) {
     }
     let mut next_col = 0u32;
     for c in row.kids("c") {
+        // The cells are streamed, so the XML element cap does not count them: a
+        // compact file could declare millions. Past the cap the cells are
+        // dropped, like the ones outside the grid, and the reader says so.
+        if cx.cells >= crate::read::MAX_CELLS {
+            st.dropped += 1;
+            continue;
+        }
+        cx.cells += 1;
         let pos = match c.attr("r") {
             Some(a) => match CellRef::parse(a.trim()) {
                 Some(p) => p,
