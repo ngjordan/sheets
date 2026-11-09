@@ -23,7 +23,7 @@ source anchors, baseline inventories and proposed steps below are historical rec
 this status governs current pins and acceptance. Final commit/source/CI bindings are in
 `final-landing/grid-publication0865` in the migration task evidence.
 
-Scope: `ngjordan/iridium-sheets` only. The shared `storytold/craft-libs`, egui fork and winit fork are
+Scope: `ngjordan/iridium-sheets` only. The shared the shared libraries repo, egui fork and winit fork are
 dependencies of this plan, not files this plan changes. Application document models, commands, undo
 semantics, XLSX persistence and UI policy remain owned by Iridium Sheets.
 
@@ -45,10 +45,10 @@ semantics, XLSX persistence and UI policy remain owned by Iridium Sheets.
 | Shared capture helper | `craft-ui` CL-2 provisional capture slot; Iridium Sheets/DesignCraft adapters are the pilot and precede CL-2F. CL-1 and CL-2F are the shared gate for the eleven craft-ui consumers |
 | Target upstream release | egui annotated tag `0.37.0`, peeled commit `841a328ba2dd8f6996beb7189ebb7fc00e668a2a` (2026-10-15) |
 | Historical review candidate egui (superseded by current immutable pin) | `aiongg/egui` `craft/0.37` at `a4f9a17f64a6bae61350fb85804c9df0d9865916`; inspect only, never publish this branch |
-| Historical review candidate winit (superseded by current immutable pin) | `aiongg/winit` `craft/0.30.13-lang` at `8b35388bd719e8cc86a95971ba0bc026c9a8f058`; published base `storytold/winit` `craft/0.30.13` at `ffae5198770d7730e718043f035a772b7dbc3b1b` |
+| Historical review candidate winit (superseded by current immutable pin) | `aiongg/winit` `craft/0.30.13-lang` at `8b35388bd719e8cc86a95971ba0bc026c9a8f058`; published base `the upstream/winit` `craft/0.30.13` at `ffae5198770d7730e718043f035a772b7dbc3b1b` |
 | Current implementation egui/winit pins |173cc7375d35dc5fbc5b5d0994fdf787f547c5d1 / ae48c756a3b81125eb796c0cc6dccf60990d1181; full P8/E21b and platform/performance acceptance remain separate, explicitly unqualified gates |
 | Stock comparison | egui 0.36.2 `49682f8baa058bf49e011035cfbd6e825f88a5ef`, 0.37.0 `841a328b…`; stock 0.37 is a measurement control only, never a production stage or pin |
-| Existing shared update | `storytold/craft-libs` PR 199, branch head `b68de8c5f4f1c060904d211a7b1320aa0f7bce78`; open and conflicting at inspection |
+| Existing shared update | the shared libraries repo PR 199, branch head `b68de8c5f4f1c060904d211a7b1320aa0f7bce78`; open and conflicting at inspection |
 | Historical diagnostics | `/home/codex/work/ssd2/task-evidence/egui037-audit-20261022/{fork,stock}/iridium-sheets.errors` |
 
 The existing audit merge `ec8840af8c5fda695cf195cdd05e5ae078415c07` is not a base: its
@@ -510,9 +510,9 @@ For suite validation, Iridium Sheets must resolve one copy of each egui-family c
 
 ```text
 iridium-sheets (eframe + egui + egui-wgpu + egui-winit + epaint)
-  -> eframe 0.37 (approved storytold rev)
-  -> egui 0.37 (approved storytold rev)
-  -> egui-wgpu 0.37 (approved storytold rev, E2+E3)
+  -> eframe 0.37 (approved the upstream rev)
+  -> egui 0.37 (approved the upstream rev)
+  -> egui-wgpu 0.37 (approved the upstream rev, E2+E3)
   -> egui-winit 0.37 (approved P8 rev: E4/P2b W15P routing + E7/E19 held-key + E21 + E21b/P7b)
   -> epaint 0.37 (approved P8 rev, E5/E8/E11/E12/E13/E14/E15/E16/E20)
   -> ecolor/emath 0.37 (approved P8 rev)
@@ -538,7 +538,7 @@ Publication rules:
   package for native and wasm feature sets.
 - `cargo check --locked` must work in a clean checkout with network access to the public fork.
 - `aiongg` is a review candidate only. The production graph must use the complete
-  reviewed/published `storytold` egui **P8** release (P2b async W15P routing, P7 held-key pairing,
+  reviewed/published the upstream egui **P8** release (P2b async W15P routing, P7 held-key pairing,
   P7b/E21b, P7c's selected #8763/#8748 fixes and justified performance fixes) and the completed
   winit series (W15P and W27 lifecycle). No stock 0.37 or intermediate P stage is a production
   candidate. The final SHAs are **not selected yet**; do not pin a candidate head, branch, old SHA
@@ -699,7 +699,7 @@ Anchors: `crates/engine/src/cmd/*` (unchanged), `crates/ui-egui/src/lib.rs::run_
   - `tests/symbol_glyphs.rs` is the installed-face coverage test and is strict in both modes
     (below); do not weaken it.
   - Do not change production font policy from Tofu.
-- Fonts come from pinned, OFL-licensed faces in `storytold/craft-fonts`, never from a copy in this
+- Fonts come from pinned, OFL-licensed faces in `the upstream/craft-fonts`, never from a copy in this
   repository: `BIZ UDPGothic` Regular/Bold (`Jpan,Latn`), `NanumGothic` Regular (`Hang,Kore`),
   `Noto Sans Symbols` Regular and `Noto Sans Symbols 2` Regular (`Zsym`).
   `crates/ui-egui/src/craft_fonts_policy.rs` is the single policy the build script and the tests
@@ -1164,7 +1164,7 @@ Freeze these before candidate runs (stricter repo budgets win):
 | --- | --- | --- | --- |
 | P0 | This plan; evidence notes | none | delete plan branch |
 | S1 | Shared craft-libs CL-1 for the eleven `craft-ui` consumers: port only `8614e4a` API hunks + `1764bca` README onto `4919088`, final approved egui/winit pins (blocked until those refs exist), registry compatibility, release SHA | P0 review, final refs selected | revert CL-1; keep old `d27646a5` |
-| S2 | Complete reviewed/published `storytold` egui **P8** (E1–E21 + E21b, P2b async W15P routing, P7 held-key pairing, P7b/E21b, P7c selected #8763/#8748 fixes, justified perf fixes) and completed winit (W17–W27 + W15P + W27 lifecycle), immutable approved SHAs. No stock 0.37 or intermediate stage | P0 review, fork review, final refs selected and published | revert fork pins; keep 0.36.2/0.36 craft set |
+| S2 | Complete reviewed/published the upstream egui **P8** (E1–E21 + E21b, P2b async W15P routing, P7 held-key pairing, P7b/E21b, P7c selected #8763/#8748 fixes, justified perf fixes) and completed winit (W17–W27 + W15P + W27 lifecycle), immutable approved SHAs. No stock 0.37 or intermediate stage | P0 review, fork review, final refs selected and published | revert fork pins; keep 0.36.2/0.36 craft set |
 | CL-2 | craft-libs provisional capture-slot API in `crates/ui/src/capture.rs`; cancellation/out-of-order/shutdown stress; lazy-print tests | P0 review | revert helper with its adapters |
 | CL-2F | Shared capture API freeze for the eleven `craft-ui` consumers after reviewing the DesignCraft and Iridium Sheets CL-2 pilot adapters | CL-2, G1 (Grid adapter), DesignCraft adapter | keep CL-2 revision; no app change |
 | G0 | Baseline harnesses on `ac8da7d4`: frame bench, phase-tagged frame log, 0.36-compatible geometry/screenshot tests, benchmark evidence (0.37-only assertions arrive in G1/G3) | P0 | remove harnesses; no production behavior change |
@@ -1176,7 +1176,7 @@ Freeze these before candidate runs (stricter repo budgets win):
 
 Implementation does not start until P0 has a fresh independent adversarial review, the complete
 S1/S2 revisions are fixed and published, and CL-2's provisional API exists. The final production
-`storytold` SHAs for egui P8/winit are unknown until that approved implementation; their absence
+the upstream SHAs for egui P8/winit are unknown until that approved implementation; their absence
 blocks S2/G1 rather than being filled with a candidate SHA or a stock/intermediate stage. Each app
 PR is reviewable on its own; do not land an intermediate dependency bump that leaves `main`
 unbuildable. A consumer already carrying an incompatible `craft-ui` bump must put that bump in the
@@ -1224,7 +1224,7 @@ not current pin blockers. Native/platform/IME, screen-reader and performance acc
 separate; the final qualification update records what actually passed.
 
 1. **Final production fork revisions.** `aiongg/egui`/`aiongg/winit` are review candidates, not
-   production sources. The exact immutable `storytold` egui **P8** (including P2b async W15P
+   production sources. The exact immutable the upstream egui **P8** (including P2b async W15P
    routing, P7 held-key pairing, P7b/E21b, P7c's selected #8763/#8748 fixes and justified perf
    fixes) and completed winit (W15P + W27 lifecycle) SHAs are not selected at planning time.
    Pinning is blocked until the approved implementation publishes them; record the full SHAs in

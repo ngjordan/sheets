@@ -23,7 +23,7 @@ use eframe::{
 /// Macs (Iris 5100 in a Mac mini 2014) Metal's compiler aborts on them ("Compiler encountered an
 /// internal error"), the device is lost and eframe exits before the window opens. Iridium Sheets issues
 /// no indirect draws or dispatches, so Intel Macs skip them; every other GPU keeps wgpu's default.
-/// Same as WordCraft (storytold/wordcraft#2652) and PhotoCraft (storytold/PhotoCraft#3171).
+/// Same approach as the sibling Iridium apps use for their window textures.
 #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 pub fn skips_indirect_validation(macos: bool, intel: bool) -> bool {
     macos && intel

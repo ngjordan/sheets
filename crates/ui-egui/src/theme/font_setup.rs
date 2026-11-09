@@ -4,7 +4,7 @@ use super::font_fallback::load_fallback;
 use super::{Arc, Color32, FontData, FontDefinitions, FontFamily, FontId};
 
 /// A font from the optional craft-fonts build input (`CRAFT_FONTS_DIR` at build time; see
-/// <https://github.com/storytold/craft-fonts> and its `docs/integration.md`). The slice is empty
+/// <https://github.com/ngjordan/craft-fonts> and its `docs/integration.md`). The slice is empty
 /// when the app is built without the checkout; nothing is downloaded and no font is in this repo.
 #[derive(Debug)]
 pub struct CraftFont {

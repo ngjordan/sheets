@@ -12,7 +12,7 @@ workspace = true
 iridium-core = { workspace = true }
 # The shared capture slot (`craft_ui::capture`) comes from the one craft-libs revision every
 # craft-libs dependency uses (see the root Cargo.toml).
-craft-ui = { git = "https://github.com/storytold/craft-libs", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7" }
+craft-ui = { git = "https://github.com/ngjordan/craft-libs", rev = "04428cee1e5bb2b85c3b6537aeb10ba0da228ff9" }
 iridium-engine = { workspace = true }
 iridium-chart = { workspace = true }
 # `monochrome_emoji_fonts` restores the Noto Emoji and emoji-icon faces that 0.37 moved behind
