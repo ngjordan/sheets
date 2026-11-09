@@ -11,6 +11,7 @@ those cells as text instead.
 from __future__ import annotations
 
 import importlib.util
+import json
 import pathlib
 import sys
 
@@ -107,6 +108,64 @@ def test_nothing_extra_is_written_when_no_cell_looks_like_a_formula() -> None:
     writes = [c for c in calls if c]
     assert len(writes) == 1, writes
     assert writes[0]["valueInputOption"] == "USER_ENTERED", writes[0]
+
+
+def test_the_google_sign_in_writes_the_token() -> None:
+    """Press Sign in with a client secret file: the token lands where the app looks."""
+    import tempfile
+    import threading
+    import urllib.parse
+    import urllib.request
+    import webbrowser
+
+    with tempfile.TemporaryDirectory() as d:
+        home = pathlib.Path(d)
+        gb.HOME = home
+        gb.TOKEN = home / "google_token.json"
+        gb.CLIENT = home / "google_client_secret.json"
+        gb.CLIENT.write_text(json.dumps({"installed": {"client_id": "cid", "client_secret": "secret"}}))
+
+        real_urlopen = urllib.request.urlopen
+
+        def fake_urlopen(req, *a, **k):
+            url = getattr(req, "full_url", str(req))
+            if "oauth2.googleapis.com/token" in url:
+                class R:
+                    def __enter__(self):
+                        return self
+
+                    def __exit__(self, *a):
+                        return False
+
+                    def read(self):
+                        return json.dumps({"access_token": "at", "refresh_token": "rt", "expires_in": 3600}).encode()
+
+                return R()
+            return real_urlopen(req, *a, **k)
+
+        def fake_open(url):
+            # The consent lands on the local port the helper is listening on.
+            redirect = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)["redirect_uri"][0]
+            threading.Thread(
+                target=lambda: real_urlopen(redirect + "?code=the-code", timeout=10)
+            ).start()
+            return True
+
+        urllib.request.urlopen = fake_urlopen
+        webbrowser.open = fake_open
+        try:
+            out = gb.google_sign_in()
+        finally:
+            urllib.request.urlopen = real_urlopen
+            webbrowser.open = fake_open
+
+        assert out == {"signed_in": True}, out
+        token = json.loads(gb.TOKEN.read_text())
+        assert token["token"] == "at", token
+        assert token["refresh_token"] == "rt", token
+        assert token["client_id"] == "cid", token
+        assert token["client_secret"] == "secret", token
+        assert oct(gb.TOKEN.stat().st_mode)[-3:] == "600", oct(gb.TOKEN.stat().st_mode)
 
 
 if __name__ == "__main__":

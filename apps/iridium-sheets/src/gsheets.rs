@@ -331,7 +331,7 @@ impl Backend for DesktopBackend {
         // has signed in, so the second press of the button finishes it.
         // Google signs in through the Google Workspace setup, which produces
         // a token the helper reads: the helper says whether it is there.
-        let r = self.call(json!({"op": "signIn"}))?;
+        let r = self.call(json!({"op": "signIn"})).map_err(|e| format!("Iridium Sheets {}: {e}", env!("CARGO_PKG_VERSION")))?;
         if r.get("signed_in").and_then(Json::as_bool).unwrap_or(false) {
             // An empty string means "already signed in" - there is no URL.
             return Ok(String::new());

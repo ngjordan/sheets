@@ -96,6 +96,7 @@ pub fn poll(app: &mut SheetApp) {
             }
         }
         Outcome::SignIn { provider, url } => {
+            let signed_in = url.is_empty();
             // An empty URL means the sign-in is done; otherwise the code goes
             // in the notice, because the user has to type it.
             if !url.is_empty()
@@ -112,6 +113,10 @@ pub fn poll(app: &mut SheetApp) {
                 kind: NoticeKind::Info,
                 action: None,
             });
+            // Signed in: show the account now, not at the next click.
+            if signed_in {
+                account(app, provider);
+            }
         }
         Outcome::Fetched { id, title, provider, bytes } => {
             let b64 = iridium_engine::io::base64_encode(&bytes);

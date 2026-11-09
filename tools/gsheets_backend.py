@@ -44,6 +44,9 @@ from pathlib import Path
 
 HOME = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
 TOKEN = HOME / "google_token.json"
+# The OAuth client of the user. Google needs one of their own: there is no
+# public client that can read someone's sheets.
+CLIENT = HOME / "google_client_secret.json"
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -52,6 +55,114 @@ DRIVE = "https://www.googleapis.com/drive/v3"
 SHEETS = "https://sheets.googleapis.com/v4"
 OAUTH = "https://oauth2.googleapis.com"
 USERINFO = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+
+def google_sign_in() -> dict:
+    """Sign in to Google, with the user's own OAuth client.
+
+    Google has no client an app may borrow: the user creates a "Desktop app"
+    client, drops the JSON at ~/.hermes/google_client_secret.json, and this
+    runs the whole flow: the consent page opens in their browser, the redirect
+    lands on a local port, and the token is written where the app looks for it.
+    """
+    if not CLIENT.exists():
+        raise RuntimeError(
+            "Google needs an OAuth client of your own: create a Desktop app client at "
+            "https://console.cloud.google.com/apis/credentials with the Sheets and Drive APIs "
+            "enabled, download its JSON, and put it at " + str(CLIENT) + ". Then press Sign in again."
+        )
+    client = json.loads(CLIENT.read_text())
+    for key in ("installed", "web", "desktop"):
+        if key in client:
+            client = client[key]
+            break
+    cid = client.get("client_id")
+    secret = client.get("client_secret")
+    if not cid or not secret:
+        raise RuntimeError(f"{CLIENT} has no client_id/client_secret")
+
+    import hashlib
+    import http.server
+    import secrets
+    import threading
+    import webbrowser
+
+    verifier = base64.urlsafe_b64encode(secrets.token_bytes(48)).rstrip(b"=").decode()
+    challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b"=").decode()
+    got: dict[str, str] = {}
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            got.update({k: v[0] for k, v in q.items()})
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"<html><body>Signed in. You can close this tab.</body></html>")
+
+        def log_message(self, *a):
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    port = srv.server_address[1]
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+
+    redirect = f"http://127.0.0.1:{port}/"
+    url = OAUTH + "/auth?" + urllib.parse.urlencode({
+        "client_id": cid,
+        "redirect_uri": redirect,
+        "response_type": "code",
+        "scope": " ".join(SCOPES),
+        "code_challenge": challenge,
+        "code_challenge_method": "S256",
+        "access_type": "offline",
+        "prompt": "consent",
+    })
+    # The URL goes to a file too, in case no browser opens.
+    (HOME / "google_signin_url.txt").write_text(url)
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
+
+    for _ in range(1500):
+        if "code" in got or "error" in got:
+            break
+        threading.Event().wait(0.2)
+    srv.shutdown()
+    if "error" in got:
+        raise RuntimeError(f"the consent was refused: {got.get('error')}")
+    if "code" not in got:
+        raise RuntimeError(f"no code came back - sign in again in the browser ({url})")
+
+    body = urllib.parse.urlencode({
+        "code": got["code"],
+        "client_id": cid,
+        "client_secret": secret,
+        "redirect_uri": redirect,
+        "grant_type": "authorization_code",
+        "code_verifier": verifier,
+    }).encode()
+    req = urllib.request.Request(OAUTH + "/token", data=body,
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        data = json.load(r)
+    if not data.get("refresh_token"):
+        raise RuntimeError("Google gave no refresh token - revoke the app and allow it again")
+
+    TOKEN.parent.mkdir(parents=True, exist_ok=True)
+    TOKEN.write_text(json.dumps({
+        "token": data["access_token"],
+        "refresh_token": data["refresh_token"],
+        "client_id": cid,
+        "client_secret": secret,
+        "scopes": SCOPES,
+        "expiry": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(
+            time.time() + int(data.get("expires_in", 3600)))),
+        "universe_domain": "googleapis.com",
+    }, indent=2))
+    os.chmod(TOKEN, 0o600)
+    return {"signed_in": True}
 
 
 def respond(obj: dict) -> None:
@@ -300,17 +411,15 @@ def main() -> int:
             title = push(req["id"], data, req.get("tab"))
             respond({"ok": True, "title": title})
         elif op == "signIn":
-            # Google has no in-app sign-in: the token comes from the one-time
-            # OAuth setup, which needs the user's own Google Cloud client.
+            # A token that works means signed in; otherwise run the OAuth flow
+            # with the user's own client.
             try:
                 access_token()
             except Exception:
-                fail(
-                    "Google needs an OAuth client of your own, once: create a Desktop app client at "
-                    "https://console.cloud.google.com/apis/credentials with the Sheets and Drive APIs "
-                    "enabled, then run Hermes's Google Workspace setup on this Mac (it writes "
-                    "~/.hermes/google_token.json) and press Sign in again."
-                )
+                try:
+                    respond({"ok": True, **google_sign_in()})
+                except Exception as e:
+                    fail(str(e))
                 return 0
             respond({"ok": True, "signed_in": True})
         else:
