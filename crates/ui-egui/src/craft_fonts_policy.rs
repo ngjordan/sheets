@@ -27,7 +27,7 @@ pub const REQUIRED_FACES: &[(&str, &str, &[&str])] = &[
 ];
 
 /// The native-only Simplified Chinese face from craft-fonts' separate
-/// `fonts/simplified-chinese-manifest.txt` (the same opt-in DeckCraft uses). It is OFL and not
+/// `fonts/simplified-chinese-manifest.txt` (the same opt-in the upstream deck app uses). It is OFL and not
 /// barred by the asset policy, but it never enters a web bundle; older native checkouts may omit
 /// the manifest, so only `CRAFT_FONTS_REQUIRED=1` builds demand it.
 pub const CHINESE_FACES: &[(&str, &str, &[&str])] = &[("LXGW WenKai Lite", "Regular", &["Hani", "Hans"])];

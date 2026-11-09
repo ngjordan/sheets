@@ -22,7 +22,7 @@ Exactly three colours:
 
 The app colour is a proposal pending the owner's approval: Sheets green `#0b6e4f`, with ink
 (darker) variant `#084f39` for text and accents on light backgrounds. It differs from
-DesignCraft's `#7bb51c`.
+the upstream app's `#7bb51c`.
 
 ## Geometry
 

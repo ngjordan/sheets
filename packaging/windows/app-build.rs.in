@@ -1,4 +1,4 @@
-// TEMPLATE for apps/iridium-sheets/build.rs (copied from DesignCraft by the release-tooling setup;
+// TEMPLATE for apps/iridium-sheets/build.rs (copied from the upstream app by the release-tooling setup;
 // apps/iridium-sheets didn't exist yet). Move it there and add to apps/iridium-sheets/Cargo.toml:
 //
 //   [build-dependencies]

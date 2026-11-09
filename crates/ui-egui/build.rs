@@ -44,7 +44,7 @@ fn main() {
 /// configuration: the only input is the environment variable. Barred Adobe/Source/Noto CJK faces
 /// stay in the shared repository for other consumers but are filtered here. A web build embeds
 /// only the explicit `WEB_ALLOWED` faces (no CJK collection). Native builds additionally opt into
-/// craft-fonts' `fonts/simplified-chinese-manifest.txt` (the OFL LXGW face DeckCraft uses): it is
+/// craft-fonts' `fonts/simplified-chinese-manifest.txt` (the OFL LXGW face the upstream deck app uses): it is
 /// optional for ordinary builds and required for `CRAFT_FONTS_REQUIRED=1` native builds.
 fn emit_craft_fonts() {
     println!("cargo::rerun-if-env-changed=CRAFT_FONTS_DIR");
