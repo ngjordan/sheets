@@ -1,8 +1,8 @@
-//! Iridium Sheets macros: typed, declarative command lists, not VBA. The model is plain data in
+//! Sheets macros: typed, declarative command lists, not VBA. The model is plain data in
 //! `iridium_model::Macro`; this module reads and writes it and keeps it within its limits.
 //!
 //! Storage: the JSON format keeps `Workbook::macros` as a field. In xlsx each macro is one item of
-//! Iridium Sheets's hidden workbook data ([`crate::cmd::stash`]), `_gc_macro_<n>_<k>`, written when the
+//! Sheets's hidden workbook data ([`crate::cmd::stash`]), `_gc_macro_<n>_<k>`, written when the
 //! file is saved and taken back out of the names when it is opened, so the names never linger in
 //! the open document. Scripts made with Automate › New Script or Record Actions are a separate,
 //! older feature with their own storage; macros neither read nor change it. A recording keeps the
@@ -105,7 +105,7 @@ pub fn check_room(wb: &Workbook) -> Result<(), String> {
     Err(match wb.macros_unread.len() {
         0 => format!("A workbook can hold at most {max} macros."),
         kept => format!(
-            "A workbook can hold at most {max} macros, and {kept} of the {} in this one {} made by a newer version of Iridium Sheets and kept unchanged.",
+            "A workbook can hold at most {max} macros, and {kept} of the {} in this one {} made by a newer version of Sheets and kept unchanged.",
             count(wb),
             if kept == 1 { "was" } else { "were" }
         ),
@@ -320,7 +320,7 @@ pub fn load(wb: &mut Workbook) -> Vec<String> {
     if !unread.is_empty() {
         let one = unread.len() == 1;
         warnings.push(format!(
-            "{} macro{} in the workbook {} made by a newer version of Iridium Sheets: this version can't show or run {}, and saving keeps {} unchanged.",
+            "{} macro{} in the workbook {} made by a newer version of Sheets: this version can't show or run {}, and saving keeps {} unchanged.",
             unread.len(),
             if one { "" } else { "s" },
             if one { "was" } else { "were" },
@@ -420,7 +420,7 @@ impl Taken {
     }
 }
 
-/// Ctrl+Shift (Cmd+Shift on a Mac) letters that Iridium Sheets already uses, on any platform, which a
+/// Ctrl+Shift (Cmd+Shift on a Mac) letters that Sheets already uses, on any platform, which a
 /// macro cannot take.
 pub const RESERVED_SHORTCUTS: &[(char, &str)] = &[
     ('F', "Format Cells (Font) or Filter"),
@@ -455,7 +455,7 @@ pub fn shortcut_text(letter: char) -> String {
     format!("Ctrl+Shift+{}", letter.to_ascii_uppercase())
 }
 
-/// Why macro `name` cannot use Ctrl+Shift+`letter`: Iridium Sheets uses it, or another macro has it.
+/// Why macro `name` cannot use Ctrl+Shift+`letter`: Sheets uses it, or another macro has it.
 pub fn shortcut_conflict(wb: &Workbook, name: &str, letter: char) -> Option<String> {
     let letter = letter.to_ascii_uppercase();
     if let Some((_, what)) = RESERVED_SHORTCUTS.iter().find(|(c, _)| *c == letter) {
@@ -480,7 +480,7 @@ pub fn check_new_name(wb: &Workbook, name: &str) -> Result<String, String> {
         return Err(format!("A macro called “{name}” already exists. Choose another name."));
     }
     if let Some(kept) = kept_name(wb, name) {
-        return Err(format!("A macro called “{kept}” is kept from a newer version of Iridium Sheets. Choose another name."));
+        return Err(format!("A macro called “{kept}” is kept from a newer version of Sheets. Choose another name."));
     }
     Ok(name.to_string())
 }

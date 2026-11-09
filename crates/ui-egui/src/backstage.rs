@@ -908,13 +908,13 @@ fn account(app: &mut SheetApp, ui: &mut Ui) {
     });
     ui.add_space(18.0);
     ui.horizontal(|ui| {
-        if square_button(ui, Icon::Info, lang.tr("About Iridium Sheets")).clicked() {
+        if square_button(ui, Icon::Info, lang.tr("About Sheets")).clicked() {
             app.open_dialog("about", json!({}));
         }
         ui.add_space(12.0);
         ui.vertical(|ui| {
             ui.add_space(14.0);
-            ui.label(RichText::new(lang.tr("About Iridium Sheets")).font(theme::ui_bold(13.5)).color(t.text));
+            ui.label(RichText::new(lang.tr("About Sheets")).font(theme::ui_bold(13.5)).color(t.text));
             dim(ui, lang.tr("Version, contributors and the AI models that helped"));
         });
     });

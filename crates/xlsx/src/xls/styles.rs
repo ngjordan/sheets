@@ -383,7 +383,7 @@ pub(super) fn build(r: &StyleRecords, formats: &HashMap<u16, String>, wb: &mut W
     }
     let out = r.xfs.iter().map(|xf| wb.styles.intern(xf_style(xf, &fonts, formats, &table))).collect();
     // User-defined named styles. Excel 2007 and later write every built-in style into each .xls
-    // (about fifty, their colours approximated to the palette); Iridium Sheets defines those itself.
+    // (about fifty, their colours approximated to the palette); Sheets defines those itself.
     let mut named: Vec<(String, Style)> = Vec::new();
     // Names are compared ASCII-case-insensitively; a set keeps a hostile file's many names linear.
     let mut seen: std::collections::HashSet<String> = std::collections::HashSet::from(["normal".to_string()]);

@@ -1,4 +1,4 @@
-//! Iridium Sheets core types: cell addresses, values and Excel's coercion rules, error values,
+//! Sheets core types: cell addresses, values and Excel's coercion rules, error values,
 //! date serials and typed-input parsing. No dependencies on the rest of the workspace.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]

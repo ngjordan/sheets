@@ -1,8 +1,8 @@
-Iridium Sheets app icon (iridium-sheets.svg and every file derived from it in this directory:
+Sheets app icon (iridium-sheets.svg and every file derived from it in this directory:
 iridium-sheets-1024.png, iridium-sheets-macos-512.png, iridium-sheets.icns, iridium-sheets.ico, hicolor/).
 
 Original artwork: written for Iridium Technologies, Inc. (hand-written SVG geometry).
-No third-party material. Licensed like the rest of Iridium Sheets, under
+No third-party material. Licensed like the rest of Sheets, under
 either of
 
   * Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)

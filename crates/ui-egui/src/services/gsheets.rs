@@ -1,7 +1,7 @@
 //! Host-provided access to cloud spreadsheets: Google Sheets and Excel.
 //!
 //! The interface is deliberately narrow: everything happens in xlsx, the one
-//! format both services and Iridium Sheets speak natively. That keeps the
+//! format both services and Sheets speak natively. That keeps the
 //! host implementation small (a handful of API calls) and means there is
 //! exactly one OOXML implementation in the product.
 //!

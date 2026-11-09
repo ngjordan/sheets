@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package Iridium Sheets for FreeBSD (<arch> is x86_64 or aarch64):
+# Build and package Sheets for FreeBSD (<arch> is x86_64 or aarch64):
 #
 #   $DIST/iridium-sheets-<version>-freebsd-<arch>.tar.gz   bin/ + share/ (desktop entry, icons,
 #                                                      AppStream, MIME), extract under /usr/local
@@ -42,7 +42,7 @@ else
 fi
 BASENAME="iridium-sheets-$VERSION-freebsd-$ARCH"
 
-echo "==> Iridium Sheets $VERSION for FreeBSD $ARCH"
+echo "==> Sheets $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   (cd "$ROOT" && cargo build --release --locked -p iridium-sheets -p iridium-sheets-cli ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"})

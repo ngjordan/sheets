@@ -1,6 +1,6 @@
 {
   "id": "iridium-sheets",
-  "name": "Iridium Sheets",
+  "name": "Sheets",
   "upgradeCode": "552EE2C8-4AE1-513A-8B74-AB2833F32150",
   "sources": [
     "iridium-sheets.wxs"
@@ -21,133 +21,133 @@
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.Workbook",
+      "Software\\Classes\\Sheets.Workbook",
       "",
-      "Iridium Sheets Workbook"
+      "Sheets Workbook"
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.TextData",
+      "Software\\Classes\\Sheets.TextData",
       "",
-      "Iridium Sheets Text Data"
+      "Sheets Text Data"
     ],
     [
       "-1",
       "Software\\Classes\\.xlsx\\OpenWithProgids",
-      "Iridium Sheets.Workbook",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook",
+      "Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.xlsm\\OpenWithProgids",
-      "Iridium Sheets.Workbook",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook",
+      "Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.xlsb\\OpenWithProgids",
-      "Iridium Sheets.Workbook",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook",
+      "Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.ods\\OpenWithProgids",
-      "Iridium Sheets.Workbook",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook",
+      "Sheets.Workbook"
     ],
     [
       "-1",
       "Software\\Classes\\.csv\\OpenWithProgids",
-      "Iridium Sheets.TextData",
-      "Iridium Sheets.TextData"
+      "Sheets.TextData",
+      "Sheets.TextData"
     ],
     [
       "-1",
       "Software\\Classes\\.tsv\\OpenWithProgids",
-      "Iridium Sheets.TextData",
-      "Iridium Sheets.TextData"
+      "Sheets.TextData",
+      "Sheets.TextData"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities",
+      "Software\\Sheets\\Capabilities",
       "ApplicationName",
-      "Iridium Sheets"
+      "Sheets"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities",
+      "Software\\Sheets\\Capabilities",
       "ApplicationDescription",
       "Open-source spreadsheet for .xlsx, CSV and TSV files"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
+      "Software\\Sheets\\Capabilities\\FileAssociations",
       ".xlsx",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
+      "Software\\Sheets\\Capabilities\\FileAssociations",
       ".xlsm",
-      "Iridium Sheets.Workbook"
+      "Sheets.Workbook"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
+      "Software\\Sheets\\Capabilities\\FileAssociations",
       ".csv",
-      "Iridium Sheets.TextData"
+      "Sheets.TextData"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Capabilities\\FileAssociations",
+      "Software\\Sheets\\Capabilities\\FileAssociations",
       ".tsv",
-      "Iridium Sheets.TextData"
+      "Sheets.TextData"
     ],
     [
       "-1",
       "Software\\RegisteredApplications",
-      "Iridium Sheets",
-      "Software\\Iridium Sheets\\Capabilities"
+      "Sheets",
+      "Software\\Sheets\\Capabilities"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Installer",
+      "Software\\Sheets\\Installer",
       "DesktopShortcut",
       "[DESKTOPSHORTCUT]"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets",
+      "Software\\Sheets",
       "InstallDir",
       "[INSTALLFOLDER]"
     ],
     [
       "-1",
-      "Software\\Iridium Sheets\\Installer",
+      "Software\\Sheets\\Installer",
       "DesktopShortcutComponent",
       "#1"
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.Workbook\\DefaultIcon",
+      "Software\\Classes\\Sheets.Workbook\\DefaultIcon",
       "",
       "\"[#IridiumExe]\",0"
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.Workbook\\shell\\open\\command",
+      "Software\\Classes\\Sheets.Workbook\\shell\\open\\command",
       "",
       "\"[#IridiumExe]\" \"%1\""
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.TextData\\DefaultIcon",
+      "Software\\Classes\\Sheets.TextData\\DefaultIcon",
       "",
       "\"[#IridiumExe]\",0"
     ],
     [
       "-1",
-      "Software\\Classes\\Iridium Sheets.TextData\\shell\\open\\command",
+      "Software\\Classes\\Sheets.TextData\\shell\\open\\command",
       "",
       "\"[#IridiumExe]\" \"%1\""
     ]

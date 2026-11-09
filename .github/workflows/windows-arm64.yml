@@ -23,6 +23,6 @@ jobs:
     uses: ngjordan/craft-common-actions/.github/workflows/windows-arm64.yml@main
     with:
       app-name: iridium-sheets
-      app-dir: Iridium Sheets
-      install-relative-path: Programs/Iridium/Iridium Sheets
+      app-dir: Sheets
+      install-relative-path: Programs/Iridium/Sheets
       install-scope: perUser

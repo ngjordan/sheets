@@ -2,9 +2,9 @@
 //!
 //! These come from WPS's own function reference and its official community
 //! posts ("WPS独有函数"). They are here so a workbook written in WPS opens
-//! and calculates in Iridium Sheets.
+//! and calculates in Sheets.
 //!
-//! The ones that need something Iridium Sheets does not have (a translation
+//! The ones that need something Sheets does not have (a translation
 //! service, a market-data feed, an AI backend) are registered with their WPS
 //! signature and give the error WPS gives when its service is missing. The
 //! rest work offline.
@@ -292,7 +292,7 @@ fn regexp(a: &[crate::Arg], _c: &mut dyn crate::Ctx) -> R<Value> {
 /// WPSAI.CLASSIFY(cell, categories): names the category a value falls in.
 ///
 /// WPS's own service-backed AI functions: they need WPS's AI backend, which
-/// Iridium Sheets does not have, so they give the error WPS gives when its
+/// Sheets does not have, so they give the error WPS gives when its
 /// service is unreachable.
 fn wpsai(a: &[crate::Arg], _c: &mut dyn crate::Ctx) -> R<Value> {
     let _ = arg(a, 0)?;

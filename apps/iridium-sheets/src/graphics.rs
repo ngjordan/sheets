@@ -21,7 +21,7 @@ use eframe::{
 
 /// wgpu compiles its indirect-call validation compute shaders inside `request_device`. On Intel
 /// Macs (Iris 5100 in a Mac mini 2014) Metal's compiler aborts on them ("Compiler encountered an
-/// internal error"), the device is lost and eframe exits before the window opens. Iridium Sheets issues
+/// internal error"), the device is lost and eframe exits before the window opens. Sheets issues
 /// no indirect draws or dispatches, so Intel Macs skip them; every other GPU keeps wgpu's default.
 /// Same approach as the sibling Iridium apps use for their window textures.
 #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
@@ -93,7 +93,7 @@ pub fn fallback_backends(backend_override: Option<Backends>, first: Backends) ->
 /// The DirectX 12 shader compiler: `env_choice` (normally `Dx12Compiler::from_env()`, i.e.
 /// `WGPU_DX12_COMPILER`, for troubleshooting) or else FXC.
 ///
-/// wgpu's default (`Auto`) loads the first `dxcompiler.dll` on the DLL search path. Iridium Sheets ships
+/// wgpu's default (`Auto`) loads the first `dxcompiler.dll` on the DLL search path. Sheets ships
 /// none, so that is another program's copy (a Windows SDK, an Edge or WebView folder, anything on
 /// `PATH`). Without a matching `dxil.dll` beside it, DXC prints "DXIL signing library not found",
 /// wgpu treats that warning as a compile error, its internal compute pipelines fail, the device is

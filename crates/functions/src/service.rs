@@ -1,4 +1,4 @@
-//! The Excel functions that need something Iridium Sheets does not have.
+//! The Excel functions that need something Sheets does not have.
 //!
 //! `TRANSLATE`, `IMAGE` and `STOCKHISTORY` are service-backed in Excel too
 //! (Microsoft Translator, a URL fetch, a market-data provider), and `RTD`,

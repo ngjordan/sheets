@@ -33,7 +33,7 @@
    "seq": "JI",
    "kind": "tab",
    "target": "Draw",
-   "note": "Two-letter unit. Deeper Draw letters differ between Excel and Iridium Sheets; left blank for future contributors."
+   "note": "Two-letter unit. Deeper Draw letters differ between Excel and Sheets; left blank for future contributors."
   },
   {
    "seq": "P",
@@ -246,7 +246,7 @@
    "target": "home.eraseBorder",
    "pending": true,
    "excel": "Erase Border",
-   "note": "pending: Excel arms an eraser pen; Iridium Sheets has no border pen mode yet"
+   "note": "pending: Excel arms an eraser pen; Sheets has no border pen mode yet"
   },
   {
    "seq": "HBG",
@@ -281,7 +281,7 @@
     "preset": "inside"
    },
    "excel": "(none)",
-   "note": "Borders menu item Iridium Sheets adds (Excel's menu has no Inside Borders); J is free under HB"
+   "note": "Borders menu item Sheets adds (Excel's menu has no Inside Borders); J is free under HB"
   },
   {
    "seq": "HBL",

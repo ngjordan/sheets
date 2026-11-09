@@ -69,7 +69,7 @@
   <key>NSHumanReadableCopyright</key>
   <string>Copyright © the @APP_NAME@ authors. MIT OR Apache-2.0.</string>
 
-  <!-- Files Iridium Sheets opens. Rank Alternate: it's offered under "Open With" without taking
+  <!-- Files Sheets opens. Rank Alternate: it's offered under "Open With" without taking
        over the default app (Numbers, another spreadsheet) for these types. -->
   <key>CFBundleDocumentTypes</key>
   <array>

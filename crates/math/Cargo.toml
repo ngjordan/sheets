@@ -3,7 +3,7 @@ name = "iridium-math"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Iridium Sheets equations: LaTeX laid out as plain glyph, rule and path data, and OMML for xlsx"
+description = "Sheets equations: LaTeX laid out as plain glyph, rule and path data, and OMML for xlsx"
 
 [lints]
 workspace = true

@@ -1,6 +1,6 @@
 use super::Dialog;
 
-/// Help ▸ About Iridium Sheets: the app, its contributors and the AI models that helped. The credits
+/// Help ▸ About Sheets: the app, its contributors and the AI models that helped. The credits
 /// are compiled in (`crate::credits`, docs/contributors.md).
 pub(super) fn about(ui: &mut egui::Ui, d: &mut Dialog) {
     ui.horizontal(|ui| {

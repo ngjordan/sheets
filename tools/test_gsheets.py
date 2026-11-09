@@ -45,7 +45,7 @@ def main() -> int:
         td = Path(td)
         xlsx = td / "budget.xlsx"
 
-        # Build a workbook with Iridium Sheets itself.
+        # Build a workbook with Sheets itself.
         proc = subprocess.run(
             [str(CLI), "run", "--sample", "budget", "--out", str(xlsx), "--quiet"],
             capture_output=True, text=True, timeout=300,

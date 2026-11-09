@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The OneDrive / Excel backend Iridium Sheets's desktop shell calls.
+"""The OneDrive / Excel backend Sheets's desktop shell calls.
 
 The same contract as the Google backend: one JSON request on stdin, one JSON
 response on stdout.
@@ -250,7 +250,7 @@ def split_formula_like(rows: list[list[str]]) -> tuple[list[list[str]], list[str
 
 
 def read_workbook(xlsx: bytes) -> list[list[str]]:
-    """Read a workbook's values with Iridium Sheets's own reader."""
+    """Read a workbook's values with Sheets's own reader."""
     cli = os.environ.get("IRIDIUM_CLI", "iridium-sheets-cli")
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as f:
         f.write(xlsx)

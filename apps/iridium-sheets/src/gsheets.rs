@@ -331,7 +331,7 @@ impl Backend for DesktopBackend {
         // has signed in, so the second press of the button finishes it.
         // Google signs in through the Google Workspace setup, which produces
         // a token the helper reads: the helper says whether it is there.
-        let r = self.call(json!({"op": "signIn"})).map_err(|e| format!("Iridium Sheets {}: {e}", env!("CARGO_PKG_VERSION")))?;
+        let r = self.call(json!({"op": "signIn"})).map_err(|e| format!("Sheets {}: {e}", env!("CARGO_PKG_VERSION")))?;
         if r.get("signed_in").and_then(Json::as_bool).unwrap_or(false) {
             // An empty string means "already signed in" - there is no URL.
             return Ok(String::new());
@@ -340,7 +340,7 @@ impl Backend for DesktopBackend {
         let code = r.get("user_code").and_then(Json::as_str).unwrap_or_default().to_string();
         if url.is_empty() {
             return Err(match self.provider {
-                Provider::Google => "Sign in through the Google Workspace setup, then reopen Iridium Sheets.".into(),
+                Provider::Google => "Sign in through the Google Workspace setup, then reopen Sheets.".into(),
                 Provider::Excel => "could not start the Microsoft sign-in".into(),
             });
         }

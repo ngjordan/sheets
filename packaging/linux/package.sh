@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package Iridium Sheets for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
+# Build and package Sheets for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
 #
 #   $DIST/iridium-sheets-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
 #   $DIST/iridium-sheets-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
@@ -39,10 +39,10 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export IRIDIUM_MAINTAINER="${IRIDIUM_MAINTAINER:-Iridium Sheets maintainers <maintainers@iridium-sheets.ph>}"
+export IRIDIUM_MAINTAINER="${IRIDIUM_MAINTAINER:-Sheets maintainers <maintainers@iridium-sheets.ph>}"
 BASENAME="iridium-sheets-$VERSION-linux-$ARCH"
 
-echo "==> Iridium Sheets $VERSION for Linux $ARCH ($FORMATS)"
+echo "==> Sheets $VERSION for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
@@ -130,7 +130,7 @@ if has appimage; then
     printf '%s  %s\n' "$sha256" "$path" | sha256sum -c -
     return
   }
-  APPDIR="$WORK/Iridium Sheets.AppDir"
+  APPDIR="$WORK/Sheets.AppDir"
   cp -R "$STAGE" "$APPDIR"
   ln -s usr/bin/iridium-sheets "$APPDIR/AppRun"
   cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sign in to Google for Iridium Sheets, from the command line.
+"""Sign in to Google for Sheets, from the command line.
 
 Google needs an OAuth client of your own. Create a "Desktop app" client at
 https://console.cloud.google.com/apis/credentials with the Sheets and Drive
@@ -9,7 +9,7 @@ APIs enabled, download its JSON, and run:
 
 It does the same thing the app's Sign in button does: the consent page opens,
 the redirect is caught, and the token is written to ~/.hermes/google_token.json
-where Iridium Sheets looks for it.
+where Sheets looks for it.
 """
 
 from __future__ import annotations

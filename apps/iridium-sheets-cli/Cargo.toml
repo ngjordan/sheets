@@ -3,7 +3,7 @@ name = "iridium-sheets-cli"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Iridium Sheets command line: inspect, convert, evaluate, script and serve MCP without a window"
+description = "Sheets command line: inspect, convert, evaluate, script and serve MCP without a window"
 publish = false
 
 [lints]
@@ -18,6 +18,6 @@ iridium-engine = { workspace = true }
 iridium-mcp = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
-# `check`: validating the packages Iridium Sheets writes (content types, relationships).
+# `check`: validating the packages Sheets writes (content types, relationships).
 zip = { workspace = true }
 quick-xml = { workspace = true }

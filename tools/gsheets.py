@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Bridge Iridium Sheets and Google Sheets.
+"""Bridge Sheets and Google Sheets.
 
 Google Sheets has no cell-level diff API, so we sync through the format both
 sides speak natively: xlsx. The Drive export endpoint is the only xlsx export
-Google offers, and Iridium Sheets' own OOXML reader consumes it directly.
+Google offers, and Sheets' own OOXML reader consumes it directly.
 
     gsheets.py pull  <spreadsheet-id> [--out FILE.xlsx]
     gsheets.py push  <spreadsheet-id> <FILE.xlsx> [--sheet NAME]

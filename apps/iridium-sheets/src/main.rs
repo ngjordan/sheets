@@ -1,4 +1,4 @@
-//! Iridium Sheets desktop app.
+//! Sheets desktop app.
 //!
 //! Usage: `iridium-sheets [--control <port> [--control-token <token>]] [--sample <name>] [files…]`
 //!
@@ -236,7 +236,7 @@ fn icon() -> Option<egui::IconData> {
     #[cfg(target_os = "macos")]
     let bytes = include_bytes!("../../../assets/app-icon/iridium-sheets-macos-512.png");
     #[cfg(not(target_os = "macos"))]
-    let bytes = include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/ph.iridium.sheets.png");
+    let bytes = include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/ph.sheets.png");
     let img = image::load_from_memory(bytes).ok()?.to_rgba8();
     Some(egui::IconData { width: img.width(), height: img.height(), rgba: img.into_raw() })
 }
@@ -266,13 +266,13 @@ fn main() -> eframe::Result<()> {
     // The restart helper a self-update spawns: it finishes the swap and relaunches, then exits.
     if let Some(done) = craft_update::self_update::finish(&iridium_ui_egui::UPDATE_APP, &std::env::args_os().skip(1).collect::<Vec<_>>()) {
         if let Err(e) = done {
-            eprintln!("Iridium Sheets update helper failed: {e}");
+            eprintln!("Sheets update helper failed: {e}");
             std::process::exit(1);
         }
         return Ok(());
     }
     if args.iter().any(|a| a == "--version" || a == "-V") {
-        println!("Iridium Sheets {}", env!("CARGO_PKG_VERSION"));
+        println!("Sheets {}", env!("CARGO_PKG_VERSION"));
         return Ok(());
     }
     let mut control_port: Option<u16> = std::env::var("IRIDIUM_CONTROL_PORT").ok().and_then(|p| p.parse().ok());
@@ -306,7 +306,7 @@ fn main() -> eframe::Result<()> {
     if let Some(logger) = logger {
         match log_dir().filter(|_| prefs_enabled()) {
             Some(dir) => match logger.attach_dir(&dir) {
-                Ok(path) => log::info!("Iridium Sheets {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
+                Ok(path) => log::info!("Sheets {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
                 // Standard error only by now (`attach_dir` gave up on the file); unlike `eprintln!`, never panics.
                 Err(e) => log::warn!("no log file: {e}"),
             },
@@ -441,8 +441,8 @@ mod packaging_tests {
         v
     }
 
-    /// macOS Open With (`CFBundleDocumentTypes`) offers Iridium Sheets for the same files as Windows
-    /// Open with, and Iridium Sheets opens each of them. #321 added `.xlsb` and `.ods` on Windows and
+    /// macOS Open With (`CFBundleDocumentTypes`) offers Sheets for the same files as Windows
+    /// Open with, and Sheets opens each of them. #321 added `.xlsb` and `.ods` on Windows and
     /// Linux only.
     #[test]
     fn macos_and_windows_offer_the_same_file_types() {
@@ -453,7 +453,7 @@ mod packaging_tests {
         assert!(mac.iter().any(|e| e == "xlsx"), "Info.plist.in extensions not found: {mac:?}");
         assert_eq!(mac, win);
         for ext in &mac {
-            assert!(FileKind::from_path(&format!("book.{ext}")).is_some(), "Iridium Sheets doesn't open .{ext}");
+            assert!(FileKind::from_path(&format!("book.{ext}")).is_some(), "Sheets doesn't open .{ext}");
         }
     }
 }

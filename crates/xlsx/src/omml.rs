@@ -808,7 +808,7 @@ mod tests {
             latex(&format!("<m:limLow><m:e>{}<m:r><m:t>+1</m:t></m:r></m:e>{lim}</m:limLow>", brace("\u{23DF}", "bot"))).as_deref(),
             Some("\\underset{n}{\\underbrace{x}+1}")
         );
-        // Written by Iridium Sheets and read back, both scripts are there and the glyphs are the same.
+        // Written by Sheets and read back, both scripts are there and the glyphs are the same.
         let back = |src: &str| {
             let omml = iridium_math::to_omml(src, 11.0, None).unwrap();
             to_latex(&crate::xml::parse(format!("<x xmlns:m=\"m\" xmlns:a=\"a\">{omml}</x>").as_bytes()).unwrap().children[0].clone()).unwrap()

@@ -7,7 +7,7 @@
 //! ([MS-XLSX] 2.3.10.4). The part's root is `python` ([MS-XLSX] 2.4.102, CT_Python 2.6.249), with
 //! `pythonScripts` (2.6.253) holding the `pythonScript` elements (2.6.252).
 //!
-//! Iridium Sheets writes one script per Python cell, in the order the cells are written, with the code
+//! Sheets writes one script per Python cell, in the order the cells are written, with the code
 //! as it is (its `xl()` references stay text in the code, so no further arguments). Reading
 //! resolves the index and puts each `%Px%` back as the text of argument `x`. A formula that names
 //! no script the part has keeps only its cached value. Hostile input is bounded: the part's size,

@@ -2,7 +2,7 @@
 
 > **Last updated:** 2026-11-01 · **Change:** minor (a close that waits on the step editor's question runs in the editor's window, and a further close asked meanwhile waits for the answer or is refused; earlier: closing a workbook or quitting asks about the step editor's unsaved draft first; recording macros and the management commands; Record Macro takes a name, shortcut and description; the macro interface: Automate › Macros, the Macros and Record Macro dialogs, the step editor, shortcuts)
 
-Iridium Sheets macros are typed, declarative lists of commands, not VBA. Every step runs a Iridium Sheets
+Sheets macros are typed, declarative lists of commands, not VBA. Every step runs a Sheets
 command (the same ids the ribbon, CLI and MCP use) or one of three bounded control steps. A macro
 declares the inputs it works on, runs as one undo step, rolls all workbook changes back on an
 error (a file it already wrote stays), checks where its results will land before it writes them,
@@ -198,7 +198,7 @@ on its own, never as a step of a script or macro, and is never recorded.
 references) and, from the Record Macro dialog, `name`, `shortcut` and `description`: the macro's
 name, its Ctrl+Shift shortcut letter (`"Ctrl+Shift+M"` or `"M"`) and its description. They are
 checked at once, so a name that is taken (a kept one included), too long or holds line breaks, or a
-letter that Iridium Sheets or another macro uses, is refused before anything is recorded. Without a name
+letter that Sheets or another macro uses, is refused before anything is recorded. Without a name
 the macro is called `Macro1`, `Macro2` and so on. A `name` or `description` given when stopping wins
 over the one given when starting; a name that another macro has by then gets a suffix, such as `Tidy
 (2)`, so stopping never replaces a macro, and a shortcut another macro took meanwhile is left off,
@@ -236,7 +236,7 @@ recording's 64 MB is left out and listed.
 Undo while recording works as in Excel: `edit.undo` is left out (a macro never runs it), and the
 step it undid stays in the recording, so playing the recording back makes that edit again.
 
-Iridium Sheets keeps the Ctrl+Shift letters it uses itself on some platform: F, G, H, J, K, L, R, S, T
+Sheets keeps the Ctrl+Shift letters it uses itself on some platform: F, G, H, J, K, L, R, S, T
 and Z (`macros::RESERVED_SHORTCUTS`). A shortcut a file brings with it on one of these letters is
 kept but does not run the macro.
 
@@ -247,7 +247,7 @@ kept but does not run the macro.
 renaming to one is refused; names compare ignoring the case of the letters A to Z. A renamed macro is checked
 against every limit again, its size included. Saving, renaming and deleting are undoable.
 
-Macros are saved in the workbook: as a field in Iridium Sheets's JSON format, and in xlsx as hidden
+Macros are saved in the workbook: as a field in Sheets's JSON format, and in xlsx as hidden
 defined names (`_gc_macro_<n>_<k>`, the macro's JSON split into string literals within Excel's
 limits), which other spreadsheet applications keep but do not run. A visible name of that shape
 is someone's own name: opening a file leaves it alone, and saving stores the macros under indices
@@ -321,7 +321,7 @@ other macros open; a macro that was left out is not in the saved file.
   `approve: true` or the chosen `onConflict`, in the workbook that asked: an answer given while
   another workbook is active does nothing and says why.
 - **Shortcuts.** Ctrl+Shift+letter (⌘⇧letter on a Mac) on the grid runs the macro with that
-  letter. The letters Iridium Sheets uses itself keep their own meaning.
+  letter. The letters Sheets uses itself keep their own meaning.
 
 Commands with empty parameters never open these dialogs: `macro.record {}` starts recording
 under the next free name, and the dialogs are opened only from the ribbon, the menus and keys.
@@ -334,5 +334,5 @@ Automate scripts (`automate.recordActions`, `newScript`, `allScripts`, `runScrip
 neither read nor change their storage; a recording keeps the steps a script run ran while it
 recorded. A workbook can hold a script and a macro with the same name.
 
-A VBA project in an `.xlsm` or `.xltm` file is preserved on save and never run. Iridium Sheets macros
+A VBA project in an `.xlsm` or `.xltm` file is preserved on save and never run. Sheets macros
 are stored apart from it.

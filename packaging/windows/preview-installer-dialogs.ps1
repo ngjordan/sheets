@@ -53,7 +53,7 @@ public static class IridiumMsiPreview {
             if (owner != process) return true;
             var title = new StringBuilder(128);
             GetWindowText(window, title, title.Capacity);
-            if (title.ToString() != "Iridium Sheets Setup") return true;
+            if (title.ToString() != "Sheets Setup") return true;
             found = window;
             return false;
         }, IntPtr.Zero);

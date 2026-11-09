@@ -221,7 +221,7 @@ fn answer_and_limits_reports_describe_the_wyndor_glass_solution() {
     assert_eq!(d.wb.active().unwrap().name, "Sheet1", "the model's sheet stays active");
     assert_eq!(saved(&s), "solver_opt", "the saved model follows its sheet");
     let a = "Answer Report 1";
-    assert_eq!(at(&s, a, "A1"), Value::text("Iridium Sheets Answer Report"));
+    assert_eq!(at(&s, a, "A1"), Value::text("Sheets Answer Report"));
     // Objective: $D$6 "Profit Used", from 0 to 36.
     let r = row_of(&s, a, "$D$6");
     assert_eq!(at(&s, a, &format!("C{}", r + 1)), Value::text("Profit Used"));
@@ -435,7 +435,7 @@ fn sensitivity_report_gives_the_wyndor_glass_shadow_prices_and_ranges() {
         .unwrap();
     assert_eq!(solved["reports"], json!(["Sensitivity Report 1"]), "{solved}");
     let rep = "Sensitivity Report 1";
-    assert_eq!(at(&s, rep, "A1"), Value::text("Iridium Sheets Sensitivity Report"));
+    assert_eq!(at(&s, rep, "A1"), Value::text("Sheets Sensitivity Report"));
     let r = row_of(&s, rep, "Reduced Cost");
     assert_eq!(at(&s, rep, &format!("F{}", r + 1)), Value::text("Objective Coefficient"));
     let cols = ["D", "E", "F", "G", "H"];
@@ -1630,7 +1630,7 @@ fn load_model_keeps_the_evolutionary_convergence_and_generations() {
     let m = s.execute("data.solver", json!({})).unwrap()["model"].clone();
     assert_eq!((m["convergence"].as_f64(), m["generationsWithoutImprovement"].as_f64()), (Some(0.001), Some(20.0)), "{m}");
     assert!(!s.doc().unwrap().wb.names.iter().any(|n| n.name == "solver_mni"));
-    // Reset All removes the Iridium Sheets name with the rest.
+    // Reset All removes the Sheets name with the rest.
     s.execute("data.solverReset", json!({})).unwrap();
     assert!(s.doc().unwrap().wb.names.iter().all(|n| n.scope != Some(0)));
 }
@@ -1673,7 +1673,7 @@ fn excel_iteration_and_time_limits_are_not_read_as_iridium_options() {
         let d = s.doc().unwrap();
         d.wb.names.iter().filter(|n| n.scope == Some(0)).map(|n| n.name.clone()).collect()
     };
-    // Iridium Sheets's evaluation limit and generations go under its own names, not Excel's.
+    // Sheets's evaluation limit and generations go under its own names, not Excel's.
     let saved = names(&s);
     assert!(saved.iter().all(|n| n != "solver_itr" && n != "solver_mni"), "{saved:?}");
     assert!(saved.iter().any(|n| n == "iridium_solver_evals") && saved.iter().any(|n| n == "iridium_solver_stall"), "{saved:?}");
@@ -1698,7 +1698,7 @@ fn excel_iteration_and_time_limits_are_not_read_as_iridium_options() {
     let r = s.execute("data.solver", json!({"saved": true})).unwrap();
     assert!(r["evaluations"].as_u64().unwrap() > 100, "{r}");
     assert!((n(&s, "A1") - 3.0).abs() < 1e-3, "{r}");
-    // Saving again replaces Iridium Sheets's names; Reset All removes them with the rest. Simplex
+    // Saving again replaces Sheets's names; Reset All removes them with the rest. Simplex
     // LP refuses the nonlinear ABS model, but the model is saved before the solve.
     let r = s.execute(
         "data.solver",

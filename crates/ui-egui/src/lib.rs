@@ -1,4 +1,4 @@
-//! Iridium Sheets's egui frontend: an Excel-style window (title bar with Quick Access Toolbar,
+//! Sheets's egui frontend: an Excel-style window (title bar with Quick Access Toolbar,
 //! ribbon, formula bar, grid, sheet tabs, status bar) over `iridium-engine`.
 //!
 //! The UI is thin: it reads engine state and acts through [`SheetApp::run`] (engine commands by
@@ -6,17 +6,17 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
-/// Iridium Sheets as craft-update knows it, with its 128 px icon and accent colour: the update
+/// Sheets as craft-update knows it, with its 128 px icon and accent colour: the update
 /// prompt shows both, and an AppImage's menu entry gets the icon.
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     id: "iridium-sheets",
     name: iridium_core::brand::NAME,
     tagline: "Spreadsheets and data",
-    repo: "ngjordan/iridium-sheets",
+    repo: "ngjordan/sheets",
     former_ids: &[],
     former_names: &[],
-    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/ph.iridium.sheets.png")),
+    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/ph.sheets.png")),
     accent: Some([0x0b, 0x6e, 0x4f]),
     developer: "Iridium Technologies, Inc.",
 };
@@ -204,7 +204,7 @@ impl UiState {
 }
 
 /// A dismissible bar under the ribbon, in the spirit of Excel's message bar. Used to tell the
-/// user what an opened file carried that Iridium Sheets handled differently (e.g. preserved macros).
+/// user what an opened file carried that Sheets handled differently (e.g. preserved macros).
 #[derive(Clone, Debug, PartialEq)]
 pub struct Notice {
     pub text: String,
@@ -303,11 +303,11 @@ pub struct SheetApp {
     pub(crate) capture_geometry_from_raw: bool,
     /// The floating object selected on the sheet (chart, picture, shape, equation or slicer).
     pub selected_object: Option<iridium_engine::model::ObjRef>,
-    /// The system clipboard's text when Iridium Sheets last copied without publishing to it (a
+    /// The system clipboard's text when Sheets last copied without publishing to it (a
     /// control-channel or MCP `edit.copy`/`edit.cut`). While the system clipboard still holds this
-    /// text, Iridium Sheets's copy is the newer one and Paste uses it.
+    /// text, Sheets's copy is the newer one and Paste uses it.
     clipboard_text_at_copy: Option<String>,
-    /// The system clipboard's text right after Iridium Sheets's last cut (the published text, or the
+    /// The system clipboard's text right after Sheets's last cut (the published text, or the
     /// text noted for an unpublished cut); `None` after a copy, or once the clipboard is seen
     /// holding other text. Once the cut has been pasted, Paste leaves this text alone.
     cut_text: Option<String>,

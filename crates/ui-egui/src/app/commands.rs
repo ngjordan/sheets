@@ -8,7 +8,7 @@ impl SheetApp {
     pub fn run(&mut self, id: &str, params: Json) -> Result<Json, String> {
         let r = self.run_command(id, params);
         // This copy leaves the system clipboard alone: note what it holds, so Paste can tell
-        // that Iridium Sheets's copy is newer while that text is still there.
+        // that Sheets's copy is newer while that text is still there.
         if matches!(id, "edit.copy" | "edit.cut") && r.is_ok() {
             self.clipboard_text_at_copy = self.system_clipboard_text();
             self.cut_text = if id == "edit.cut" { self.clipboard_text_at_copy.clone() } else { None };

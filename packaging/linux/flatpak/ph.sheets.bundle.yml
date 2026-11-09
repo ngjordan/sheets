@@ -9,15 +9,15 @@
 # Wayland, xkbcommon and Vulkan/GL at runtime; the freedesktop runtime has all of them, and the
 # GPU driver comes from its org.freedesktop.Platform.GL extension.
 #
-# ph.iridium.sheets.yml (same directory) is the from-source manifest for Flathub. Keep
+# ph.sheets.yml (same directory) is the from-source manifest for Flathub. Keep
 # runtime, runtime-version, sdk and finish-args identical in both (packaging-lint checks this).
-id: ph.iridium.sheets
+id: ph.sheets
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: iridium-sheets
 finish-args:
-  - --filesystem=xdg-data/Iridium Sheets/versions:ro
+  - --filesystem=xdg-data/Sheets/versions:ro
   # Display: Wayland first; X11 only when no Wayland compositor is running.
   - --socket=wayland
   - --socket=fallback-x11
@@ -95,12 +95,12 @@ modules:
     buildsystem: simple
     build-commands:
       - install -Dm755 bin/iridium-sheets /app/bin/iridium-sheets
-      # Headless CLI and MCP server: `flatpak run --command=iridium-sheets-cli ph.iridium.sheets`.
+      # Headless CLI and MCP server: `flatpak run --command=iridium-sheets-cli ph.sheets`.
       - install -Dm755 bin/iridium-sheets-cli /app/bin/iridium-sheets-cli
-      - install -Dm644 share/applications/ph.iridium.sheets.desktop /app/share/applications/ph.iridium.sheets.desktop
-      - install -Dm644 share/mime/packages/ph.iridium.sheets.xml /app/share/mime/packages/ph.iridium.sheets.xml
+      - install -Dm644 share/applications/ph.sheets.desktop /app/share/applications/ph.sheets.desktop
+      - install -Dm644 share/mime/packages/ph.sheets.xml /app/share/mime/packages/ph.sheets.xml
       # Already has the release's version and date substituted by package.sh.
-      - install -Dm644 share/metainfo/ph.iridium.sheets.metainfo.xml /app/share/metainfo/ph.iridium.sheets.metainfo.xml
+      - install -Dm644 share/metainfo/ph.sheets.metainfo.xml /app/share/metainfo/ph.sheets.metainfo.xml
       - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/iridium-sheets /app/share/doc/
     sources:
       - type: dir

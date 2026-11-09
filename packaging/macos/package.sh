@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/iridium-sheets-<version>-macos-<arch>.dmg          Iridium Sheets.app on a drag-to-Applications DMG
+#   $DIST/iridium-sheets-<version>-macos-<arch>.dmg          Sheets.app on a drag-to-Applications DMG
 #   $DIST/iridium-sheets-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
@@ -54,7 +54,7 @@ else
   warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
 fi
 
-echo "==> Iridium Sheets $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> Sheets $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" = 0 ]]; then
@@ -113,7 +113,7 @@ notarize() {
   fi
 }
 
-# ---- Iridium Sheets.app ----------------------------------------------------------------------------
+# ---- Sheets.app ----------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).

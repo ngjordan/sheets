@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/ph.iridium.sheets.png" width="128" height="128" alt="Iridium Sheets icon: a spreadsheet page on a green tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/ph.sheets.png" width="128" height="128" alt="Sheets icon: a spreadsheet page on a green tile">
 </p>
 
-<h1 align="center">Iridium Sheets</h1>
+<h1 align="center">Sheets</h1>
 
 <p align="center">
   <b>Spreadsheets and data; an open-source, high-performance modern spreadsheet application, built in pure Rust.</b>
@@ -20,7 +20,7 @@
   <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20%2F%20Apache--2.0-084f39?style=flat-square">
   <img alt="Agent-drivable over MCP" src="https://img.shields.io/badge/agents-MCP-0b6e4f?style=flat-square">
   <br>
-  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/ngjordan/iridium-sheets?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
+  <a href="https://coderabbit.ai"><img alt="Reviewed by CodeRabbit" src="https://img.shields.io/coderabbit/prs/github/ngjordan/sheets?style=flat-square&label=Reviewed%20by%20CodeRabbit&logo=coderabbit"></a>
 </p>
 
 <p align="center">
@@ -28,24 +28,24 @@
 </p>
 
 <p align="center">
-  <a href="https://iridium-sheets.ph"><b>Iridium Sheets by Iridium Technologies, Inc.</b></a> ·
-  <a href="https://github.com/ngjordan/iridium-sheets">Based on GridCraft by the ArtCraft team</a>
+  <a href="https://iridium-sheets.ph"><b>Sheets by Iridium Technologies, Inc.</b></a> ·
+  <a href="https://github.com/ngjordan/sheets">Based on GridCraft by the ArtCraft team</a>
 </p>
 
 <br>
 
 <p align="center">
-  <img src="docs/images/hero-sales.png" alt="Iridium Sheets showing a quarterly sales dashboard: a styled table with banded rows, filter buttons, a totals row, data bars, arrow icons and sparklines, next to a clustered column chart and a pie chart" width="100%">
-  <br><sub><b>Quarterly Sales Dashboard</b>: a table with a totals row, conditional formatting, sparklines and two live charts — built entirely from Iridium Sheets commands (<code>File → New → Sample</code>).</sub>
+  <img src="docs/images/hero-sales.png" alt="Sheets showing a quarterly sales dashboard: a styled table with banded rows, filter buttons, a totals row, data bars, arrow icons and sparklines, next to a clustered column chart and a pie chart" width="100%">
+  <br><sub><b>Quarterly Sales Dashboard</b>: a table with a totals row, conditional formatting, sparklines and two live charts — built entirely from Sheets commands (<code>File → New → Sample</code>).</sub>
 </p>
 
 > [!NOTE]
-> **Iridium Sheets is built for people who work with numbers.** Analysts, engineers, bookkeepers,
+> **Sheets is built for people who work with numbers.** Analysts, engineers, bookkeepers,
 > scientists and small business owners, and the people who build the tools they use.
 
 <p align="center">
   <a href="#a-look-around">A look around</a> ·
-  <a href="#why-iridium-sheets">Why Iridium Sheets</a> ·
+  <a href="#why-iridium-sheets">Why Sheets</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#for-agents-mcp-cli-and-the-control-channel">For agents</a> ·
   <a href="#architecture">Architecture</a> ·
@@ -71,7 +71,7 @@
 </tr>
 </table>
 
-## Why Iridium Sheets
+## Why Sheets
 
 - **Familiar.** Ribbon, formula bar, Name Box, sheet tabs, keyboard shortcuts, fill handle,
   point-mode formula entry with coloured references, Format Cells, Paste Special,
@@ -144,10 +144,10 @@ Browsers or desktop environments may reserve Alt/F10 for their own menus.
 
 The desktop app writes its log to standard error and to `iridium-sheets.log` in the `logs` folder
 next to its settings: `~/.config/iridium-sheets/logs` on Linux and BSD (`$XDG_CONFIG_HOME/iridium-sheets/logs`
-when set), `~/Library/Application Support/Iridium Sheets/logs` on macOS and
-`%APPDATA%\Iridium Sheets\logs` on Windows. Each start moves the previous log to `iridium-sheets.1.log` and
+when set), `~/Library/Application Support/Sheets/logs` on macOS and
+`%APPDATA%\Sheets\logs` on Windows. Each start moves the previous log to `iridium-sheets.1.log` and
 that one to `iridium-sheets.2.log`, so the log of a run that crashed survives the next start; attach
-them to a bug report. A log file stops growing at 16 MiB. By default Iridium Sheets's own crates log
+them to a bug report. A log file stops growing at 16 MiB. By default Sheets's own crates log
 at `info` and everything else at `warn`; `RUST_LOG` replaces that with env_logger-style
 directives, e.g. `RUST_LOG=debug` or `RUST_LOG=warn,iridium_engine=debug` (a trailing `*`
 matches a prefix: `iridium_sheets*=debug`). Runs with `IRIDIUM_NO_PREFS` set (no saved settings)
@@ -166,13 +166,13 @@ iridium-sheets-cli commands --search chart                          # every comm
 
 The MCP server offers tools such as `read_range`, `write_range`, `set_cell`, `evaluate_formula`,
 `format_range`, `insert_chart`, `create_table`, `sort_range`, `filter` and `execute_command`
-(which reaches every one of Iridium Sheets's commands). The desktop app's control channel adds real
+(which reaches every one of Sheets's commands). The desktop app's control channel adds real
 pointer and keyboard input, dialogs and screenshots. See [`docs/mcp.md`](docs/mcp.md),
 [`docs/cli.md`](docs/cli.md) and [`docs/control-protocol.md`](docs/control-protocol.md).
 
 ## Architecture
 
-Iridium Sheets is an engine-first Cargo workspace with enforced layering (`cargo xtask layers`). The
+Sheets is an engine-first Cargo workspace with enforced layering (`cargo xtask layers`). The
 egui frontend is a separate crate, so the UI can be swapped without touching the engine.
 
 | Layer | Crates |
@@ -191,7 +191,7 @@ egui frontend is a separate crate, so the UI can be swapped without touching the
 
 ## Roadmap
 
-Iridium Sheets is in **alpha**: the core workflow works end to end, but depth, fidelity and file
+Sheets is in **alpha**: the core workflow works end to end, but depth, fidelity and file
 compatibility are still rough. It covers 89% of standard ribbon commands in our catalog
 ([`docs/parity-checklist.md`](docs/parity-checklist.md)) and 513 standard worksheet functions
 ([`docs/function-parity.md`](docs/function-parity.md)); this is a parity inventory, not a count of working implementations. Weighted by what spreadsheet users rely on, we
@@ -201,7 +201,7 @@ numbers and estimates are in [ROADMAP.md](ROADMAP.md); the ranked work list is [
 
 ## Downloads
 
-**Download Iridium Sheets** from GitHub: the [latest release](https://github.com/ngjordan/iridium-sheets/releases/latest) has every build listed below, and [all releases](https://github.com/ngjordan/iridium-sheets/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
+**Download Sheets** from GitHub: the [latest release](https://github.com/ngjordan/sheets/releases/latest) has every build listed below, and [all releases](https://github.com/ngjordan/sheets/releases) has earlier versions and their notes. `<ver>` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
 
 ### Windows
 
@@ -232,7 +232,7 @@ web backend defaults are unchanged.
 
 **If the app is slow on an older Windows PC, or DirectX 12 can't start:** when DirectX 12 finds no
 graphics card with a driver for it, it only offers the Windows-provided software renderer, which draws every
-frame on the processor. In that case Iridium Sheets uses OpenGL instead, without setting anything; if
+frame on the processor. In that case Sheets uses OpenGL instead, without setting anything; if
 the first renderer fails to start, it tries the other one once. The log file records the choice
 (lines starting with `graphics:`). `WGPU_BACKEND` still overrides it (and then nothing else is
 tried), e.g. `$env:WGPU_BACKEND = "gl"` or `"dx12"`.
@@ -273,25 +273,27 @@ handling again for troubleshooting.
 
 ## The Crafting Apps
 
-Iridium Sheets is one of the Iridium applications, alongside the Iridium Docs word processor.
+Sheets is one of five open-source desktop applications, alongside the Docs word processor.
 Each is built from an open-source independent project, in pure Rust, and each stands on its own.
 
 | App | What it's for | Code |
-|:-:|---|---|
-| **Iridium Sheets** | Spreadsheets and data | [GitHub](https://github.com/ngjordan/iridium-sheets) |
-| **Iridium Docs** | Word processing and documents | [GitHub](https://github.com/ngjordan/iridium-docs) |
+| **Sheets** | Spreadsheets and data | [GitHub](https://github.com/ngjordan/sheets) |
+| **Docs** | Word processing and documents | [GitHub](https://github.com/ngjordan/docs) |
+| **CAD** | Computer-aided design and drafting | [GitHub](https://github.com/ngjordan/cad) |
+| **Decks** | Presentations and slide shows | [GitHub](https://github.com/ngjordan/decks) |
+| **PDF** | Reading, organizing and protecting PDF files | [GitHub](https://github.com/ngjordan/pdf) |
 
 
 ## License and credits
 
-Iridium Sheets is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
+Sheets is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
 Copyright (c) 2026 ArtCraft Team and the GridCraft contributors. Required notices are in [NOTICE](NOTICE).
 
 Bundled fonts, icons, images and other assets keep their own open licenses; each one is listed
 with its author, source and license in [ATTRIBUTION.md](ATTRIBUTION.md).
 
 All UI icons are drawn in code and are original; the sample workbooks and every screenshot in
-this README were made with Iridium Sheets itself. Iridium Sheets bundles no fonts: it uses the fonts
+this README were made with Sheets itself. Sheets bundles no fonts: it uses the fonts
 installed on your system.
 
 The ArtCraft name, wordmark and logos are trademarks of the ArtCraft Team and are not covered by
@@ -301,7 +303,7 @@ upstream brand licence requires for forks.
 <br>
 
 <p align="center">
-  <sub>Based on <a href="https://github.com/ngjordan/iridium-sheets">GridCraft</a> by the ArtCraft team.
-  Iridium Sheets is a modified distribution; the ArtCraft marks have been removed as the upstream
+  <sub>Based on <a href="https://github.com/ngjordan/sheets">GridCraft</a> by the ArtCraft team.
+  Sheets is a modified distribution; the ArtCraft marks have been removed as the upstream
   brand licence requires. MIT OR Apache-2.0.</sub>
 </p>

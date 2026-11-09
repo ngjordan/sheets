@@ -1,4 +1,4 @@
-//! A tiny, self-contained PDF 1.7 writer for Iridium Sheets's print and PDF export.
+//! A tiny, self-contained PDF 1.7 writer for Sheets's print and PDF export.
 //!
 //! - The 14 standard fonts (no embedding) with WinAnsiEncoding, plus approximate width tables
 //!   ([`text_width`]) so callers can measure, align and wrap text. Characters outside

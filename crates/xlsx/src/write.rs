@@ -281,7 +281,7 @@ pub fn write_xlsx_named(wb: &Workbook, kind: XlsxKind, book_name: Option<&str>) 
 
     let mut w = format!("{XML_DECL}<workbook xmlns=\"{NS_MAIN}\" xmlns:r=\"{NS_REL}\">");
     // A workbook read from a file keeps its <fileVersion> as it was: Excel trusts the saved values
-    // only when appName is "xl" (#799). One without names Iridium Sheets (#1699), and Excel recalculates it.
+    // only when appName is "xl" (#799). One without names Sheets (#1699), and Excel recalculates it.
     let file_version = crate::passthrough::workbook_elements(wb, "fileVersion");
     w.push_str(if file_version.is_empty() { "<fileVersion appName=\"iridium-sheets\"/>" } else { &file_version });
     w.push_str("<workbookPr");
@@ -425,7 +425,7 @@ pub fn write_xlsx_named(wb: &Workbook, kind: XlsxKind, book_name: Option<&str>) 
     core.push_str("</cp:coreProperties>");
     out.part("docProps/core.xml", Some("application/vnd.openxmlformats-package.core-properties+xml"), core.into_bytes());
     let mut app = String::from(XML_DECL);
-    app.push_str("<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>Iridium Sheets</Application>");
+    app.push_str("<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>Sheets</Application>");
     if !company.is_empty() {
         let _ = write!(app, "<Company>{}</Company>", esc(&company));
     }

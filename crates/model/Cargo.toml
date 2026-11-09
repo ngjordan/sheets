@@ -3,7 +3,7 @@ name = "iridium-model"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Iridium Sheets document model: workbooks, sheets, cells, styles, tables, charts"
+description = "Sheets document model: workbooks, sheets, cells, styles, tables, charts"
 
 [lints]
 workspace = true

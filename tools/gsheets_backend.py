@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The Google Sheets backend Iridium Sheets's desktop shell calls.
+"""The Google Sheets backend Sheets's desktop shell calls.
 
 One JSON request on stdin, one JSON response on stdout. The Rust side
 runs this on a worker thread, so it must never block on the UI and must
@@ -341,7 +341,7 @@ def push(sid: str, xlsx: bytes, tab: str | None) -> str:
     """Upload a workbook into a spreadsheet.
 
     The Sheets API has no "replace this file's contents" call, so the xlsx is
-    read here (with Iridium Sheets's own reader, through the CLI) and the
+    read here (with Sheets's own reader, through the CLI) and the
     values are written cell by cell. Formulas are sent as USER_ENTERED so
     Google evaluates them rather than storing them as text.
     """

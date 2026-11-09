@@ -8,9 +8,9 @@ use std::{env, fs, path::PathBuf};
 /// Used when the file is missing, which happens when this crate is packaged on
 /// its own. Keeps `cargo package` and `cargo publish` working.
 const DEFAULTS: &[(&str, &str)] = &[
-    ("APP_NAME", "Iridium Sheets"),
+    ("APP_NAME", "Sheets"),
     ("APP_SLUG", "iridium-sheets"),
-    ("APP_ID", "ph.iridium.sheets"),
+    ("APP_ID", "ph.sheets"),
     ("APP_VENDOR", "Iridium Technologies, Inc."),
     ("APP_HOMEPAGE", "https://github.com/ngjordan/iridium-sheets"),
 ];

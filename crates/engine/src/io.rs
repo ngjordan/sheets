@@ -9,7 +9,7 @@ use crate::{EngineError, Result};
 
 mod sylk;
 
-/// File formats Iridium Sheets reads or writes.
+/// File formats Sheets reads or writes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FileKind {
     Xlsx,
@@ -49,7 +49,7 @@ pub const PASSWORD_REQUIRED: &str = "is password-protected. Enter its password t
 /// The error for a wrong password contains this.
 pub const WRONG_PASSWORD: &str = "The password is incorrect.";
 /// The first open warning of a workbook decrypted with its password.
-pub const DECRYPTED_NOTICE: &str = "This workbook was password-protected. Iridium Sheets saves it without the password.";
+pub const DECRYPTED_NOTICE: &str = "This workbook was password-protected. Sheets saves it without the password.";
 
 /// Parses a file's bytes into a workbook. `name` picks the format by extension when the bytes
 /// don't say. An encrypted workbook needs [`open_bytes_with_password`].
@@ -117,7 +117,7 @@ fn decrypt_message(name: &str, e: iridium_xlsx::DecryptError) -> String {
     match e {
         iridium_xlsx::DecryptError::WrongPassword => format!("{WRONG_PASSWORD} Check that Caps Lock is off and try again."),
         iridium_xlsx::DecryptError::Unsupported(scheme) => {
-            format!("'{name}' uses {scheme} encryption, which Iridium Sheets can't open yet. Remove the password in Excel and try again.")
+            format!("'{name}' uses {scheme} encryption, which Sheets can't open yet. Remove the password in Excel and try again.")
         }
         iridium_xlsx::DecryptError::Malformed(detail) => format!("We can't open '{name}': the encrypted file is damaged ({detail})."),
     }
@@ -268,7 +268,7 @@ fn read_plain(name: &str, bytes: &[u8], csv_as_text: bool) -> Result<(Workbook, 
     }
     if sniffed == iridium_xlsx::Format::LegacyBinary {
         return Err(EngineError::Other(format!(
-            "'{name}' is a legacy binary file but not an Excel workbook (no workbook stream). Iridium Sheets can't open it."
+            "'{name}' is a legacy binary file but not an Excel workbook (no workbook stream). Sheets can't open it."
         )));
     }
     // Content wins over the extension: an ODS or XLSB package is imported as what it is,
@@ -287,7 +287,7 @@ fn read_plain(name: &str, bytes: &[u8], csv_as_text: bool) -> Result<(Workbook, 
     }
     // Text named `.xlsx` is read as text.
     if sniffed == iridium_xlsx::Format::Xlsx || (kind == Some(FileKind::Xlsx) && sniffed != iridium_xlsx::Format::Csv) {
-        // Google Sheets' export wrapper is read as the formula inside when Iridium Sheets calculates it (#2871).
+        // Google Sheets' export wrapper is read as the formula inside when Sheets calculates it (#2871).
         let (wb, report) = iridium_xlsx::read_xlsx_with(bytes, &iridium_calc::is_known_function).map_err(|e| {
             EngineError::Other(match (&e, iridium_xlsx::oversized_part(bytes)) {
                 (iridium_xlsx::IoError::TooLarge(_), Some((part, size))) => part_too_large_message(name, &part, size),
@@ -301,8 +301,7 @@ fn read_plain(name: &str, bytes: &[u8], csv_as_text: bool) -> Result<(Workbook, 
     }
     match kind {
         Some(FileKind::Json) => {
-            let mut wb: Workbook =
-                serde_json::from_slice(bytes).map_err(|e| EngineError::Other(format!("not a Iridium Sheets JSON workbook: {e}")))?;
+            let mut wb: Workbook = serde_json::from_slice(bytes).map_err(|e| EngineError::Other(format!("not a Sheets JSON workbook: {e}")))?;
             wb.styles.rebuild_index();
             if wb.sheets.is_empty() {
                 // The file's macros are read after this (`macros::load`), so they come along.
@@ -355,7 +354,7 @@ fn part_too_large_message(name: &str, part: &str, size: u64) -> String {
         "To open it, save the data as CSV, which keeps only its values."
     };
     format!(
-        "We can't open '{name}': its part {part} unpacks to {size}, over Iridium Sheets's limit of {limit} MB for one part \
+        "We can't open '{name}': its part {part} unpacks to {size}, over Sheets's limit of {limit} MB for one part \
          (a guard against damaged or malicious files). {remedy}"
     )
 }

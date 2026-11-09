@@ -3,7 +3,7 @@ name = "iridium-calc"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Iridium Sheets calculation engine: dependency graph, recalculation, evaluator, dynamic arrays"
+description = "Sheets calculation engine: dependency graph, recalculation, evaluator, dynamic arrays"
 
 [lints]
 workspace = true

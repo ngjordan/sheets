@@ -2023,7 +2023,7 @@ fn inserting_a_column_next_to_far_right_data_names_iridium_in_the_refusal() {
     let mut sess = s();
     sess.execute("cell.set", json!({"cell": "XFD1", "input": "2"})).unwrap();
     let e = sess.execute("home.insertColumns", json!({"cols": "A:A"})).unwrap_err();
-    assert!(e.to_string().contains("Iridium Sheets cannot shift nonblank cells"), "{e}");
+    assert!(e.to_string().contains("Sheets cannot shift nonblank cells"), "{e}");
     assert!(!e.to_string().contains("Excel"), "{e}");
 }
 

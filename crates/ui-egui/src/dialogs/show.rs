@@ -204,7 +204,7 @@ pub fn show(app: &mut SheetApp, ctx: &egui::Context) {
                 "solverResults" => solver_results(app, ui, &mut d, &mut open),
                 "spelling" => spelling(app, ui, &mut d, &mut open),
                 "agents" => {
-                    ui.label("Iridium Sheets is fully drivable by agents. Every menu item, button and gesture is a command:");
+                    ui.label("Sheets is fully drivable by agents. Every menu item, button and gesture is a command:");
                     ui.add_space(4.0);
                     ui.monospace("iridium-sheets --control 7979        # JSON-lines control channel\niridium-sheets-cli mcp --connect 7979   # MCP bridged to this window\niridium-sheets-cli mcp                   # headless MCP server");
                     ui.add_space(4.0);

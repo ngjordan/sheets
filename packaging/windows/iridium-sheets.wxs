@@ -142,8 +142,8 @@
       <ComponentGroupRef Id="IridiumFiles" />
       <ComponentGroupRef Id="GoogleLibFiles" />
     </Feature>
-  <Property Id="CRAFT_OPTION_1_M" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_MSearch" Root="HKLM" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcut" Type="raw" />
-    </Property><SetProperty Id="SAVEDDESKTOPSHORTCUT" Action="CraftLoadOption1M" Value="[CRAFT_OPTION_1_M]" After="LaunchConditions" Sequence="both" Condition="ALLUSERS = 1" /><Property Id="CRAFT_OPTION_1_U" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_USearch" Root="HKCU" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcut" Type="raw" />
+  <Property Id="CRAFT_OPTION_1_M" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_MSearch" Root="HKLM" Key="Software\Sheets\Installer" Name="DesktopShortcut" Type="raw" />
+    </Property><SetProperty Id="SAVEDDESKTOPSHORTCUT" Action="CraftLoadOption1M" Value="[CRAFT_OPTION_1_M]" After="LaunchConditions" Sequence="both" Condition="ALLUSERS = 1" /><Property Id="CRAFT_OPTION_1_U" Secure="yes"><RegistrySearch Id="CRAFT_OPTION_1_USearch" Root="HKCU" Key="Software\Sheets\Installer" Name="DesktopShortcut" Type="raw" />
     </Property><SetProperty Id="SAVEDDESKTOPSHORTCUT" Action="CraftLoadOption1U" Value="[CRAFT_OPTION_1_U]" After="CraftLoadOption1M" Sequence="both" Condition="ALLUSERS &lt;&gt; 1" /></Package>
 
   <Fragment>
@@ -167,34 +167,34 @@
 
         <RegistryValue Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\iridium-sheets.exe" Value="[#IridiumExe]" Type="string" />
 
-        <!-- ProgIds: how Explorer opens a file with Iridium Sheets. Nothing here sets HKCR\.<ext>'s
+        <!-- ProgIds: how Explorer opens a file with Sheets. Nothing here sets HKCR\.<ext>'s
              default value, so the user's current default app is left alone. -->
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.Workbook" Value="$(var.AppName) Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.Workbook\DefaultIcon" Value="&quot;[#IridiumExe]&quot;,0" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.Workbook\shell\open\command" Value="&quot;[#IridiumExe]&quot; &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.TextData" Value="$(var.AppName) Text Data" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.TextData\DefaultIcon" Value="&quot;[#IridiumExe]&quot;,0" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\Iridium Sheets.TextData\shell\open\command" Value="&quot;[#IridiumExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.Workbook" Value="$(var.AppName) Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.Workbook\DefaultIcon" Value="&quot;[#IridiumExe]&quot;,0" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.Workbook\shell\open\command" Value="&quot;[#IridiumExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.TextData" Value="$(var.AppName) Text Data" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.TextData\DefaultIcon" Value="&quot;[#IridiumExe]&quot;,0" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Sheets.TextData\shell\open\command" Value="&quot;[#IridiumExe]&quot; &quot;%1&quot;" Type="string" />
 
         <!-- "Open with": Windows reads only the value names under OpenWithProgids; the data is
              ignored (WiX rejects an empty Value, so it repeats the ProgId). -->
-        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsx\OpenWithProgids" Name="Iridium Sheets.Workbook" Value="Iridium Sheets.Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsm\OpenWithProgids" Name="Iridium Sheets.Workbook" Value="Iridium Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsx\OpenWithProgids" Name="Sheets.Workbook" Value="Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsm\OpenWithProgids" Name="Sheets.Workbook" Value="Sheets.Workbook" Type="string" />
         <!-- .xlsb and .ods are imported (data only) into a new workbook that saves as .xlsx. -->
-        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsb\OpenWithProgids" Name="Iridium Sheets.Workbook" Value="Iridium Sheets.Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\.ods\OpenWithProgids" Name="Iridium Sheets.Workbook" Value="Iridium Sheets.Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\.csv\OpenWithProgids" Name="Iridium Sheets.TextData" Value="Iridium Sheets.TextData" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Classes\.tsv\OpenWithProgids" Name="Iridium Sheets.TextData" Value="Iridium Sheets.TextData" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.xlsb\OpenWithProgids" Name="Sheets.Workbook" Value="Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.ods\OpenWithProgids" Name="Sheets.Workbook" Value="Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.csv\OpenWithProgids" Name="Sheets.TextData" Value="Sheets.TextData" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.tsv\OpenWithProgids" Name="Sheets.TextData" Value="Sheets.TextData" Type="string" />
 
-        <!-- Settings > Default apps: lets the user pick Iridium Sheets for these types. -->
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities" Name="ApplicationName" Value="$(var.AppName)" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities" Name="ApplicationDescription" Value="Open-source spreadsheet for .xlsx, CSV and TSV files" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities\FileAssociations" Name=".xlsx" Value="Iridium Sheets.Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities\FileAssociations" Name=".xlsm" Value="Iridium Sheets.Workbook" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities\FileAssociations" Name=".csv" Value="Iridium Sheets.TextData" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Capabilities\FileAssociations" Name=".tsv" Value="Iridium Sheets.TextData" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\RegisteredApplications" Name="$(var.AppName)" Value="Software\Iridium Sheets\Capabilities" Type="string" />
-      <RegistryValue Root="HKMU" Key="Software\Iridium Sheets" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
+        <!-- Settings > Default apps: lets the user pick Sheets for these types. -->
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities" Name="ApplicationName" Value="$(var.AppName)" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities" Name="ApplicationDescription" Value="Open-source spreadsheet for .xlsx, CSV and TSV files" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities\FileAssociations" Name=".xlsx" Value="Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities\FileAssociations" Name=".xlsm" Value="Sheets.Workbook" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities\FileAssociations" Name=".csv" Value="Sheets.TextData" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Capabilities\FileAssociations" Name=".tsv" Value="Sheets.TextData" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\RegisteredApplications" Name="$(var.AppName)" Value="Software\Sheets\Capabilities" Type="string" />
+      <RegistryValue Root="HKMU" Key="Software\Sheets" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
       </Component>
 
       <Component Id="IridiumCli">
@@ -204,13 +204,13 @@
       <!-- Persist both on and off, independently of the optional shortcut. AppSearch reads
            this before MajorUpgrade removes the previous product. -->
       <Component Id="DesktopShortcutPreference">
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcut" Value="[DESKTOPSHORTCUT]" Type="string" KeyPath="yes" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Installer" Name="DesktopShortcut" Value="[DESKTOPSHORTCUT]" Type="string" KeyPath="yes" />
       </Component>
       <Component Id="DesktopShortcutComponent" Directory="DesktopFolder" Condition="DESKTOPSHORTCUT = &quot;1&quot;">
         <Shortcut Id="DesktopShortcut" Name="$(var.AppName)" Description="$(var.AppName) spreadsheet" Target="[#IridiumExe]" WorkingDirectory="INSTALLFOLDER" Icon="IridiumIcon.ico" IconIndex="0" />
         <!-- HKMU resolves to HKLM for this per-machine package, so another account can
              uninstall the marker too. MSI root -1 also satisfies ICE43 for this shortcut. -->
-        <RegistryValue Root="HKMU" Key="Software\Iridium Sheets\Installer" Name="DesktopShortcutComponent" Value="1" Type="integer" KeyPath="yes" />
+        <RegistryValue Root="HKMU" Key="Software\Sheets\Installer" Name="DesktopShortcutComponent" Value="1" Type="integer" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

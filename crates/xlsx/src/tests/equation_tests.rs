@@ -121,7 +121,7 @@ fn office_math_without_a_source_is_converted_to_latex() {
     let quad = "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}";
     let wb = book(vec![equation(1, "B2", quad, Color::Auto), equation(2, "B8", "\\sum_{k=0}^{n} \\binom{n}{k} \\le \\infty", Color::Auto)]);
     let mut parts = unzip(&write_xlsx(&wb).unwrap());
-    // Strip Iridium Sheets's source, as a file saved by another application would be.
+    // Strip Sheets's source, as a file saved by another application would be.
     let name = parts.keys().find(|k| k.starts_with("xl/drawings/drawing")).unwrap().clone();
     let mut d = drawing(&parts);
     while let Some(a) = d.find(" descr=\"iridium:latex:") {
@@ -175,7 +175,7 @@ fn a_text_box_stays_a_text_box_and_hostile_sources_survive() {
 
 #[test]
 fn office_math_edited_elsewhere_reads_back_as_edited() {
-    // Iridium Sheets writes the source in the description and Office Math in the body. Another
+    // Sheets writes the source in the description and Office Math in the body. Another
     // application that edits the Office Math (Excel) leaves the description alone; the marker in
     // the description no longer matches the body, so the Office Math is converted and the stale
     // source dropped, and the next save writes the edited equation.
@@ -217,7 +217,7 @@ fn a_marker_over_garbage_office_math_falls_back_without_panicking() {
     assert_eq!(s.len(), 1);
     assert_eq!(s[0].kind, ShapeKind::Equation);
     assert_eq!(s[0].text, "x^2");
-    // A description whose marker is malformed is not Iridium Sheets's source: with Office Math the
+    // A description whose marker is malformed is not Sheets's source: with Office Math the
     // maths is converted; without it the box is text.
     let d2 = drawing(&unzip(&write_xlsx(&wb).unwrap())).replace("descr=\"iridium:latex:", "descr=\"iridium:latex:zz:");
     parts.insert(name, d2.into_bytes());
@@ -233,7 +233,7 @@ fn office_math_outside_the_subset_reads_the_fallback() {
     let mut parts = unzip(&write_xlsx(&wb).unwrap());
     let name = parts.keys().find(|k| k.starts_with("xl/drawings/drawing")).unwrap().clone();
     let mut d = drawing(&parts);
-    // Another writer: no Iridium Sheets source, Office Math the reader does not convert (a
+    // Another writer: no Sheets source, Office Math the reader does not convert (a
     // pre-subscript), and a fallback text box with its own text.
     while let Some(a) = d.find(" descr=\"iridium:latex:") {
         let b = d[a + 8..].find('"').unwrap() + a + 9;
@@ -312,7 +312,7 @@ fn hostile_sources_round_trip_exactly() {
 
 #[test]
 fn office_math_beside_text_or_other_math_is_not_an_equation() {
-    // Another writer's text box: no Iridium Sheets source, and Office Math the reader converts, but
+    // Another writer's text box: no Sheets source, and Office Math the reader converts, but
     // sharing the box with ordinary text or with a second equation. Taking it as one equation
     // would drop the rest, so it stays a text box (or the writer's fallback is read).
     let saved = || {
@@ -376,7 +376,7 @@ fn office_math_beside_text_or_other_math_is_not_an_equation() {
 #[test]
 fn a_brace_with_scripts_on_both_sides_round_trips() {
     // `\underbrace{x}_{n}^{2}`: the label is the brace's limit and the exponent a superscript
-    // around the whole. With Iridium Sheets's source in the description, the marker matches the body
+    // around the whole. With Sheets's source in the description, the marker matches the body
     // and the source comes back as written; with the source stripped (a file another application
     // saved) the Office Math is converted and the exponent is still there.
     let src = "\\underbrace{x}_{n}^{2}";

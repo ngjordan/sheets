@@ -1,10 +1,10 @@
-# Iridium Sheets app icon (PLACEHOLDER)
+# Sheets app icon (PLACEHOLDER)
 
 **This icon is temporary.** Every Crafting App's icon is an engraved creature portrait that the
-product owner makes; Iridium Sheets's hasn't been made yet.
+product owner makes; Sheets's hasn't been made yet.
 Until it is, this placeholder stands in: a simple ledger page with a header row, a row-number
 column, a selected cell with its fill handle and a double rule under a total, on a full-bleed
-Iridium Sheets-green tile. It is original geometry written by hand for this repository, deliberately
+Sheets-green tile. It is original geometry written by hand for this repository, deliberately
 not modelled on any vendor's spreadsheet logo (no letters, no "X", no overlapping panels).
 
 When the owner's art arrives, replace `iridium-sheets.svg`, run `packaging/icons.sh`, update this
@@ -18,9 +18,9 @@ Exactly three colours:
 |---|---|---|
 | Ink | `#0b0b0c` | Line work and contour |
 | Paper | `#efe9dc` | The page |
-| Iridium Sheets green (app colour, **proposed**) | `#0b6e4f` | The full-bleed field and the header cells |
+| Sheets green (app colour, **proposed**) | `#0b6e4f` | The full-bleed field and the header cells |
 
-The app colour is a proposal pending the owner's approval: Iridium Sheets green `#0b6e4f`, with ink
+The app colour is a proposal pending the owner's approval: Sheets green `#0b6e4f`, with ink
 (darker) variant `#084f39` for text and accents on light backgrounds. It differs from
 DesignCraft's `#7bb51c`.
 
@@ -39,12 +39,12 @@ body with a transparent margin.
 | `iridium-sheets-macos-512.png` | Runtime Dock icon on macOS (for `apps/iridium-sheets` to embed) |
 | `iridium-sheets.icns` | macOS bundle icon (`CFBundleIconFile`) |
 | `iridium-sheets.ico` | Windows exe icon, 16–256 px (embedded by `apps/iridium-sheets/build.rs`) |
-| `hicolor/<size>/apps/ph.iridium.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
-| `hicolor/scalable/apps/ph.iridium.sheets.svg` | Linux scalable icon |
+| `hicolor/<size>/apps/ph.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
+| `hicolor/scalable/apps/ph.sheets.svg` | Linux scalable icon |
 | `LICENSE.txt` | MIT OR Apache-2.0 |
 
-The app ID is `ph.iridium.sheets`. It's used for the hicolor icon names, the Wayland app
-ID and `packaging/linux/ph.iridium.sheets.desktop`.
+The app ID is `ph.sheets`. It's used for the hicolor icon names, the Wayland app
+ID and `packaging/linux/ph.sheets.desktop`.
 
 ## Regenerate
 

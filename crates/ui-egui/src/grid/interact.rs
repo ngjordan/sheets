@@ -746,7 +746,7 @@ fn handle_release(app: &mut SheetApp, input: &InteractionInput<'_>) {
                 let src = sel.current();
                 // Dropping on cells that hold data asks first, as in Excel.
                 if to != src.start {
-                    crate::macro_ui::call(app, "Iridium Sheets", "range.move", json!({"range": src.a1(), "to": to.a1()}));
+                    crate::macro_ui::call(app, "Sheets", "range.move", json!({"range": src.a1(), "to": to.a1()}));
                 }
             }
             Drag::MoveCols { source, before: Some(before) } => {

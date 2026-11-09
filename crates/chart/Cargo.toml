@@ -3,7 +3,7 @@ name = "iridium-chart"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Iridium Sheets charts: data resolution, layout into toolkit-free primitives, sparklines and a small rasteriser"
+description = "Sheets charts: data resolution, layout into toolkit-free primitives, sparklines and a small rasteriser"
 
 [lints]
 workspace = true

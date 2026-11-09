@@ -267,7 +267,7 @@ mod tests {
             serde_json::from_str::<serde_json::Value>("{\"a\":2,\"b\":1}").unwrap(),
             "maps compare regardless of order"
         );
-        // Every preset in the Borders menu has its letter (Inside Borders is Iridium Sheets's own, J).
+        // Every preset in the Borders menu has its letter (Inside Borders is Sheets's own, J).
         for preset in [
             "bottom",
             "top",

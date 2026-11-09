@@ -1,6 +1,6 @@
-# Iridium Sheets MCP server
+# Sheets MCP server
 
-`iridium-sheets-cli mcp` exposes Iridium Sheets to AI agents over the [Model Context Protocol](https://modelcontextprotocol.io):
+`iridium-sheets-cli mcp` exposes Sheets to AI agents over the [Model Context Protocol](https://modelcontextprotocol.io):
 newline-delimited JSON-RPC 2.0 on stdin/stdout (protocol `2025-06-18`; `2025-03-26` and `2024-11-05` clients are
 answered in their own version). Logs go to stderr.
 

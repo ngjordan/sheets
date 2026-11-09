@@ -785,7 +785,7 @@ fn borders_keytip_opens_the_borders_menu() {
     assert_eq!(h.state().keytips.prefix(), None);
     assert!(sides(&h, "B2").iter().all(|s| *s != iridium_engine::model::BorderStyle::None), "A applied All Borders");
 
-    // Inside Borders, Iridium Sheets's own item, has a letter too (J): only the inner edges.
+    // Inside Borders, Sheets's own item, has a letter too (J): only the inner edges.
     let mut h = harness(selected("A1:B2"));
     sequence(&mut h, &[Key::H, Key::B, Key::J], false);
     h.run_steps(2);

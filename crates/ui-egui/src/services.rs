@@ -41,7 +41,7 @@ pub struct Services {
     pub paste_html: Option<Box<dyn FnMut() -> Option<String>>>,
     /// Read the system clipboard's plain text for the ribbon and menu Paste commands (Cmd/Ctrl+V
     /// gets it from egui's `Event::Paste`). `None` from the host, or no service (web), pastes
-    /// Iridium Sheets's own clipboard.
+    /// Sheets's own clipboard.
     pub paste_text: Option<Box<dyn FnMut() -> Option<String>>>,
     /// Read the picture on the system clipboard for the ribbon and menu Paste commands when it
     /// holds no text (Cmd/Ctrl+V gets it from egui's `Event::PasteImage`).

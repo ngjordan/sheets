@@ -545,7 +545,7 @@ mod tests {
     fn an_underbrace_with_both_scripts_keeps_its_exponent() {
         // The label under the brace is its limit; the exponent on the other side is a
         // superscript around the whole, so that an application reading the Office Math sees it
-        // (the source in `descr` hid its loss in a Iridium Sheets-to-Iridium Sheets round trip).
+        // (the source in `descr` hid its loss in a Sheets-to-Sheets round trip).
         let brace = |chr: &str, pos: &str, vert: &str| {
             format!(
                 "<m:groupChr><m:groupChrPr><m:chr m:val=\"{chr}\"/><m:pos m:val=\"{pos}\"/><m:vertJc m:val=\"{vert}\"/></m:groupChrPr><m:e><m:r><m:t>x</m:t></m:r></m:e></m:groupChr>"

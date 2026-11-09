@@ -1,20 +1,20 @@
-# Releasing Iridium Sheets
+# Releasing Sheets
 
 Every push to the `release` branch runs `.github/workflows/release.yml`. The workflow builds
 signed installers for macOS, Windows, Linux, FreeBSD and the web, then creates or updates a
-**draft** GitHub Release named `Iridium Sheets v<version>`. Nobody sees a draft until a maintainer
+**draft** GitHub Release named `Sheets v<version>`. Nobody sees a draft until a maintainer
 publishes it.
 
 This process was copied from DesignCraft and renamed. User-facing names say
-**Iridium Sheets**. Files, binaries and ids stay lowercase
-(`iridium-<version>-<platform>-<arch>.<ext>`, `ph.iridium.sheets`).
+**Sheets**. Files, binaries and ids stay lowercase
+(`iridium-<version>-<platform>-<arch>.<ext>`, `ph.sheets`).
 
 | App-specific value | Where |
 |---|---|
-| Display name `Iridium Sheets`, binaries `iridium-sheets` + `iridium-sheets-cli` | every script and workflow |
-| Bundle / app id `ph.iridium.sheets` | `packaging/macos/Info.plist.in`, `packaging/linux/*`, flatpak manifest |
+| Display name `Sheets`, binaries `iridium-sheets` + `iridium-sheets-cli` | every script and workflow |
+| Bundle / app id `ph.sheets` | `packaging/macos/Info.plist.in`, `packaging/linux/*`, flatpak manifest |
 | WiX UpgradeCode `5511327B-F305-41BE-92D0-EB84944E7C4D` (fixed forever) | `packaging/windows/iridium-sheets.wxs` |
-| File types `.xlsx` `.xlsm` `.xlsb` `.ods` `.csv` `.tsv` | Info.plist (`CFBundleDocumentTypes`), WiX (ProgIds/OpenWithProgids), `.desktop` `MimeType=`, `ph.iridium.sheets.mime.xml`, metainfo |
+| File types `.xlsx` `.xlsm` `.xlsb` `.ods` `.csv` `.tsv` | Info.plist (`CFBundleDocumentTypes`), WiX (ProgIds/OpenWithProgids), `.desktop` `MimeType=`, `ph.sheets.mime.xml`, metainfo |
 | Web app dir `apps/iridium-sheets-web` | `packaging/web/package.sh` |
 | App colour `#0b6e4f` (ink `#084f39`), **proposed** | `assets/app-icon/README.md`, metainfo `<branding>` |
 
@@ -34,8 +34,8 @@ The `apps/iridium-sheets` and `apps/iridium-sheets-web` crates are workspace mem
   `IRIDIUM_BUILD_SHA` and `IRIDIUM_BUILD_DATE` for artifact metadata.
 - **Runtime icon:** `apps/iridium-sheets/src/main.rs` embeds
   `assets/app-icon/iridium-sheets-macos-512.png` (macOS Dock) and
-  `hicolor/256x256/apps/ph.iridium.sheets.png` (Windows/Linux) as the window icon, and
-  uses `ph.iridium.sheets` as the Wayland app id / `StartupWMClass`.
+  `hicolor/256x256/apps/ph.sheets.png` (Windows/Linux) as the window icon, and
+  uses `ph.sheets` as the Wayland app id / `StartupWMClass`.
 
 ## Cutting a release
 
@@ -50,7 +50,7 @@ The `apps/iridium-sheets` and `apps/iridium-sheets-web` crates are workspace mem
    Commit the change (`Cargo.toml` + `Cargo.lock`) through the normal review flow.
 2. **Merge `main` into `release`** (or fast-forward it) and push. The workflow starts by itself.
 3. **Wait for the draft.** Notarization and the FreeBSD VM are the slow parts. The Releases
-   page then has a draft `Iridium Sheets v0.2.0`, tagged `v0.2.0` on the pushed commit, with every
+   page then has a draft `Sheets v0.2.0`, tagged `v0.2.0` on the pushed commit, with every
    artifact and `SHA256SUMS.txt`. The notes are generated from the merged PRs.
 4. **Check it.** Download an installer or two and read the job summaries. Any `::warning::`
    there means a signing secret was missing and that artifact is unsigned.
@@ -88,12 +88,12 @@ and upload their artifacts, the environment refuses macOS and Windows, and no re
 ### macOS
 
 `packaging/macos/package.sh` builds `aarch64-apple-darwin` and `x86_64-apple-darwin` with
-`MACOSX_DEPLOYMENT_TARGET=11.0`, joins them with `lipo`, and assembles `Iridium Sheets.app`:
+`MACOSX_DEPLOYMENT_TARGET=11.0`, joins them with `lipo`, and assembles `Sheets.app`:
 
-- `Info.plist` comes from `Info.plist.in`: bundle id `ph.iridium.sheets`,
+- `Info.plist` comes from `Info.plist.in`: bundle id `ph.sheets`,
   `LSMinimumSystemVersion` 11.0, `NSHighResolutionCapable`, category productivity, and
   `CFBundleDocumentTypes` for `.xlsx`, `.xlsm`, `.xlsb`, `.ods`, `.csv` and `.tsv` with rank
-  **Alternate**, so Iridium Sheets is offered in *Open With* without taking over Numbers' (or another
+  **Alternate**, so Sheets is offered in *Open With* without taking over Numbers' (or another
   app's) defaults. `.xlsm` and `.xlsb` get imported UTIs in case macOS doesn't know them.
 - **Signing** goes inside-out with the hardened runtime and a secure timestamp; no `--deep` on
   the final signature; `entitlements.plist` is deliberately empty.
@@ -101,7 +101,7 @@ and upload their artifacts, the environment refuses macOS and Windows, and no re
   stapled. The DMG (with an `Applications` link) is signed, notarized and stapled too, and
   checked with `codesign --verify --strict`, `stapler validate` and `spctl -a -vvv`.
   Its Finder window (background, icon size and positions) comes from
-  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `Iridium Sheets`
+  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `Sheets`
   without the version, which the window's background needs; the DMG file name keeps the version.
 - **CLI:** the universal `iridium-sheets-cli` is signed, zipped and notarized.
 
@@ -121,11 +121,11 @@ is GUI, `iridium-sheets-cli.exe` console), signs both executables, builds the MS
 the MSI, and zips a portable build.
 
 - `iridium-sheets.wxs`: a dual-scope package (per-user by default into
-  `%LOCALAPPDATA%\Programs\Iridium\Iridium Sheets`, per-machine into `Program Files\Iridium\Iridium Sheets` (`Program Files (x86)` for the 32-bit build),
+  `%LOCALAPPDATA%\Programs\Iridium\Sheets`, per-machine into `Program Files\Iridium\Sheets` (`Program Files (x86)` for the 32-bit build),
   see `packaging/windows/INSTALLATION.md`), advertised Start Menu shortcut, App
-  Paths (Win+R `iridium-sheets`). File types: ProgIds `Iridium Sheets.Workbook` (`.xlsx`, `.xlsm`) and
-  `Iridium Sheets.TextData` (`.csv`, `.tsv`), listed under each extension's `OpenWithProgids` and
-  in `Capabilities` + `RegisteredApplications`, so Iridium Sheets appears in *Open with* and
+  Paths (Win+R `iridium-sheets`). File types: ProgIds `Sheets.Workbook` (`.xlsx`, `.xlsm`) and
+  `Sheets.TextData` (`.csv`, `.tsv`), listed under each extension's `OpenWithProgids` and
+  in `Capabilities` + `RegisteredApplications`, so Sheets appears in *Open with* and
   *Settings › Default apps* but never silently becomes the default. The MSI version is the
   numeric `X.Y.Z`; same-version upgrades let release candidates replace each other.
 - **Desktop shortcut:** full installer UI offers an unchecked checkbox on a new installation.
@@ -160,7 +160,7 @@ Locally on Windows: `dotnet tool install -g wix --version 5.0.2`, then
 ### Linux
 
 `packaging/linux/package.sh` stages one FHS tree (both binaries,
-`ph.iridium.sheets.desktop` with `MimeType=` for the four types, hicolor icons 16–512 px
+`ph.sheets.desktop` with `MimeType=` for the four types, hicolor icons 16–512 px
 + scalable SVG, AppStream metainfo, shared-mime-info) and builds the AppImage (appimagetool),
 `.deb` and `.rpm` (nfpm, `nfpm.yaml`) and `.tar.gz` from it. Built on Ubuntu 22.04, so the
 binaries need glibc ≥ 2.35. X11/Wayland/xkbcommon/Vulkan/EGL are loaded at runtime; the
@@ -172,11 +172,11 @@ matching `.zsync` is published beside it, so AppImageUpdate and AppImageLauncher
 changed blocks of the newest published release. appimagetool writes the `.zsync` when
 `zsyncmake` (the `zsync` package) is installed; without it the script warns and skips it.
 
-Flatpak: `packaging/linux/flatpak/ph.iridium.sheets.yml` builds from source and is ready
+Flatpak: `packaging/linux/flatpak/ph.sheets.yml` builds from source and is ready
 for a Flathub submission (freedesktop 25.08; Wayland + X11 fallback, `dri`, IPC; Documents and
 Downloads; everything else through portals); build it by hand with the commands in its header.
 The single-file `.flatpak` on each release comes from `packaging/linux/flatpak-bundle.sh` and
-`ph.iridium.sheets.bundle.yml`, which repackage the release's Linux tarball (no Rust
+`ph.sheets.bundle.yml`, which repackage the release's Linux tarball (no Rust
 build) and smoke-test the result in the sandbox. packaging-lint checks that both manifests
 agree on runtime and finish-args.
 
@@ -272,7 +272,7 @@ the publisher.
 ## Icons
 
 `assets/app-icon/iridium-sheets.svg` is a **placeholder** (an original ledger-page drawing on
-Iridium Sheets green) until the owner makes Iridium Sheets's engraved creature portrait. `packaging/icons.sh` regenerates the 1024 px PNG, the macOS 512 px
+Sheets green) until the owner makes Sheets's engraved creature portrait. `packaging/icons.sh` regenerates the 1024 px PNG, the macOS 512 px
 PNG, the `.icns` (iconutil), the `.ico` (`cargo xtask ico`) and the hicolor PNGs from it; it
 needs `resvg`. The outputs are committed, so packaging never needs those tools. Every file has a
 row in `ATTRIBUTION.md` (`cargo xtask assets`).

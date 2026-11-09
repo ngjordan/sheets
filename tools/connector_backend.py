@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The connector backend Iridium Sheets's desktop shell calls.
+"""The connector backend Sheets's desktop shell calls.
 
 One JSON request on stdin, one JSON response on stdout, the same shape as
 the other cloud helpers. The Rust side runs this on a worker thread, so it

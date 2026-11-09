@@ -96,7 +96,7 @@ pub struct CalcSettings {
     /// Use precision as displayed.
     pub precision_as_displayed: bool,
     /// R1C1 reference style (`<calcPr refMode="R1C1"/>`): kept with the file and written back;
-    /// Iridium Sheets itself shows and takes A1 references.
+    /// Sheets itself shows and takes A1 references.
     #[serde(default)]
     pub r1c1: bool,
 }
@@ -207,7 +207,7 @@ pub struct Workbook {
     pub show_objects: ShowObjects,
     /// Trust Center › Privacy Options › "Remove personal information from file properties on save"
     /// (`<workbookPr filterPrivacy="1"/>`): kept with the file, and while it is on the author and
-    /// company are left out of the XLSX files Iridium Sheets writes, as Excel leaves them empty. Other
+    /// company are left out of the XLSX files Sheets writes, as Excel leaves them empty. Other
     /// formats aren't filtered: the workbook's own serialization still holds them.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub remove_personal_info: bool,
@@ -237,7 +237,7 @@ pub struct Workbook {
     /// which holds unmodelled parts), so it is saved to JSON as well as to XLSX.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub phonetics: Vec<PhoneticString>,
-    /// VBA project (`xl/vbaProject.bin`) carried through unchanged. Iridium Sheets does not run
+    /// VBA project (`xl/vbaProject.bin`) carried through unchanged. Sheets does not run
     /// macros; the blob is preserved so that saving a macro-enabled workbook never destroys the
     /// macros it arrived with. base64 in JSON. `None` = the workbook has no macros. Shared, so a
     /// copy of the workbook (every edit's undo step) doesn't copy it.
@@ -247,7 +247,7 @@ pub struct Workbook {
     /// separator back (a `;` file stays a `;` file). `None` = not read from CSV: CSV saves use `,`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub csv_delimiter: Option<u8>,
-    /// Iridium Sheets macros (typed command lists, not VBA), in the order the macro list shows them.
+    /// Sheets macros (typed command lists, not VBA), in the order the macro list shows them.
     /// The JSON format keeps them as this field; xlsx keeps them in hidden defined names.
     #[serde(default, skip_serializing_if = "crate::macros::Macros::is_empty", skip_deserializing)]
     pub macros: crate::macros::Macros,

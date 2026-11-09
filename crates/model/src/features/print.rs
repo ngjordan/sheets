@@ -197,7 +197,7 @@ pub struct SheetProtection {
     /// password itself).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<crate::PasswordHash>,
-    /// The internal hash older Iridium Sheets JSON workbooks stored ([`password_hash`]); still
+    /// The internal hash older Sheets JSON workbooks stored ([`password_hash`]); still
     /// verified when unprotecting, never written for new passwords.
     #[serde(rename = "password_hash", default, skip_serializing_if = "Option::is_none")]
     pub legacy_password_hash: Option<u64>,
@@ -232,7 +232,7 @@ impl EditRange {
     }
 }
 
-/// The non-cryptographic password hash older Iridium Sheets versions stored for sheet protection
+/// The non-cryptographic password hash older Sheets versions stored for sheet protection
 /// (only verified now, see [`SheetProtection::legacy_password_hash`]).
 pub fn password_hash(pw: &str) -> u64 {
     let mut h: u64 = 0xcbf29ce484222325 ^ 0x5348_4545_5443;

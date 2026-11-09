@@ -1,11 +1,11 @@
 //! The `postMessage` bridge to a same-origin parent page (`?host=parent`), for pages that embed
-//! Iridium Sheets in an `<iframe>` (such as a Nextcloud app). Messages are plain objects with a `type`:
+//! Sheets in an `<iframe>` (such as a Nextcloud app). Messages are plain objects with a `type`:
 //!
 //! - `iridium:ready` (to the parent): `{ version }`, the app is listening; send a file now.
 //! - `iridium:open` (from the parent): `{ name, bytes }`, bytes an `ArrayBuffer` or
 //!   `Uint8Array`. It opens like a workbook picked with File › Open or dropped on the window.
 //! - `iridium:save` (to the parent): `{ name, bytes }` (a transferred `ArrayBuffer`) for every
-//!   file Iridium Sheets would otherwise download: Save and Save As (an .xlsx workbook) and Export
+//!   file Sheets would otherwise download: Save and Save As (an .xlsx workbook) and Export
 //!   as PDF. The parent stores it and reports failures itself.
 //! - `iridium:dirty` (to the parent): `{ dirty }` whenever unsaved changes appear or go away.
 //! - `iridium:failed` (to the parent): `{ error }` when the app couldn't start.

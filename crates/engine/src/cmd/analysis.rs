@@ -5,7 +5,7 @@
 //! Every tool is one `tool` value of `data.analysisToolPak`. Distribution values (t, F) come
 //! from the worksheet functions (`T.DIST.2T`, `F.DIST.RT`, `T.INV.2T`…), so the reports agree
 //! with the formulas a user would write. Layouts follow Microsoft's public description of the
-//! tools (row labels and section titles); exact spacing is Iridium Sheets's reading of it.
+//! tools (row labels and section titles); exact spacing is Sheets's reading of it.
 
 use std::collections::{BTreeMap, HashMap};
 
@@ -1399,7 +1399,7 @@ fn fourier_analysis(s: &Session, p: &Json) -> Result<Grid> {
 // ---------------------------------------------------------------- random numbers and sampling
 
 /// A seeded generator: xoshiro256** (Blackman and Vigna, a public-domain algorithm) with its
-/// state filled by SplitMix64. The same seed gives the same numbers in Iridium Sheets; they are not
+/// state filled by SplitMix64. The same seed gives the same numbers in Sheets; they are not
 /// Excel's numbers, whose generator is not documented.
 struct Rng([u64; 4]);
 

@@ -31,7 +31,7 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-env-changed=IRIDIUM_REQUIRE_WINRES");
     let brand = brand();
-    let name = brand.get("APP_NAME").cloned().unwrap_or_else(|| "Iridium Sheets".to_string());
+    let name = brand.get("APP_NAME").cloned().unwrap_or_else(|| "Sheets".to_string());
     let slug = brand.get("APP_SLUG").cloned().unwrap_or_else(|| "iridium-sheets".to_string());
     let vendor = brand.get("APP_VENDOR").cloned().unwrap_or_else(|| "Iridium Technologies, Inc.".to_string());
     let icon = format!("../../assets/app-icon/{slug}.ico");
