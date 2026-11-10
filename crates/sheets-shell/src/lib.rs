@@ -96,6 +96,11 @@ impl Shell {
             app.open_path(f);
         }
         SheetApp::setup_context_for_language(ctx, app.ui.dark, app.ui.language);
+        // Capture the fonts Sheets installed. `Context::fonts` PANICS before egui's first pass
+        // ("No fonts available until first call to Context::run()"), and a host may build this
+        // module before any frame has run, so capture the definitions the app built instead of
+        // reading them back.
+        let fonts = iridium_ui_egui::theme::font_definitions_for_language(app.ui.language);
         if let Some(port) = launch.control_port {
             match control_server::start(port, launch.control_token.clone(), ctx.clone()) {
                 Ok(rx) => app.control_rx = Some(rx),
@@ -119,7 +124,7 @@ impl Shell {
             inbox,
             #[cfg(target_os = "macos")]
             ctx: ctx.clone(),
-            fonts: ctx.fonts(|f| f.definitions().clone()),
+            fonts,
             style: ctx.global_style().as_ref().clone(),
             zoom: ctx.zoom_factor(),
         }
