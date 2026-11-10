@@ -49,15 +49,31 @@ pub struct Shell {
     windows: DocWindows,
     launch: Launch,
     #[cfg(target_os = "macos")]
-    menu: Option<native_menu::NativeMenu>,
+    menu: RefCell<Option<native_menu::NativeMenu>>,
     #[cfg(target_os = "macos")]
     inbox: fmv_macos_events::Inbox,
+    #[cfg(target_os = "macos")]
+    ctx: egui::Context,
+    fonts: egui::FontDefinitions,
+    style: egui::Style,
+    zoom: f32,
 }
 
 impl Shell {
     /// Build the shell: the workbook session, preferences, command-line files, the control
     /// channel and the workbook windows.
+    ///
+    /// A thin wrapper over [`Shell::new_for_host`]; Sheets needs nothing from `cc` beyond its
+    /// context and storage (which it ignores).
     pub fn new(cc: &eframe::CreationContext<'_>, launch: Launch) -> Self {
+        Self::new_for_host(&cc.egui_ctx, cc.storage, launch)
+    }
+
+    /// Host-facing constructor: no `CreationContext`, so a host can build this module later.
+    /// `storage` is unused (Sheets keeps its settings in `launch.config_dir`). The fonts, style and
+    /// zoom Sheets installed into `ctx` are captured for [`fonts`](Self::fonts),
+    /// [`style`](Self::style) and [`zoom`](Self::zoom).
+    pub fn new_for_host(ctx: &egui::Context, _storage: Option<&dyn eframe::Storage>, launch: Launch) -> Self {
         let mut session = Session::new();
         if let Some(s) = &launch.sample
             && let Err(e) = session.execute("file.new", json!({"sample": s}))
@@ -79,9 +95,9 @@ impl Shell {
         for f in &launch.files {
             app.open_path(f);
         }
-        SheetApp::setup_context_for_language(&cc.egui_ctx, app.ui.dark, app.ui.language);
+        SheetApp::setup_context_for_language(ctx, app.ui.dark, app.ui.language);
         if let Some(port) = launch.control_port {
-            match control_server::start(port, launch.control_token.clone(), cc.egui_ctx.clone()) {
+            match control_server::start(port, launch.control_token.clone(), ctx.clone()) {
                 Ok(rx) => app.control_rx = Some(rx),
                 Err(e) => log::error!("control channel on port {port}: {e}"),
             }
@@ -89,7 +105,7 @@ impl Shell {
         let windows = DocWindows::new(&mut app, launch.viewport.clone(), DocWindows::platform_quits_with_last_window());
         #[cfg(target_os = "macos")]
         let inbox = {
-            let ctx = cc.egui_ctx.clone();
+            let ctx = ctx.clone();
             launch.inbox.set_wake(move || ctx.request_repaint());
             launch.inbox.clone()
         };
@@ -98,9 +114,39 @@ impl Shell {
             windows,
             launch,
             #[cfg(target_os = "macos")]
-            menu: None,
+            menu: RefCell::new(None),
             #[cfg(target_os = "macos")]
             inbox,
+            #[cfg(target_os = "macos")]
+            ctx: ctx.clone(),
+            fonts: ctx.fonts(|f| f.definitions().clone()),
+            style: ctx.global_style().as_ref().clone(),
+            zoom: ctx.zoom_factor(),
+        }
+    }
+
+    /// The font set Sheets installed, captured at construction.
+    pub fn fonts(&self) -> egui::FontDefinitions {
+        self.fonts.clone()
+    }
+
+    /// The style Sheets left behind, captured at construction.
+    pub fn style(&self) -> egui::Style {
+        self.style.clone()
+    }
+
+    /// The zoom factor Sheets left behind, captured at construction.
+    pub fn zoom(&self) -> f32 {
+        self.zoom
+    }
+
+    /// macOS: re-install Sheets's native menu as the menu bar. No-op elsewhere.
+    pub fn install_native_menu(&self) {
+        #[cfg(target_os = "macos")]
+        if std::env::var_os("IRIDIUM_NO_NATIVE_MENU").is_none()
+            && let Ok(mut menu) = self.menu.try_borrow_mut()
+        {
+            *menu = Some(native_menu::NativeMenu::install(&self.ctx));
         }
     }
 
@@ -108,10 +154,10 @@ impl Shell {
     pub fn logic(&mut self, ctx: &egui::Context) {
         #[cfg(target_os = "macos")]
         {
-            if self.menu.is_none() && std::env::var_os("IRIDIUM_NO_NATIVE_MENU").is_none() {
-                self.menu = Some(native_menu::NativeMenu::install(ctx));
+            if self.menu.get_mut().is_none() && std::env::var_os("IRIDIUM_NO_NATIVE_MENU").is_none() {
+                *self.menu.get_mut() = Some(native_menu::NativeMenu::install(ctx));
             }
-            if let Some(m) = &mut self.menu {
+            if let Some(m) = self.menu.get_mut() {
                 m.poll(&mut self.app, ctx, self.windows.focused_viewport());
             }
             apple_events::poll(&self.inbox, &mut self.app, ctx);
