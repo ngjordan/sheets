@@ -1,0 +1,43 @@
+[package]
+name = "iridium-sheets-shell"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "Sheets desktop shell: the app's window logic as a library, driven by apps/iridium-sheets"
+
+[lints]
+workspace = true
+
+[dependencies]
+iridium-core = { workspace = true }
+iridium-engine = { workspace = true }
+iridium-ui-egui = { workspace = true }
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11", "clipboard"] }
+egui = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+image = { workspace = true }
+chrono = { workspace = true }
+craft-print = { git = "https://github.com/ngjordan/craft-libs", rev = "04428cee1e5bb2b85c3b6537aeb10ba0da228ff9" }
+rfd = { workspace = true }
+arboard = { workspace = true, features = ["image-data"] }
+iridium-mcp = { workspace = true }
+getrandom = "0.4"
+
+[target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]
+arboard = { workspace = true, features = ["image-data", "wayland-data-control"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+muda = { version = "0.21", default-features = false }
+fmv-macos-events = "=0.1.0"
+objc2 = "=0.6.5"
+objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "NSApplication", "NSResponder", "NSWindow"] }
+
+[target.'cfg(target_os = "macos")'.dev-dependencies]
+objc2 = "=0.6.5"
+objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "NSApplication", "NSMenu", "NSMenuItem", "NSResponder"] }
+
+[[test]]
+name = "mac_menu_appkit"
+harness = false

@@ -9,63 +9,27 @@
 #![cfg_attr(all(target_os = "windows", not(debug_assertions)), windows_subsystem = "windows")]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-#[cfg(target_os = "macos")]
-mod apple_events;
-mod connector;
-mod control_server;
 #[cfg(any(target_os = "windows", target_os = "macos", test))]
 mod graphics;
-mod gsheets;
 mod logging;
-#[cfg(target_os = "macos")]
-mod native_menu;
-mod print;
 
-use std::cell::RefCell;
-use std::rc::Rc;
+use iridium_sheets_shell::{Launch, Shell};
 
-use iridium_engine::Session;
-use iridium_ui_egui::doc_windows::DocWindows;
-use iridium_ui_egui::{Services, SheetApp};
-use serde_json::json;
-
-/// The app, its native window per workbook window, and (macOS) the menu bar and Finder events.
-struct App(SheetApp, DocWindows, #[cfg(target_os = "macos")] Option<native_menu::NativeMenu>, #[cfg(target_os = "macos")] fmv_macos_events::Inbox);
+/// The shell, wrapped for eframe. Process-wide exit handling stays here.
+struct App(Shell);
 
 impl eframe::App for App {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        #[cfg(target_os = "macos")]
-        {
-            if self.2.is_none() && std::env::var_os("IRIDIUM_NO_NATIVE_MENU").is_none() {
-                self.2 = Some(native_menu::NativeMenu::install(ctx));
-            }
-            if let Some(m) = &mut self.2 {
-                m.poll(&mut self.0, ctx, self.1.focused_viewport());
-            }
-            apple_events::poll(&self.3, &mut self.0, ctx);
-        }
         self.0.logic(ctx);
-        self.1.logic(&mut self.0, ctx);
-        if ctx.input(|input| input.viewport().close_requested()) && self.0.printing.busy() {
-            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
-        }
     }
-    /// Forwards raw input to the shared app, then opens every non-empty dropped file path as a workbook.
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw: &mut egui::RawInput) {
         self.0.raw_input_hook(ctx, raw);
-        // Files dropped on the window open as workbooks.
-        for f in std::mem::take(&mut raw.dropped_files) {
-            if let Some(p) = f.path().to_str().map(str::to_string).filter(|p| !p.is_empty()) {
-                self.0.open_path(&p);
-            }
-        }
     }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        self.1.show(&mut self.0, ui);
+        self.0.ui(ui);
     }
     fn on_exit(&mut self) {
-        print::finish_pending_jobs();
-        save_prefs(&self.0);
+        self.0.save_state();
         // macOS (#117): end the process here, before eframe tears the window down. AccessKit's
         // macOS adapter subclasses the window's content view and restores its class on teardown;
         // AppKit's Touch Bar support observes that view (KVO), so in the next display cycle
@@ -101,135 +65,6 @@ fn prefs_enabled() -> bool {
 /// Where the log files live: `logs` in the settings folder, next to `ui.json` (see `logging`).
 fn log_dir() -> Option<std::path::PathBuf> {
     Some(config_dir()?.join("logs"))
-}
-
-fn load_prefs(app: &mut SheetApp) {
-    if !prefs_enabled() {
-        return;
-    }
-    // First run (or a ui.json without a usable language): follow the desktop's language.
-    app.ui.language = iridium_ui_egui::i18n::Language::system();
-    // ...and its light or dark appearance (#239), until a theme is chosen and saved in ui.json.
-    app.ui.system_theme = true;
-    let Some(dir) = config_dir() else { return };
-    if let Ok(b) = std::fs::read(dir.join("ui.json"))
-        && let Ok(ui) = serde_json::from_slice::<iridium_ui_egui::UiState>(&b)
-    {
-        let saved = serde_json::from_slice(&b).ok().and_then(|v| iridium_ui_egui::i18n::saved_language(&v));
-        let language = saved.unwrap_or(app.ui.language);
-        app.ui = ui.at_startup();
-        app.ui.language = language;
-    }
-    if let Ok(b) = std::fs::read(dir.join("prefs.json"))
-        && let Ok(p) = serde_json::from_slice(&b)
-    {
-        app.session.prefs = p;
-    }
-}
-
-fn save_prefs(app: &SheetApp) {
-    if !prefs_enabled() {
-        return;
-    }
-    let Some(dir) = config_dir() else { return };
-    let _ = std::fs::create_dir_all(&dir);
-    if let Ok(b) = serde_json::to_vec_pretty(&app.ui) {
-        let _ = std::fs::write(dir.join("ui.json"), b);
-    }
-    if let Ok(b) = serde_json::to_vec_pretty(&app.session.prefs) {
-        let _ = std::fs::write(dir.join("prefs.json"), b);
-    }
-}
-
-/// Read the system clipboard through the shared handle, creating it on first use.
-fn read_clipboard<T>(
-    handle: &RefCell<Option<arboard::Clipboard>>,
-    read: impl FnOnce(&mut arboard::Clipboard) -> Result<T, arboard::Error>,
-) -> Option<T> {
-    let mut clipboard = handle.try_borrow_mut().ok()?;
-    if clipboard.is_none() {
-        *clipboard = arboard::Clipboard::new().ok();
-    }
-    read(clipboard.as_mut()?).ok()
-}
-
-fn services() -> Services {
-    // Keep the owner alive: X11/Wayland serve clipboard data from this handle.
-    let clipboard: Rc<RefCell<Option<arboard::Clipboard>>> = Rc::default();
-    let (html_clipboard, text_clipboard, image_clipboard) = (clipboard.clone(), clipboard.clone(), clipboard.clone());
-    Services {
-        copy_html: Some(Box::new(move |html, text| {
-            let mut clipboard = clipboard.borrow_mut();
-            if clipboard.is_none() {
-                *clipboard = Some(arboard::Clipboard::new().map_err(|e| e.to_string())?);
-            }
-            clipboard.as_mut().ok_or("clipboard unavailable")?.set_html(html, Some(text)).map_err(|e| e.to_string())
-        })),
-        paste_html: Some(Box::new(move || read_clipboard(&html_clipboard, |clipboard| clipboard.get().html()))),
-        paste_text: Some(Box::new(move || read_clipboard(&text_clipboard, |clipboard| clipboard.get_text()))),
-        paste_image: Some(Box::new(move || {
-            let image = read_clipboard(&image_clipboard, |clipboard| clipboard.get_image())?;
-            image::RgbaImage::from_raw(u32::try_from(image.width).ok()?, u32::try_from(image.height).ok()?, image.bytes.into_owned())
-        })),
-        pick_open: Some(Box::new(|| {
-            rfd::FileDialog::new()
-                .add_filter("Spreadsheets", &["xlsx", "xlsm", "xls", "xlsb", "ods", "csv", "tsv", "txt", "slk", "json"])
-                .add_filter("Excel Workbook", &["xlsx", "xlsm"])
-                .add_filter("Excel 97-2003 Workbook (import)", &["xls"])
-                .add_filter("Excel Binary Workbook (data import)", &["xlsb"])
-                .add_filter("OpenDocument Spreadsheet (data import)", &["ods"])
-                .add_filter("CSV", &["csv"])
-                .pick_file()
-                .and_then(|p| p.to_str().map(str::to_string))
-        })),
-        pick_picture: Some(Box::new(|| {
-            rfd::FileDialog::new()
-                .add_filter("Pictures (PNG, JPEG)", &["png", "jpg", "jpeg"])
-                .pick_file()
-                .and_then(|p| p.to_str().map(str::to_string))
-        })),
-        pick_save: Some(Box::new(|suggested: &str| {
-            let path = std::path::Path::new(suggested);
-            let stem = path.file_stem().and_then(std::ffi::OsStr::to_str).unwrap_or("Book1").to_string();
-            // The suggested name's type (an export asks for .pdf, .csv or .html) comes first.
-            const TYPES: [(&str, &str); 4] =
-                [("Excel Workbook (.xlsx)", "xlsx"), ("CSV UTF-8 (.csv)", "csv"), ("Web Page (.html)", "html"), ("PDF (.pdf)", "pdf")];
-            let ext = path.extension().and_then(std::ffi::OsStr::to_str).map(str::to_ascii_lowercase).filter(|e| TYPES.iter().any(|(_, x)| x == e));
-            let ext = ext.unwrap_or_else(|| "xlsx".to_string());
-            let mut dialog = rfd::FileDialog::new().set_file_name(format!("{stem}.{ext}"));
-            for (label, x) in TYPES.iter().filter(|(_, x)| *x == ext).chain(TYPES.iter().filter(|(_, x)| *x != ext)) {
-                dialog = dialog.add_filter(*label, &[*x]);
-            }
-            dialog.save_file().and_then(|p| p.to_str().map(str::to_string))
-        })),
-        open_url: Some(Box::new(|url: &str| open_with_system(url))),
-        gsheets: vec![std::sync::Arc::new(gsheets::DesktopBackend::google()), std::sync::Arc::new(gsheets::DesktopBackend::excel())],
-        connectors: vec![std::sync::Arc::new(connector::DesktopBackend::new())],
-        printers: Some(print::discover()),
-        print_native: Some(print::submit()),
-        ..Default::default()
-    }
-}
-
-/// Opens a URL or file with the system's default application.
-fn open_with_system(target: &str) {
-    // Last line of defence behind `link.open` and the click prompt: the system only ever gets
-    // http, https and mailto addresses.
-    let iridium_engine::links::LinkKind::External(target) = iridium_engine::links::classify(target) else {
-        log::warn!("refused to open {target:?}: only http, https and mailto links are opened");
-        return;
-    };
-    let target = target.as_str();
-    let cmd = if cfg!(target_os = "macos") {
-        "open"
-    } else if cfg!(windows) {
-        "explorer"
-    } else {
-        "xdg-open"
-    };
-    if let Err(e) = std::process::Command::new(cmd).arg(target).spawn() {
-        log::warn!("{cmd} {target}: {e}");
-    }
 }
 
 fn icon() -> Option<egui::IconData> {
@@ -313,28 +148,6 @@ fn main() -> eframe::Result<()> {
             None => logger.no_file(),
         }
     }
-    let mut session = Session::new();
-    if let Some(s) = &sample
-        && let Err(e) = session.execute("file.new", json!({"sample": s}))
-    {
-        log::warn!("sample {s}: {e}");
-    }
-    let mut app = SheetApp::new(session, services());
-    app.watch_desktop_theme();
-    app.start_update_check();
-    let control_port = control_port;
-    load_prefs(&mut app);
-    // Stamp the startup workbook's author from the persisted user name.
-    if app.session.documents().is_empty() {
-        app.session.new_workbook();
-    }
-    app.after_engine(); // Show warnings from the sample.
-    // Files named on the command line (a double-click on Windows and Linux) open as File › Open
-    // opens them: a password-protected one asks for its password, and errors are shown, not
-    // only logged. Each replaces the untouched blank Book1, as a file opened from Finder does.
-    for f in &files {
-        app.open_path(f);
-    }
     let mut viewport = egui::ViewportBuilder::default()
         .with_title(iridium_core::brand::NAME)
         .with_inner_size([1440.0, 900.0])
@@ -347,7 +160,21 @@ fn main() -> eframe::Result<()> {
     if let Some(i) = icon() {
         viewport = viewport.with_icon(i);
     }
-    let window_builder = viewport.clone();
+    // Registered before the event loop starts, so it catches the Finder event that launched us as
+    // well as later ones. Lives until the event loop returns; the shell only drains the inbox.
+    #[cfg(target_os = "macos")]
+    let (_apple_events, inbox) = fmv_macos_events::Registration::install();
+    let launch = Launch {
+        files,
+        sample,
+        control_port,
+        control_token,
+        viewport: viewport.clone(),
+        prefs: prefs_enabled(),
+        config_dir: config_dir(),
+        #[cfg(target_os = "macos")]
+        inbox,
+    };
     let options = eframe::NativeOptions { viewport, ..Default::default() };
     #[cfg(unix)]
     let mut options = options;
@@ -376,39 +203,16 @@ fn main() -> eframe::Result<()> {
     };
     #[cfg(target_os = "windows")]
     let retry_options = options.clone();
-    // Registered before the event loop starts, so it catches the Finder event that launched us as
-    // well as later ones. Lives until the event loop returns; the app creator only borrows it.
-    #[cfg(target_os = "macos")]
-    let apple_events = apple_events::AppleEvents::install();
-    #[cfg(target_os = "macos")]
-    let apple_events = &apple_events;
-    // The app waits here until a start gets as far as creating it; a start that fails before
-    // (no graphics adapter, device or surface) leaves it here for the next attempt.
-    let pending = std::cell::Cell::new(Some(app));
+    // A start that fails before the app exists (no graphics adapter, device or surface) builds no
+    // shell, so a retry builds it from the same `launch`.
+    let created = std::cell::Cell::new(false);
     let run = |options: eframe::NativeOptions| {
         eframe::run_native(
             iridium_core::brand::NAME,
             options,
             Box::new(|cc| {
-                let Some(mut app) = pending.take() else {
-                    return Err("the app was already created".into());
-                };
-                SheetApp::setup_context_for_language(&cc.egui_ctx, app.ui.dark, app.ui.language);
-                if let Some(port) = control_port {
-                    match control_server::start(port, control_token.clone(), cc.egui_ctx.clone()) {
-                        Ok(rx) => app.control_rx = Some(rx),
-                        Err(e) => log::error!("control channel on port {port}: {e}"),
-                    }
-                }
-                let windows = DocWindows::new(&mut app, window_builder.clone(), DocWindows::platform_quits_with_last_window());
-                Ok(Box::new(App(
-                    app,
-                    windows,
-                    #[cfg(target_os = "macos")]
-                    None,
-                    #[cfg(target_os = "macos")]
-                    apple_events.connect(&cc.egui_ctx),
-                )))
+                created.set(true);
+                Ok(Box::new(App(Shell::new(cc, launch.clone()))))
             }),
         )
     };
@@ -417,11 +221,10 @@ fn main() -> eframe::Result<()> {
     // reuses its event loop for the second run). Errors after that, or from winit, are returned.
     #[cfg(target_os = "windows")]
     if let Err(eframe::Error::Wgpu(e)) = &result
-        && let Some(app) = pending.take()
+        && !created.get()
         && let Some(backends) = graphics::fallback_backends(backend_override, first_backends)
     {
         log::error!("graphics: the renderer didn't start on {first_backends:?} ({e}); trying {backends:?}");
-        pending.set(Some(app));
         let mut options = retry_options;
         graphics::configure_backends(&mut options, backends);
         return run(options);

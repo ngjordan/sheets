@@ -42,6 +42,7 @@ pub const TABLE: &[(&str, Class)] = &[
     ("mcp", Class::Layer(6)),
     // L7 apps (exempt) and tooling (unchecked)
     ("sheets", Class::Layer(7)),
+    ("sheets-shell", Class::Layer(7)),
     ("sheets-cli", Class::Layer(7)),
     ("sheets-web", Class::Layer(7)),
     ("xtask", Class::Exempt),

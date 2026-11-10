@@ -7,34 +7,13 @@
 //! format". Handling it ourselves needs Objective-C class declarations, i.e. `unsafe`, which this
 //! workspace forbids. The audited `fmv-macos-events` crate (also used by the upstream apps)
 //! wraps exactly that, an `NSAppleEventManager` handler registered before Finder's launch event
-//! that leaves winit's delegate alone, behind a safe main-thread API.
+//! that leaves winit's delegate alone, behind a safe main-thread API. The handler is registered
+//! by the binary (`main.rs`) before the event loop starts; this file drains its inbox.
 
-use fmv_macos_events::{Event, Inbox, Registration};
+use fmv_macos_events::{Event, Inbox};
 use iridium_ui_egui::SheetApp;
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSApplication, NSRequestUserAttentionType};
-
-/// Keeps the Apple-event handlers registered; hold it until the event loop returns.
-pub struct AppleEvents {
-    _registration: Registration,
-    inbox: Inbox,
-}
-
-impl AppleEvents {
-    /// Register the handlers. Call on the main thread before the event loop starts, so the event
-    /// that launched the app (a Finder double-click) is caught too.
-    pub fn install() -> Self {
-        let (registration, inbox) = Registration::install();
-        Self { _registration: registration, inbox }
-    }
-
-    /// The queue the app drains every frame ([`poll`]); events arriving later wake `ctx`.
-    pub fn connect(&self, ctx: &egui::Context) -> Inbox {
-        let ctx = ctx.clone();
-        self.inbox.set_wake(move || ctx.request_repaint());
-        self.inbox.clone()
-    }
-}
 
 /// Open the documents and act on the quit requests that arrived since the last frame.
 pub fn poll(inbox: &Inbox, app: &mut SheetApp, ctx: &egui::Context) {

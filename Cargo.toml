@@ -23,6 +23,7 @@ iridium-chart = { path = "crates/chart" }
 iridium-engine = { path = "crates/engine" }
 iridium-ui-egui = { path = "crates/ui-egui" }
 iridium-mcp = { path = "crates/mcp" }
+iridium-sheets-shell = { path = "crates/sheets-shell" }
 iridium-pdf = { path = "crates/pdf" }
 iridium-math = { path = "crates/math" }
 # Every craft-libs crate (craft-update and craft-window here, craft-ui in ui-egui, craft-print in

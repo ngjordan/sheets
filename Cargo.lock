@@ -2544,26 +2544,18 @@ dependencies = [
 name = "iridium-sheets"
 version = "0.18.3"
 dependencies = [
- "arboard",
  "chrono",
- "craft-print",
  "craft-update",
  "eframe",
  "egui",
  "fmv-macos-events",
- "getrandom 0.4.3",
  "image",
  "iridium-core",
  "iridium-engine",
- "iridium-mcp",
+ "iridium-sheets-shell",
  "iridium-ui-egui",
  "log",
- "muda",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
  "pollster 1.0.1",
- "rfd",
- "serde_json",
  "winit",
  "winresource",
 ]
@@ -2578,6 +2570,30 @@ dependencies = [
  "quick-xml 0.41.0",
  "serde_json",
  "zip",
+]
+
+[[package]]
+name = "iridium-sheets-shell"
+version = "0.18.3"
+dependencies = [
+ "arboard",
+ "chrono",
+ "craft-print",
+ "eframe",
+ "egui",
+ "fmv-macos-events",
+ "getrandom 0.4.3",
+ "image",
+ "iridium-core",
+ "iridium-engine",
+ "iridium-mcp",
+ "iridium-ui-egui",
+ "log",
+ "muda",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "rfd",
+ "serde_json",
 ]
 
 [[package]]
