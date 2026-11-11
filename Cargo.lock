@@ -963,7 +963,7 @@ dependencies = [
 [[package]]
 name = "craft-update"
 version = "0.1.0"
-source = "git+https://github.com/ngjordan/craft-libs?rev=9f9b19b7140e#9f9b19b7140e9a72d3c89bf27df8645810e54c56"
+source = "git+https://github.com/ngjordan/craft-libs?rev=d38561ef0f67dc32286c439febcc3d1f0bb2e125#d38561ef0f67dc32286c439febcc3d1f0bb2e125"
 dependencies = [
  "chrono",
  "dunce",

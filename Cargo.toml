@@ -29,7 +29,7 @@ iridium-math = { path = "crates/math" }
 # Every craft-libs crate (craft-update and craft-window here, craft-ui in ui-egui, craft-print in
 # the app) comes from one shared libraries revision.
 # craft-update: app-specific pretend versions apply to startup and manual checks.
-craft-update = { git = "https://github.com/ngjordan/craft-libs", rev = "9f9b19b7140e", version = "=0.1.0", features = ["egui"] }
+craft-update = { git = "https://github.com/ngjordan/craft-libs", rev = "d38561ef0f67dc32286c439febcc3d1f0bb2e125", version = "=0.1.0", features = ["egui"] }
 
 # foundation
 thiserror = "2"
