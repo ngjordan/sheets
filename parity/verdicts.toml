@@ -1152,67 +1152,67 @@ commands = ["formulas.insertFunction"]
 
 [verdict."formulas-recently-used"]
 title = "Recently Used"
-verdict = "PARTIAL"
+verdict = "REAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:313", "crates/engine/src/cmd/extra/cells.rs:128"]
 commands = ["formulas.recentlyUsed"]
-note = "lists functions only; insertion goes through formulas.insertFunction"
+note = "recently_used inserts the named function when it is given one and lists the recently used functions otherwise, so the menu both reads and writes"
 
 [verdict."formulas-financial"]
 title = "Financial"
-verdict = "PARTIAL"
+verdict = "REAL"
 level = "read"
-evidence = ["crates/engine/src/cmd/extra.rs:314"]
+evidence = ["crates/engine/src/cmd/extra.rs:314", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.financial"]
-note = "lists functions of the category only (extra.rs:314); insert via formulas.insertFunction"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-logical"]
 title = "Logical"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:315"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:315", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.logical"]
-note = "lists functions of the category only (extra.rs:315)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-text"]
 title = "Text"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:316"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:316", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.text"]
-note = "lists functions of the category only (extra.rs:316)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-date-time"]
 title = "Date & Time"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:317"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:317", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.dateTime"]
-note = "lists functions of the category only (extra.rs:317)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-lookup-reference"]
 title = "Lookup & Reference"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:318"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:318", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.lookupReference"]
-note = "lists functions of the category only (extra.rs:318)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-math-trig"]
 title = "Math & Trig"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:319"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:319", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.mathTrig"]
-note = "lists functions of the category only (extra.rs:319)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-more-functions"]
 title = "More Functions"
-verdict = "PARTIAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/extra.rs:320"]
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:320", "crates/engine/src/cmd/extra.rs:335"]
 commands = ["formulas.moreFunctions"]
-note = "lists functions of the category only (extra.rs:320)"
+note = "category inserts the named function when it is given one and lists the category otherwise"
 
 [verdict."formulas-name-manager"]
 title = "Name Manager"
