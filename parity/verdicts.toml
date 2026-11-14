@@ -1,5 +1,6 @@
 # Per-row verdicts. level=read: handler located and read/screened; wired: registration read, handler delegates via closure/helper not opened.
 
+
 [verdict."file-new"]
 title = "New"
 verdict = "REAL"
@@ -765,7 +766,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:312"]
 commands = ["home.addIns"]
-# Office Add-ins store
+note = "Office Add-ins store"
 
 [verdict."insert-pivottable"]
 title = "PivotTable"
@@ -815,7 +816,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:121", "crates/engine/src/cmd.rs"]
 commands = ["insert.smartArt"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-screenshot"]
 title = "Screenshot"
@@ -823,7 +824,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:122", "crates/engine/src/cmd.rs"]
 commands = ["insert.screenshot"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-recommended-charts"]
 title = "Recommended Charts"
@@ -852,7 +853,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:126", "crates/engine/src/cmd.rs"]
 commands = ["insert.map"]
-# Bing-backed Maps chart (cloud geocoding)
+note = "Bing-backed Maps chart (cloud geocoding)"
 
 [verdict."insert-sparklines"]
 title = "Sparklines"
@@ -874,7 +875,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:129", "crates/engine/src/cmd.rs"]
 commands = ["insert.timeline"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-link"]
 title = "Link"
@@ -910,7 +911,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:134", "crates/engine/src/cmd.rs"]
 commands = ["insert.wordArt"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-signature-line"]
 title = "Signature Line"
@@ -918,7 +919,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:135", "crates/engine/src/cmd.rs"]
 commands = ["insert.signatureLine"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-object"]
 title = "Object"
@@ -926,7 +927,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:136", "crates/engine/src/cmd.rs"]
 commands = ["insert.object"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."insert-equation"]
 title = "Equation"
@@ -969,7 +970,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/draw.rs:13", "crates/engine/src/cmd/draw.rs:52"]
 commands = ["draw.lasso"]
-# only clears the active draw tool (draw.rs:13); selection by drag is UI-side
+note = "only clears the active draw tool (draw.rs:13); selection by drag is UI-side"
 
 [verdict."draw-ink-to-shape"]
 title = "Ink to Shape"
@@ -1140,7 +1141,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:133", "crates/engine/src/cmd/extra/objects.rs:177"]
 commands = ["arrange.rotate"]
-# rotate works, flip refused: shapes have no flip state (extra/objects.rs:179)
+note = "rotate works, flip refused: shapes have no flip state (extra/objects.rs:179)"
 
 [verdict."formulas-insert-function"]
 title = "Insert Function"
@@ -1155,7 +1156,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:313", "crates/engine/src/cmd/extra/cells.rs:128"]
 commands = ["formulas.recentlyUsed"]
-# lists functions only; insertion goes through formulas.insertFunction
+note = "lists functions only; insertion goes through formulas.insertFunction"
 
 [verdict."formulas-financial"]
 title = "Financial"
@@ -1163,7 +1164,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:314"]
 commands = ["formulas.financial"]
-# lists functions of the category only (extra.rs:314); insert via formulas.insertFunction
+note = "lists functions of the category only (extra.rs:314); insert via formulas.insertFunction"
 
 [verdict."formulas-logical"]
 title = "Logical"
@@ -1171,7 +1172,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:315"]
 commands = ["formulas.logical"]
-# lists functions of the category only (extra.rs:315)
+note = "lists functions of the category only (extra.rs:315)"
 
 [verdict."formulas-text"]
 title = "Text"
@@ -1179,7 +1180,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:316"]
 commands = ["formulas.text"]
-# lists functions of the category only (extra.rs:316)
+note = "lists functions of the category only (extra.rs:316)"
 
 [verdict."formulas-date-time"]
 title = "Date & Time"
@@ -1187,7 +1188,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:317"]
 commands = ["formulas.dateTime"]
-# lists functions of the category only (extra.rs:317)
+note = "lists functions of the category only (extra.rs:317)"
 
 [verdict."formulas-lookup-reference"]
 title = "Lookup & Reference"
@@ -1195,7 +1196,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:318"]
 commands = ["formulas.lookupReference"]
-# lists functions of the category only (extra.rs:318)
+note = "lists functions of the category only (extra.rs:318)"
 
 [verdict."formulas-math-trig"]
 title = "Math & Trig"
@@ -1203,7 +1204,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:319"]
 commands = ["formulas.mathTrig"]
-# lists functions of the category only (extra.rs:319)
+note = "lists functions of the category only (extra.rs:319)"
 
 [verdict."formulas-more-functions"]
 title = "More Functions"
@@ -1211,7 +1212,7 @@ verdict = "PARTIAL"
 level = "wired"
 evidence = ["crates/engine/src/cmd/extra.rs:320"]
 commands = ["formulas.moreFunctions"]
-# lists functions of the category only (extra.rs:320)
+note = "lists functions of the category only (extra.rs:320)"
 
 [verdict."formulas-name-manager"]
 title = "Name Manager"
@@ -1317,7 +1318,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:205", "crates/engine/src/cmd/extra/data.rs:45"]
 commands = ["data.getData"]
-# imports CSV/TSV/JSON only (extra/data.rs:45); no Power Query connectors
+note = "imports CSV/TSV/JSON only (extra/data.rs:45); no Power Query connectors"
 
 [verdict."data-from-text-csv"]
 title = "From Text/CSV"
@@ -1332,7 +1333,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:196", "crates/engine/src/cmd.rs"]
 commands = ["data.fromWeb"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."data-from-table-range"]
 title = "From Table/Range"
@@ -1340,7 +1341,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:214", "crates/engine/src/cmd/extra/data.rs:110"]
 commands = ["data.fromTableRange"]
-# copies range to a new sheet table (extra/data.rs:110); no Power Query editor/refreshable query
+note = "copies range to a new sheet table (extra/data.rs:110); no Power Query editor/refreshable query"
 
 [verdict."data-refresh-all"]
 title = "Refresh All"
@@ -1355,7 +1356,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:222", "crates/engine/src/cmd/extra/data.rs:119"]
 commands = ["data.queriesConnections"]
-# lists tables only (extra/data.rs:119); no queries or connections
+note = "lists tables only (extra/data.rs:119); no queries or connections"
 
 [verdict."data-stocks"]
 title = "Stocks"
@@ -1363,7 +1364,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:200", "crates/engine/src/cmd.rs"]
 commands = ["data.stocks"]
-# cloud data types (Microsoft data service)
+note = "cloud data types (Microsoft data service)"
 
 [verdict."data-geography"]
 title = "Geography"
@@ -1371,7 +1372,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:201", "crates/engine/src/cmd.rs"]
 commands = ["data.geography"]
-# cloud data types (Microsoft data service)
+note = "cloud data types (Microsoft data service)"
 
 [verdict."data-sort-a-to-z"]
 title = "Sort A to Z"
@@ -1472,7 +1473,7 @@ verdict = "ABSENT"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:215", "crates/engine/src/cmd.rs"]
 commands = ["data.relationships"]
-# not registered in crates/engine/src/cmd; catalogue row only
+note = "not registered in crates/engine/src/cmd; catalogue row only"
 
 [verdict."data-scenario-manager"]
 title = "Scenario Manager"
@@ -1543,7 +1544,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:225", "crates/engine/src/cmd.rs"]
 commands = ["data.analyzeData"]
-# cloud Ideas service
+note = "cloud Ideas service"
 
 [verdict."data-solver"]
 title = "Solver"
@@ -1593,7 +1594,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:233", "crates/engine/src/cmd.rs"]
 commands = ["review.smartLookup"]
-# Bing cloud lookup
+note = "Bing cloud lookup"
 
 [verdict."review-translate"]
 title = "Translate"
@@ -1601,7 +1602,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:234", "crates/engine/src/cmd.rs"]
 commands = ["review.translate"]
-# Microsoft cloud translator
+note = "Microsoft cloud translator"
 
 [verdict."review-new-comment"]
 title = "New Comment"
@@ -1700,7 +1701,7 @@ verdict = "NA"
 level = "read"
 evidence = ["crates/engine/src/catalog.rs:248", "crates/engine/src/cmd.rs"]
 commands = ["review.showChanges"]
-# cloud co-authoring change history
+note = "cloud co-authoring change history"
 
 [verdict."view-normal"]
 title = "Normal"
@@ -1832,7 +1833,7 @@ verdict = "PARTIAL"
 level = "read"
 evidence = ["crates/engine/src/cmd/extra.rs:166", "crates/engine/src/cmd/extra/window.rs:116"]
 commands = ["view.split"]
-# toggles frozen panes only; no independent split panes (extra/window.rs:116, registration says "shown as frozen panes")
+note = "toggles frozen panes only; no independent split panes (extra/window.rs:116, registration says \"shown as frozen panes\")"
 
 [verdict."view-hide"]
 title = "Hide"
