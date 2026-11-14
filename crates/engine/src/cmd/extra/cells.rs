@@ -125,7 +125,10 @@ pub(super) fn new_cell_style(s: &mut Session, p: &Json) -> Result<Json> {
 
 /// Formulas › Recently Used: the functions most recently entered in a formula, newest first
 /// ([`crate::Prefs::recent_functions`]).
-pub(super) fn recently_used(s: &mut Session, _: &Json) -> Result<Json> {
+pub(super) fn recently_used(s: &mut Session, p: &Json) -> Result<Json> {
+    if str_param(p, "name").is_some() {
+        return s.execute("formulas.insertFunction", p.clone());
+    }
     Ok(json!(s.prefs.recent_functions))
 }
 

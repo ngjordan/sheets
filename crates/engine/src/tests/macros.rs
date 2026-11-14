@@ -2463,3 +2463,24 @@ fn a_shortcut_taken_while_recording_is_reported_when_it_is_left_off() {
     assert!(r.get("shortcutDropped").is_none(), "{r}");
     assert_eq!(s.execute("macro.get", json!({"name": "Keep"})).unwrap()["shortcut"], "Ctrl+Shift+Q");
 }
+
+#[test]
+fn function_library_galleries_insert_by_name() {
+    let mut s = s();
+    let list = s.execute("formulas.financial", json!({})).unwrap();
+    assert!(list.as_array().is_some_and(|a| !a.is_empty()));
+    for cmd in [
+        "formulas.financial",
+        "formulas.logical",
+        "formulas.text",
+        "formulas.dateTime",
+        "formulas.lookupReference",
+        "formulas.mathTrig",
+        "formulas.moreFunctions",
+        "formulas.recentlyUsed",
+    ] {
+        s.take_ui_requests();
+        s.execute(cmd, json!({"name": "sum"})).unwrap();
+        assert!(s.take_ui_requests().iter().any(|q| matches!(q, crate::UiRequest::EditCell(Some(t)) if t == "=SUM(")), "{cmd}");
+    }
+}

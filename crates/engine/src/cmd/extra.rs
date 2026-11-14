@@ -310,14 +310,14 @@ pub fn specs() -> Vec<CommandSpec> {
             new_cell_style
         ),
         cmd!(query "home.addIns", "Add-ins", ["Home", "Add-ins"], None, "{} → Sheets extends through MCP and scripts instead of add-ins", always, |_, _| Ok(json!({"addIns": [], "hint": "Use iridium-sheets-cli mcp or Automate › scripts"}))),
-        cmd!(query "formulas.recentlyUsed", "Recently Used", ["Formulas", "Function Library"], None, "{} → the functions most recently entered in formulas, newest first", has_doc, recently_used),
-        cmd!(query "formulas.financial", "Financial", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Financial"}))),
-        cmd!(query "formulas.logical", "Logical", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Logical"}))),
-        cmd!(query "formulas.text", "Text", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Text"}))),
-        cmd!(query "formulas.dateTime", "Date & Time", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "DateTime"}))),
-        cmd!(query "formulas.lookupReference", "Lookup & Reference", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "Lookup"}))),
-        cmd!(query "formulas.mathTrig", "Math & Trig", ["Formulas", "Function Library"], None, "{}", always, |s, _| s.execute("formulas.functions", json!({"category": "MathTrig"}))),
-        cmd!(query "formulas.moreFunctions", "More Functions", ["Formulas", "Function Library"], None, "{category?: Statistical|Engineering|Information|Database|Compatibility|Web|Cube}", always, |s, p| s.execute("formulas.functions", json!({"category": str_param(p, "category").unwrap_or("Statistical")}))),
+        cmd!(query "formulas.recentlyUsed", "Recently Used", ["Formulas", "Function Library"], None, "{name?} → the functions most recently entered, newest first; with `name`, inserts it", has_doc, recently_used),
+        cmd!(query "formulas.financial", "Financial", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "Financial")),
+        cmd!(query "formulas.logical", "Logical", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "Logical")),
+        cmd!(query "formulas.text", "Text", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "Text")),
+        cmd!(query "formulas.dateTime", "Date & Time", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "DateTime")),
+        cmd!(query "formulas.lookupReference", "Lookup & Reference", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "Lookup")),
+        cmd!(query "formulas.mathTrig", "Math & Trig", ["Formulas", "Function Library"], None, "{name?} → lists the category; with `name`, inserts that function (formulas.insertFunction)", always, |s, p| category(s, p, "MathTrig")),
+        cmd!(query "formulas.moreFunctions", "More Functions", ["Formulas", "Function Library"], None, "{category?: Statistical|Engineering|Information|Database|Compatibility|Web|Cube, name?} → lists the category; with `name`, inserts that function", always, |s, p| category(s, p, str_param(p, "category").unwrap_or("Statistical"))),
         cmd!(
             "formulas.useInFormula",
             "Use in Formula",
@@ -329,6 +329,14 @@ pub fn specs() -> Vec<CommandSpec> {
         ),
         cmd!(query "formulas.watchWindow", "Watch Window", ["Formulas", "Formula Auditing"], None, "{add?: \"Sheet1!B5\", remove?: \"…\"} → watched cells with current values", has_doc, watch_window),
     ]
+}
+
+/// Function Library gallery: with `name`, insert it (as formulas.insertFunction); else list the category.
+fn category(s: &mut Session, p: &Json, cat: &str) -> Result<Json> {
+    if str_param(p, "name").is_some() {
+        return s.execute("formulas.insertFunction", p.clone());
+    }
+    s.execute("formulas.functions", json!({"category": cat}))
 }
 
 const VIEWS_NAME: &str = "_sc_custom_views";
