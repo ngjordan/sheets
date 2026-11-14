@@ -2,8 +2,10 @@
 
 | Tier | Applicable | Works | Partial | Broken | **Unaudited** | Wired (machine) | Stale |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| P2 | 292 | 0 (0.0 %) | 0 (0.0 %) | 0 (0.0 %) | **292 (100.0 %)** | 292 (100.0 %) | 0 |
+| P0 | 101 | 101 (100.0 %) | 0 (0.0 %) | 0 (0.0 %) | **0 (0.0 %)** | 99 (98.0 %) | 0 |
+| P1 | 132 | 122 (92.4 %) | 10 (7.6 %) | 0 (0.0 %) | **0 (0.0 %)** | 129 (97.7 %) | 0 |
+| P2 | 61 | 49 (80.3 %) | 4 (6.6 %) | 8 (13.1 %) | **0 (0.0 %)** | 50 (82.0 %) | 0 |
 
-**Catalogue coverage:** 0 (0.0 %) of 292 rows are works or partial; 0 (0.0 %) works outright; **292 (100.0 %) unaudited**.
+**Catalogue coverage:** 286 (97.3 %) of 294 rows are works or partial; 272 (92.5 %) works outright; **0 (0.0 %) unaudited**.
 
-Catalogue rows: 292. Verdicts recorded: 0. Registry ids: 433.
+Catalogue rows: 302. Verdicts recorded: 302. Registry ids: 403.

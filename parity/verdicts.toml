@@ -1,0 +1,2145 @@
+# Per-row verdicts. level=read: handler located and read/screened; wired: registration read, handler delegates via closure/helper not opened.
+
+[verdict."file-new"]
+title = "New"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:10", "crates/engine/src/cmd/file.rs:34"]
+commands = ["file.new"]
+
+[verdict."file-open"]
+title = "Open"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:11", "crates/engine/src/cmd/file.rs:46"]
+commands = ["file.open"]
+
+[verdict."file-save"]
+title = "Save"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:12", "crates/engine/src/cmd/file.rs:109"]
+commands = ["file.save"]
+
+[verdict."file-save-as"]
+title = "Save As"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:13", "crates/engine/src/cmd/file.rs:148"]
+commands = ["file.saveAs"]
+
+[verdict."file-close"]
+title = "Close"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:15", "crates/engine/src/cmd/file.rs:166"]
+commands = ["file.close"]
+
+[verdict."file-print"]
+title = "Print"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/print.rs:59", "crates/engine/src/cmd/print.rs:194"]
+commands = ["file.print"]
+
+[verdict."file-export-to-pdf"]
+title = "Export to PDF"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/print.rs:50", "crates/engine/src/cmd/print.rs:183"]
+commands = ["file.exportPdf"]
+
+[verdict."file-csv"]
+title = "CSV"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/file.rs:16"]
+commands = ["file.exportCsv"]
+
+[verdict."file-web-page"]
+title = "Web Page"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/file.rs:17"]
+commands = ["file.exportHtml"]
+
+[verdict."file-properties"]
+title = "Properties"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:18", "crates/engine/src/cmd/file.rs:203"]
+commands = ["file.properties"]
+
+[verdict."file-options"]
+title = "Options"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:20", "crates/engine/src/cmd/file.rs:224"]
+commands = ["file.options"]
+
+[verdict."home-paste"]
+title = "Paste"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:85", "crates/engine/src/cmd/edit/clipboard.rs:154"]
+commands = ["edit.paste"]
+
+[verdict."home-paste-special"]
+title = "Paste Special"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:105"]
+commands = ["edit.pasteSpecial"]
+
+[verdict."home-cut"]
+title = "Cut"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:83", "crates/engine/src/cmd/edit/clipboard.rs:130"]
+commands = ["edit.cut"]
+
+[verdict."home-copy"]
+title = "Copy"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:82", "crates/engine/src/cmd/edit/clipboard.rs:126"]
+commands = ["edit.copy"]
+
+[verdict."home-format-painter"]
+title = "Format Painter"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:158", "crates/engine/src/cmd/edit.rs:377"]
+commands = ["edit.formatPainter"]
+
+[verdict."home-font"]
+title = "Font"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:58", "crates/engine/src/cmd/format.rs:343"]
+commands = ["home.fontName"]
+
+[verdict."home-font-size"]
+title = "Font Size"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:59", "crates/engine/src/cmd/format.rs:352"]
+commands = ["home.fontSize"]
+
+[verdict."home-increase-font-size"]
+title = "Increase Font Size"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:60"]
+commands = ["home.increaseFontSize"]
+
+[verdict."home-decrease-font-size"]
+title = "Decrease Font Size"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:61", "crates/engine/src/cmd/format.rs:386"]
+commands = ["home.decreaseFontSize"]
+
+[verdict."home-bold"]
+title = "Bold"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:15", "crates/engine/src/cmd/format.rs:328"]
+commands = ["home.bold"]
+
+[verdict."home-italic"]
+title = "Italic"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:21", "crates/engine/src/cmd/format.rs:328"]
+commands = ["home.italic"]
+
+[verdict."home-underline"]
+title = "Underline"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:28", "crates/engine/src/cmd/format.rs:328"]
+commands = ["home.underline"]
+
+[verdict."home-double-underline"]
+title = "Double Underline"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:36", "crates/engine/src/cmd/format.rs:343"]
+commands = ["home.doubleUnderline"]
+
+[verdict."home-strikethrough"]
+title = "Strikethrough"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:40", "crates/engine/src/cmd/format.rs:343"]
+commands = ["home.strikethrough"]
+
+[verdict."home-superscript"]
+title = "Superscript"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:46", "crates/engine/src/cmd/format.rs:343"]
+commands = ["home.superscript"]
+
+[verdict."home-subscript"]
+title = "Subscript"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:52", "crates/engine/src/cmd/format.rs:343"]
+commands = ["home.subscript"]
+
+[verdict."home-borders"]
+title = "Borders"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:75", "crates/engine/src/cmd/format.rs:414"]
+commands = ["home.borders"]
+
+[verdict."home-draw-border"]
+title = "Draw Border"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:295", "crates/engine/src/cmd/extra/cells.rs:98"]
+commands = ["home.drawBorder"]
+
+[verdict."home-fill-color"]
+title = "Fill Color"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:73", "crates/engine/src/cmd/format.rs:391"]
+commands = ["home.fillColor"]
+
+[verdict."home-font-color"]
+title = "Font Color"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:65", "crates/engine/src/cmd/format.rs:386"]
+commands = ["home.fontColor"]
+
+[verdict."home-top-align"]
+title = "Top Align"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:103"]
+commands = ["home.alignTop"]
+
+[verdict."home-middle-align"]
+title = "Middle Align"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:104"]
+commands = ["home.alignMiddle"]
+
+[verdict."home-bottom-align"]
+title = "Bottom Align"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:105"]
+commands = ["home.alignBottom"]
+
+[verdict."home-orientation"]
+title = "Orientation"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:123", "crates/engine/src/cmd/format.rs:619"]
+commands = ["home.orientation"]
+
+[verdict."home-align-left"]
+title = "Align Left"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:95"]
+commands = ["home.alignLeft"]
+
+[verdict."home-center"]
+title = "Center"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:99"]
+commands = ["home.alignCenter"]
+
+[verdict."home-align-right"]
+title = "Align Right"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:101"]
+commands = ["home.alignRight"]
+
+[verdict."home-decrease-indent"]
+title = "Decrease Indent"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:119", "crates/engine/src/cmd/format.rs:619"]
+commands = ["home.decreaseIndent"]
+
+[verdict."home-increase-indent"]
+title = "Increase Indent"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:118"]
+commands = ["home.increaseIndent"]
+
+[verdict."home-wrap-text"]
+title = "Wrap Text"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:106"]
+commands = ["home.wrapText"]
+
+[verdict."home-merge-center"]
+title = "Merge & Center"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:131"]
+commands = ["home.mergeCenter"]
+
+[verdict."home-merge-across"]
+title = "Merge Across"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:132"]
+commands = ["home.mergeAcross"]
+
+[verdict."home-merge-cells"]
+title = "Merge Cells"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:133"]
+commands = ["home.mergeCells"]
+
+[verdict."home-unmerge-cells"]
+title = "Unmerge Cells"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:134"]
+commands = ["home.unmergeCells"]
+
+[verdict."home-number-format"]
+title = "Number Format"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:137", "crates/engine/src/cmd/format.rs:725"]
+commands = ["home.numberFormat"]
+
+[verdict."home-accounting-number-format"]
+title = "Accounting Number Format"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:145", "crates/engine/src/cmd/format.rs:220"]
+commands = ["home.accounting"]
+
+[verdict."home-percent-style"]
+title = "Percent Style"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:146"]
+commands = ["home.percent"]
+
+[verdict."home-comma-style"]
+title = "Comma Style"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:147"]
+commands = ["home.comma"]
+
+[verdict."home-increase-decimal"]
+title = "Increase Decimal"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:148"]
+commands = ["home.increaseDecimal"]
+
+[verdict."home-decrease-decimal"]
+title = "Decrease Decimal"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:149"]
+commands = ["home.decreaseDecimal"]
+
+[verdict."home-conditional-formatting"]
+title = "Conditional Formatting"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:204", "crates/engine/src/cmd/insert.rs:1599"]
+commands = ["home.conditionalFormat"]
+
+[verdict."home-clear-rules"]
+title = "Clear Rules"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:212", "crates/engine/src/cmd/insert.rs:1726"]
+commands = ["home.clearRules"]
+
+[verdict."home-manage-rules"]
+title = "Manage Rules"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:214", "crates/engine/src/cmd/insert.rs:1763"]
+commands = ["home.manageRules"]
+
+[verdict."home-format-as-table"]
+title = "Format as Table"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:32", "crates/engine/src/cmd/insert.rs:386"]
+commands = ["home.formatAsTable"]
+
+[verdict."home-cell-styles"]
+title = "Cell Styles"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:152", "crates/engine/src/cmd/format/cell_styles.rs:176"]
+commands = ["home.cellStyle"]
+
+[verdict."home-new-cell-style"]
+title = "New Cell Style"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:304", "crates/engine/src/cmd/extra/cells.rs:113"]
+commands = ["home.newCellStyle"]
+
+[verdict."home-insert-cells"]
+title = "Insert Cells"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:46", "crates/engine/src/cmd/sheet.rs:482"]
+commands = ["home.insertCells"]
+
+[verdict."home-insert-sheet-rows"]
+title = "Insert Sheet Rows"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/sheet.rs:22"]
+commands = ["home.insertRows"]
+
+[verdict."home-insert-sheet-columns"]
+title = "Insert Sheet Columns"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:30", "crates/engine/src/cmd/sheet.rs:383"]
+commands = ["home.insertColumns"]
+
+[verdict."home-insert-sheet"]
+title = "Insert Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:57", "crates/engine/src/cmd/sheet/tabs.rs:3"]
+commands = ["home.insertSheet"]
+
+[verdict."home-delete-cells"]
+title = "Delete Cells"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:56", "crates/engine/src/cmd/sheet.rs:522"]
+commands = ["home.deleteCells"]
+
+[verdict."home-delete-sheet-rows"]
+title = "Delete Sheet Rows"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:35", "crates/engine/src/cmd/sheet.rs:383"]
+commands = ["home.deleteRows"]
+
+[verdict."home-delete-sheet-columns"]
+title = "Delete Sheet Columns"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:40", "crates/engine/src/cmd/sheet.rs:383"]
+commands = ["home.deleteColumns"]
+
+[verdict."home-delete-sheet"]
+title = "Delete Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:58", "crates/engine/src/cmd/sheet/tabs.rs:39"]
+commands = ["home.deleteSheet"]
+
+[verdict."home-row-height"]
+title = "Row Height"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:162", "crates/engine/src/cmd/format/sizes.rs:43"]
+commands = ["home.rowHeight"]
+
+[verdict."home-autofit-row-height"]
+title = "AutoFit Row Height"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:179", "crates/engine/src/cmd/format/sizes.rs:193"]
+commands = ["home.autofitRowHeight"]
+
+[verdict."home-column-width"]
+title = "Column Width"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:171", "crates/engine/src/cmd/format/sizes.rs:75"]
+commands = ["home.columnWidth"]
+
+[verdict."home-autofit-column-width"]
+title = "AutoFit Column Width"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:180", "crates/engine/src/cmd/format/sizes.rs:138"]
+commands = ["home.autofitColumnWidth"]
+
+[verdict."home-default-width"]
+title = "Default Width"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:181", "crates/engine/src/cmd/format/sizes.rs:213"]
+commands = ["home.defaultWidth"]
+
+[verdict."home-hide-rows"]
+title = "Hide Rows"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:182"]
+commands = ["home.hideRows"]
+
+[verdict."home-hide-columns"]
+title = "Hide Columns"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:185"]
+commands = ["home.hideColumns"]
+
+[verdict."home-unhide-rows"]
+title = "Unhide Rows"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:189"]
+commands = ["home.unhideRows"]
+
+[verdict."home-unhide-columns"]
+title = "Unhide Columns"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:198"]
+commands = ["home.unhideColumns"]
+
+[verdict."home-hide-sheet"]
+title = "Hide Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:62", "crates/engine/src/cmd/sheet/tabs.rs:239"]
+commands = ["sheet.hide"]
+
+[verdict."home-unhide-sheet"]
+title = "Unhide Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:63", "crates/engine/src/cmd/sheet/tabs.rs:256"]
+commands = ["sheet.unhide"]
+
+[verdict."home-rename-sheet"]
+title = "Rename Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:59", "crates/engine/src/cmd/sheet/tabs.rs:97"]
+commands = ["sheet.rename"]
+
+[verdict."home-move-or-copy-sheet"]
+title = "Move or Copy Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:60", "crates/engine/src/cmd/sheet/tabs.rs:143"]
+commands = ["sheet.move"]
+
+[verdict."home-tab-color"]
+title = "Tab Color"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:61", "crates/engine/src/cmd/sheet/tabs.rs:230"]
+commands = ["sheet.tabColor"]
+
+[verdict."home-protect-sheet"]
+title = "Protect Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:13", "crates/engine/src/cmd/review.rs:134"]
+commands = ["review.protectSheet"]
+
+[verdict."home-lock-cell"]
+title = "Lock Cell"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/format.rs:206"]
+commands = ["home.lockCell"]
+
+[verdict."home-format-cells"]
+title = "Format Cells"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:84", "crates/engine/src/cmd/format.rs:540"]
+commands = ["home.formatCells"]
+
+[verdict."home-autosum"]
+title = "AutoSum"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:15", "crates/engine/src/cmd/formulas.rs:202"]
+commands = ["formulas.autoSum"]
+
+[verdict."home-fill-down"]
+title = "Fill Down"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:124"]
+commands = ["edit.fillDown"]
+
+[verdict."home-fill-right"]
+title = "Fill Right"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:125"]
+commands = ["edit.fillRight"]
+
+[verdict."home-fill-up"]
+title = "Fill Up"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:126"]
+commands = ["edit.fillUp"]
+
+[verdict."home-fill-left"]
+title = "Fill Left"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:127"]
+commands = ["edit.fillLeft"]
+
+[verdict."home-series"]
+title = "Series"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:138", "crates/engine/src/cmd/edit/fill.rs:72"]
+commands = ["edit.fillSeries"]
+
+[verdict."home-flash-fill"]
+title = "Flash Fill"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:146", "crates/engine/src/cmd/edit/fill.rs:86"]
+commands = ["edit.flashFill"]
+
+[verdict."home-clear-all"]
+title = "Clear All"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:115"]
+commands = ["edit.clearAll"]
+
+[verdict."home-clear-formats"]
+title = "Clear Formats"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:116"]
+commands = ["edit.clearFormats"]
+
+[verdict."home-clear-contents"]
+title = "Clear Contents"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:117"]
+commands = ["edit.clearContents"]
+
+[verdict."home-clear-comments"]
+title = "Clear Comments"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:120"]
+commands = ["edit.clearComments"]
+
+[verdict."home-clear-hyperlinks"]
+title = "Clear Hyperlinks"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:123"]
+commands = ["edit.clearHyperlinks"]
+
+[verdict."home-sort-a-to-z"]
+title = "Sort A to Z"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:40"]
+commands = ["data.sortAscending"]
+
+[verdict."home-sort-z-to-a"]
+title = "Sort Z to A"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:43"]
+commands = ["data.sortDescending"]
+
+[verdict."home-custom-sort"]
+title = "Custom Sort"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:45", "crates/engine/src/cmd/data/sort.rs:40"]
+commands = ["data.sort"]
+
+[verdict."home-filter"]
+title = "Filter"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:54", "crates/engine/src/cmd/data/filter.rs:9"]
+commands = ["data.filter"]
+
+[verdict."home-clear-filter"]
+title = "Clear Filter"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:71", "crates/engine/src/cmd/data/filter.rs:271"]
+commands = ["data.clearFilter"]
+
+[verdict."home-reapply"]
+title = "Reapply"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:72", "crates/engine/src/cmd/data/filter.rs:284"]
+commands = ["data.reapply"]
+
+[verdict."home-find"]
+title = "Find"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:147", "crates/engine/src/cmd/edit/find.rs:54"]
+commands = ["edit.find"]
+
+[verdict."home-replace"]
+title = "Replace"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:149", "crates/engine/src/cmd/edit/find.rs:115"]
+commands = ["edit.replace"]
+
+[verdict."home-go-to"]
+title = "Go To"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/edit.rs:78"]
+commands = ["edit.goTo"]
+
+[verdict."home-go-to-special"]
+title = "Go To Special"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:79", "crates/engine/src/cmd/edit/go_to.rs:156"]
+commands = ["edit.goToSpecial"]
+
+[verdict."home-add-ins"]
+title = "Add-ins"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:312"]
+commands = ["home.addIns"]
+# Office Add-ins store
+
+[verdict."insert-pivottable"]
+title = "PivotTable"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:37", "crates/engine/src/cmd/pivot/create.rs:69"]
+commands = ["insert.pivotTable"]
+
+[verdict."insert-recommended-pivottables"]
+title = "Recommended PivotTables"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:46", "crates/engine/src/cmd/pivot/charts.rs:151"]
+commands = ["insert.recommendedPivotTables"]
+
+[verdict."insert-table"]
+title = "Table"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:23", "crates/engine/src/cmd/insert.rs:273"]
+commands = ["insert.table"]
+
+[verdict."insert-pictures"]
+title = "Pictures"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:118", "crates/engine/src/cmd/insert.rs:1061"]
+commands = ["insert.picture"]
+
+[verdict."insert-shapes"]
+title = "Shapes"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:127", "crates/engine/src/cmd/insert.rs:1155"]
+commands = ["insert.shape"]
+
+[verdict."insert-icons"]
+title = "Icons"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:136", "crates/engine/src/cmd/insert.rs:1802"]
+commands = ["insert.icons"]
+
+[verdict."insert-smartart"]
+title = "SmartArt"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:121", "crates/engine/src/cmd.rs"]
+commands = ["insert.smartArt"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-screenshot"]
+title = "Screenshot"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:122", "crates/engine/src/cmd.rs"]
+commands = ["insert.screenshot"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-recommended-charts"]
+title = "Recommended Charts"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:80"]
+commands = ["insert.recommendedCharts"]
+
+[verdict."insert-charts"]
+title = "Charts"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:71", "crates/engine/src/cmd/insert.rs:862"]
+commands = ["insert.chart"]
+
+[verdict."insert-pivotchart"]
+title = "PivotChart"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:73", "crates/engine/src/cmd/pivot/charts.rs:29"]
+commands = ["insert.pivotChart"]
+
+[verdict."insert-maps"]
+title = "Maps"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:126", "crates/engine/src/cmd.rs"]
+commands = ["insert.map"]
+# Bing-backed Maps chart (cloud geocoding)
+
+[verdict."insert-sparklines"]
+title = "Sparklines"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:109", "crates/engine/src/cmd/insert.rs:1043"]
+commands = ["insert.sparkline"]
+
+[verdict."insert-slicer"]
+title = "Slicer"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/slicer.rs:19", "crates/engine/src/cmd/slicer.rs:101"]
+commands = ["insert.slicer"]
+
+[verdict."insert-timeline"]
+title = "Timeline"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:129", "crates/engine/src/cmd.rs"]
+commands = ["insert.timeline"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-link"]
+title = "Link"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:169", "crates/engine/src/cmd/insert.rs:1306"]
+commands = ["insert.link"]
+
+[verdict."insert-comment"]
+title = "Comment"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:187", "crates/engine/src/cmd/insert.rs:1416"]
+commands = ["review.newComment"]
+
+[verdict."insert-text-box"]
+title = "Text Box"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:144", "crates/engine/src/cmd/insert.rs:1202"]
+commands = ["insert.textBox"]
+
+[verdict."insert-header-footer"]
+title = "Header & Footer"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:147", "crates/engine/src/cmd/view.rs:417"]
+commands = ["pageLayout.headerFooter"]
+
+[verdict."insert-wordart"]
+title = "WordArt"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:134", "crates/engine/src/cmd.rs"]
+commands = ["insert.wordArt"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-signature-line"]
+title = "Signature Line"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:135", "crates/engine/src/cmd.rs"]
+commands = ["insert.signatureLine"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-object"]
+title = "Object"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:136", "crates/engine/src/cmd.rs"]
+commands = ["insert.object"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."insert-equation"]
+title = "Equation"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/equation.rs:17", "crates/engine/src/cmd/equation.rs:63"]
+commands = ["insert.equation"]
+
+[verdict."insert-symbol"]
+title = "Symbol"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:195", "crates/engine/src/cmd/insert.rs:1460"]
+commands = ["insert.symbol"]
+
+[verdict."insert-checkbox"]
+title = "Checkbox"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:265", "crates/engine/src/cmd/extra/cells.rs:11"]
+commands = ["insert.checkbox"]
+
+[verdict."draw-pen"]
+title = "Pen"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/draw.rs:11", "crates/engine/src/cmd/draw.rs:30"]
+commands = ["draw.pen"]
+
+[verdict."draw-eraser"]
+title = "Eraser"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/draw.rs:12", "crates/engine/src/cmd/draw.rs:42"]
+commands = ["draw.eraser"]
+
+[verdict."draw-lasso-select"]
+title = "Lasso Select"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/draw.rs:13", "crates/engine/src/cmd/draw.rs:52"]
+commands = ["draw.lasso"]
+# only clears the active draw tool (draw.rs:13); selection by drag is UI-side
+
+[verdict."draw-ink-to-shape"]
+title = "Ink to Shape"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/draw.rs:19", "crates/engine/src/cmd/draw.rs:118"]
+commands = ["draw.inkToShape"]
+
+[verdict."page-layout-themes"]
+title = "Themes"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:156", "crates/engine/src/cmd/view.rs:509"]
+commands = ["pageLayout.theme"]
+
+[verdict."page-layout-colors"]
+title = "Colors"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:274", "crates/engine/src/cmd/extra/cells.rs:70"]
+commands = ["pageLayout.themeColors"]
+
+[verdict."page-layout-fonts"]
+title = "Fonts"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:275", "crates/engine/src/cmd/extra/cells.rs:78"]
+commands = ["pageLayout.themeFonts"]
+
+[verdict."page-layout-effects"]
+title = "Effects"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:277"]
+commands = ["pageLayout.themeEffects"]
+
+[verdict."page-layout-margins"]
+title = "Margins"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:92", "crates/engine/src/cmd/view.rs:307"]
+commands = ["pageLayout.margins"]
+
+[verdict."page-layout-orientation"]
+title = "Orientation"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:81", "crates/engine/src/cmd/view.rs:289"]
+commands = ["pageLayout.orientation"]
+
+[verdict."page-layout-size"]
+title = "Size"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:83", "crates/engine/src/cmd/view.rs:298"]
+commands = ["pageLayout.size"]
+
+[verdict."page-layout-print-area"]
+title = "Print Area"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:101", "crates/engine/src/cmd/view.rs:331"]
+commands = ["pageLayout.printArea"]
+
+[verdict."page-layout-breaks"]
+title = "Breaks"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:138", "crates/engine/src/cmd/view.rs:386"]
+commands = ["pageLayout.breaks"]
+
+[verdict."page-layout-background"]
+title = "Background"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:286", "crates/engine/src/cmd/extra/cells.rs:84"]
+commands = ["pageLayout.background"]
+
+[verdict."page-layout-print-titles"]
+title = "Print Titles"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:110", "crates/engine/src/cmd/view.rs:341"]
+commands = ["pageLayout.printTitles"]
+
+[verdict."page-layout-page-setup"]
+title = "Page Setup"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/print.rs:77", "crates/engine/src/cmd/print.rs:239"]
+commands = ["pageLayout.pageSetup"]
+
+[verdict."page-layout-scale-to-fit"]
+title = "Scale to Fit"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:119", "crates/engine/src/cmd/view.rs:371"]
+commands = ["pageLayout.scaleToFit"]
+
+[verdict."page-layout-view-gridlines"]
+title = "View Gridlines"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:38"]
+commands = ["view.gridlines"]
+
+[verdict."page-layout-print-gridlines"]
+title = "Print Gridlines"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:127", "crates/engine/src/cmd/view.rs:386"]
+commands = ["pageLayout.printGridlines"]
+
+[verdict."page-layout-view-headings"]
+title = "View Headings"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:39"]
+commands = ["view.headings"]
+
+[verdict."page-layout-print-headings"]
+title = "Print Headings"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:132", "crates/engine/src/cmd/view.rs:386"]
+commands = ["pageLayout.printHeadings"]
+
+[verdict."page-layout-bring-forward"]
+title = "Bring Forward"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:96"]
+commands = ["arrange.bringForward"]
+
+[verdict."page-layout-send-backward"]
+title = "Send Backward"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:105"]
+commands = ["arrange.sendBackward"]
+
+[verdict."page-layout-selection-pane"]
+title = "Selection Pane"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:113", "crates/engine/src/cmd/extra/objects.rs:90"]
+commands = ["arrange.selectionPane"]
+
+[verdict."page-layout-align"]
+title = "Align"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:115", "crates/engine/src/cmd/extra/objects.rs:122"]
+commands = ["arrange.align"]
+
+[verdict."page-layout-group"]
+title = "Group"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:124"]
+commands = ["arrange.group"]
+
+[verdict."page-layout-rotate"]
+title = "Rotate"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:133", "crates/engine/src/cmd/extra/objects.rs:177"]
+commands = ["arrange.rotate"]
+# rotate works, flip refused: shapes have no flip state (extra/objects.rs:179)
+
+[verdict."formulas-insert-function"]
+title = "Insert Function"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:24", "crates/engine/src/cmd/formulas.rs:240"]
+commands = ["formulas.insertFunction"]
+
+[verdict."formulas-recently-used"]
+title = "Recently Used"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:313", "crates/engine/src/cmd/extra/cells.rs:128"]
+commands = ["formulas.recentlyUsed"]
+# lists functions only; insertion goes through formulas.insertFunction
+
+[verdict."formulas-financial"]
+title = "Financial"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:314"]
+commands = ["formulas.financial"]
+# lists functions of the category only (extra.rs:314); insert via formulas.insertFunction
+
+[verdict."formulas-logical"]
+title = "Logical"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:315"]
+commands = ["formulas.logical"]
+# lists functions of the category only (extra.rs:315)
+
+[verdict."formulas-text"]
+title = "Text"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:316"]
+commands = ["formulas.text"]
+# lists functions of the category only (extra.rs:316)
+
+[verdict."formulas-date-time"]
+title = "Date & Time"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:317"]
+commands = ["formulas.dateTime"]
+# lists functions of the category only (extra.rs:317)
+
+[verdict."formulas-lookup-reference"]
+title = "Lookup & Reference"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:318"]
+commands = ["formulas.lookupReference"]
+# lists functions of the category only (extra.rs:318)
+
+[verdict."formulas-math-trig"]
+title = "Math & Trig"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:319"]
+commands = ["formulas.mathTrig"]
+# lists functions of the category only (extra.rs:319)
+
+[verdict."formulas-more-functions"]
+title = "More Functions"
+verdict = "PARTIAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/extra.rs:320"]
+commands = ["formulas.moreFunctions"]
+# lists functions of the category only (extra.rs:320)
+
+[verdict."formulas-name-manager"]
+title = "Name Manager"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:51", "crates/engine/src/cmd/formulas.rs:519"]
+commands = ["formulas.nameManager"]
+
+[verdict."formulas-define-name"]
+title = "Define Name"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:34", "crates/engine/src/cmd/formulas.rs:363"]
+commands = ["formulas.defineName"]
+
+[verdict."formulas-use-in-formula"]
+title = "Use in Formula"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:322", "crates/engine/src/cmd/extra/cells.rs:132"]
+commands = ["formulas.useInFormula"]
+
+[verdict."formulas-create-from-selection"]
+title = "Create from Selection"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:53", "crates/engine/src/cmd/formulas.rs:537"]
+commands = ["formulas.createFromSelection"]
+
+[verdict."formulas-trace-precedents"]
+title = "Trace Precedents"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:70", "crates/engine/src/cmd/formulas.rs:660"]
+commands = ["formulas.tracePrecedents"]
+
+[verdict."formulas-trace-dependents"]
+title = "Trace Dependents"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:71", "crates/engine/src/cmd/formulas.rs:668"]
+commands = ["formulas.traceDependents"]
+
+[verdict."formulas-remove-arrows"]
+title = "Remove Arrows"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/formulas.rs:83"]
+commands = ["formulas.removeArrows"]
+
+[verdict."formulas-show-formulas"]
+title = "Show Formulas"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:84", "crates/engine/src/cmd/formulas.rs:828"]
+commands = ["formulas.showFormulas"]
+
+[verdict."formulas-error-checking"]
+title = "Error Checking"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:94", "crates/engine/src/cmd/formulas.rs:872"]
+commands = ["formulas.errorChecking"]
+
+[verdict."formulas-evaluate-formula"]
+title = "Evaluate Formula"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:95", "crates/engine/src/cmd/formulas.rs:896"]
+commands = ["formulas.evaluateFormula"]
+
+[verdict."formulas-watch-window"]
+title = "Watch Window"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:330", "crates/engine/src/cmd/extra/window.rs:183"]
+commands = ["formulas.watchWindow"]
+
+[verdict."formulas-calculation-options"]
+title = "Calculation Options"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:100", "crates/engine/src/cmd/formulas.rs:950"]
+commands = ["formulas.calculationOptions"]
+
+[verdict."formulas-calculate-now"]
+title = "Calculate Now"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:97", "crates/engine/src/cmd/formulas.rs:942"]
+commands = ["formulas.calculateNow"]
+
+[verdict."formulas-calculate-sheet"]
+title = "Calculate Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/formulas.rs:98", "crates/engine/src/cmd/formulas.rs:942"]
+commands = ["formulas.calculateSheet"]
+
+[verdict."data-get-data"]
+title = "Get Data"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:205", "crates/engine/src/cmd/extra/data.rs:45"]
+commands = ["data.getData"]
+# imports CSV/TSV/JSON only (extra/data.rs:45); no Power Query connectors
+
+[verdict."data-from-text-csv"]
+title = "From Text/CSV"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:196", "crates/engine/src/cmd/extra/data.rs:45"]
+commands = ["data.fromTextCsv"]
+
+[verdict."data-from-web"]
+title = "From Web"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:196", "crates/engine/src/cmd.rs"]
+commands = ["data.fromWeb"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."data-from-table-range"]
+title = "From Table/Range"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:214", "crates/engine/src/cmd/extra/data.rs:110"]
+commands = ["data.fromTableRange"]
+# copies range to a new sheet table (extra/data.rs:110); no Power Query editor/refreshable query
+
+[verdict."data-refresh-all"]
+title = "Refresh All"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:182", "crates/engine/src/cmd/pivot/layout.rs:211"]
+commands = ["data.refreshAll"]
+
+[verdict."data-queries-connections"]
+title = "Queries & Connections"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:222", "crates/engine/src/cmd/extra/data.rs:119"]
+commands = ["data.queriesConnections"]
+# lists tables only (extra/data.rs:119); no queries or connections
+
+[verdict."data-stocks"]
+title = "Stocks"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:200", "crates/engine/src/cmd.rs"]
+commands = ["data.stocks"]
+# cloud data types (Microsoft data service)
+
+[verdict."data-geography"]
+title = "Geography"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:201", "crates/engine/src/cmd.rs"]
+commands = ["data.geography"]
+# cloud data types (Microsoft data service)
+
+[verdict."data-sort-a-to-z"]
+title = "Sort A to Z"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:40"]
+commands = ["data.sortAscending"]
+
+[verdict."data-sort-z-to-a"]
+title = "Sort Z to A"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:43"]
+commands = ["data.sortDescending"]
+
+[verdict."data-sort"]
+title = "Sort"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:45", "crates/engine/src/cmd/data/sort.rs:40"]
+commands = ["data.sort"]
+
+[verdict."data-filter"]
+title = "Filter"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:54", "crates/engine/src/cmd/data/filter.rs:9"]
+commands = ["data.filter"]
+
+[verdict."data-clear"]
+title = "Clear"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:71", "crates/engine/src/cmd/data/filter.rs:271"]
+commands = ["data.clearFilter"]
+
+[verdict."data-reapply"]
+title = "Reapply"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:72", "crates/engine/src/cmd/data/filter.rs:284"]
+commands = ["data.reapply"]
+
+[verdict."data-advanced"]
+title = "Advanced"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/whatif.rs:81", "crates/engine/src/cmd/whatif/advanced_filter.rs:86"]
+commands = ["data.advancedFilter"]
+
+[verdict."data-text-to-columns"]
+title = "Text to Columns"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:83", "crates/engine/src/cmd/data/tools.rs:108"]
+commands = ["data.textToColumns"]
+
+[verdict."data-flash-fill"]
+title = "Flash Fill"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:163"]
+commands = ["data.flashFill"]
+
+[verdict."data-remove-duplicates"]
+title = "Remove Duplicates"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:74", "crates/engine/src/cmd/data/tools.rs:8"]
+commands = ["data.removeDuplicates"]
+
+[verdict."data-data-validation"]
+title = "Data Validation"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:92", "crates/engine/src/cmd/data/validation.rs:57"]
+commands = ["data.validation"]
+
+[verdict."data-circle-invalid-data"]
+title = "Circle Invalid Data"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:101", "crates/engine/src/cmd/data/validation.rs:285"]
+commands = ["data.circleInvalid"]
+
+[verdict."data-consolidate"]
+title = "Consolidate"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/whatif.rs:90", "crates/engine/src/cmd/whatif/consolidate.rs:64"]
+commands = ["data.consolidate"]
+
+[verdict."data-relationships"]
+title = "Relationships"
+verdict = "ABSENT"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:215", "crates/engine/src/cmd.rs"]
+commands = ["data.relationships"]
+# not registered in crates/engine/src/cmd; catalogue row only
+
+[verdict."data-scenario-manager"]
+title = "Scenario Manager"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/whatif.rs:43", "crates/engine/src/cmd/whatif/scenarios.rs:82"]
+commands = ["data.scenarioManager"]
+
+[verdict."data-goal-seek"]
+title = "Goal Seek"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/whatif.rs:34", "crates/engine/src/cmd/whatif.rs:319"]
+commands = ["data.goalSeek"]
+
+[verdict."data-data-table"]
+title = "Data Table"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/whatif.rs:72", "crates/engine/src/cmd/whatif.rs:358"]
+commands = ["data.dataTable"]
+
+[verdict."data-forecast-sheet"]
+title = "Forecast Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/forecast.rs:41"]
+commands = ["data.forecastSheet"]
+
+[verdict."data-group"]
+title = "Group"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:105"]
+commands = ["data.group"]
+
+[verdict."data-ungroup"]
+title = "Ungroup"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:117"]
+commands = ["data.ungroup"]
+
+[verdict."data-subtotal"]
+title = "Subtotal"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/data.rs:155", "crates/engine/src/cmd/data/grouping.rs:198"]
+commands = ["data.subtotal"]
+
+[verdict."data-show-detail"]
+title = "Show Detail"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:135"]
+commands = ["data.showDetail"]
+
+[verdict."data-hide-detail"]
+title = "Hide Detail"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/data.rs:127"]
+commands = ["data.hideDetail"]
+
+[verdict."data-analyze-data"]
+title = "Analyze Data"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:225", "crates/engine/src/cmd.rs"]
+commands = ["data.analyzeData"]
+# cloud Ideas service
+
+[verdict."data-solver"]
+title = "Solver"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/solver.rs:78", "crates/engine/src/cmd/solver.rs:185"]
+commands = ["data.solver"]
+
+[verdict."data-data-analysis"]
+title = "Data Analysis"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/analysis.rs:68"]
+commands = ["data.analysisToolPak"]
+
+[verdict."review-spelling"]
+title = "Spelling"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/spelling.rs:14", "crates/engine/src/cmd/spelling.rs:124"]
+commands = ["review.spelling"]
+
+[verdict."review-thesaurus"]
+title = "Thesaurus"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/spelling.rs:17", "crates/engine/src/cmd/spelling.rs:176"]
+commands = ["review.thesaurus"]
+
+[verdict."review-workbook-statistics"]
+title = "Workbook Statistics"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:31", "crates/engine/src/cmd/review.rs:331"]
+commands = ["review.workbookStatistics"]
+
+[verdict."review-check-accessibility"]
+title = "Check Accessibility"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:45", "crates/engine/src/cmd/review.rs:341"]
+commands = ["review.checkAccessibility"]
+
+[verdict."review-smart-lookup"]
+title = "Smart Lookup"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:233", "crates/engine/src/cmd.rs"]
+commands = ["review.smartLookup"]
+# Bing cloud lookup
+
+[verdict."review-translate"]
+title = "Translate"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:234", "crates/engine/src/cmd.rs"]
+commands = ["review.translate"]
+# Microsoft cloud translator
+
+[verdict."review-new-comment"]
+title = "New Comment"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:187", "crates/engine/src/cmd/insert.rs:1416"]
+commands = ["review.newComment"]
+
+[verdict."review-delete-comment"]
+title = "Delete Comment"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:192", "crates/engine/src/cmd/insert.rs:1440"]
+commands = ["review.deleteComment"]
+
+[verdict."review-previous-comment"]
+title = "Previous Comment"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:46", "crates/engine/src/cmd/review.rs:115"]
+commands = ["review.previousComment"]
+
+[verdict."review-next-comment"]
+title = "Next Comment"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:49", "crates/engine/src/cmd/review.rs:115"]
+commands = ["review.nextComment"]
+
+[verdict."review-show-comments"]
+title = "Show Comments"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:52", "crates/engine/src/cmd/review.rs:115"]
+commands = ["review.showComments"]
+
+[verdict."review-new-note"]
+title = "New Note"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:186"]
+commands = ["review.newNote"]
+
+[verdict."review-show-hide-note"]
+title = "Show/Hide Note"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:193", "crates/engine/src/cmd/insert.rs:1449"]
+commands = ["review.showNote"]
+
+[verdict."review-show-all-notes"]
+title = "Show All Notes"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:56", "crates/engine/src/cmd/review.rs:115"]
+commands = ["review.showAllNotes"]
+
+[verdict."review-convert-to-comments"]
+title = "Convert to Comments"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:61", "crates/engine/src/cmd/review.rs:115"]
+commands = ["review.convertToComments"]
+
+[verdict."review-protect-sheet"]
+title = "Protect Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:13", "crates/engine/src/cmd/review.rs:134"]
+commands = ["review.protectSheet"]
+
+[verdict."review-unprotect-sheet"]
+title = "Unprotect Sheet"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:21", "crates/engine/src/cmd/review.rs:171"]
+commands = ["review.unprotectSheet"]
+
+[verdict."review-protect-workbook"]
+title = "Protect Workbook"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:23", "crates/engine/src/cmd/review.rs:307"]
+commands = ["review.protectWorkbook"]
+
+[verdict."review-allow-edit-ranges"]
+title = "Allow Edit Ranges"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/review.rs:34"]
+commands = ["review.allowEditRanges"]
+
+[verdict."review-show-changes"]
+title = "Show Changes"
+verdict = "NA"
+level = "read"
+evidence = ["crates/engine/src/catalog.rs:248", "crates/engine/src/cmd.rs"]
+commands = ["review.showChanges"]
+# cloud co-authoring change history
+
+[verdict."view-normal"]
+title = "Normal"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:142"]
+commands = ["view.normal"]
+
+[verdict."view-page-break-preview"]
+title = "Page Break Preview"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:157"]
+commands = ["view.pageBreakPreview"]
+
+[verdict."view-page-layout"]
+title = "Page Layout"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:148"]
+commands = ["view.pageLayout"]
+
+[verdict."view-custom-views"]
+title = "Custom Views"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:165", "crates/engine/src/cmd/extra/window.rs:70"]
+commands = ["view.customViews"]
+
+[verdict."view-ruler"]
+title = "Ruler"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:188", "crates/engine/src/cmd/extra/window.rs:22"]
+commands = ["view.ruler"]
+
+[verdict."view-formula-bar"]
+title = "Formula Bar"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:67", "crates/engine/src/cmd/view.rs:238"]
+commands = ["view.formulaBar"]
+
+[verdict."view-gridlines"]
+title = "Gridlines"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:38"]
+commands = ["view.gridlines"]
+
+[verdict."view-headings"]
+title = "Headings"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:39"]
+commands = ["view.headings"]
+
+[verdict."view-zoom"]
+title = "Zoom"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:65", "crates/engine/src/cmd/view.rs:262"]
+commands = ["view.zoom"]
+
+[verdict."view-100"]
+title = "100%"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:66"]
+commands = ["view.zoom100"]
+
+[verdict."view-zoom-to-selection"]
+title = "Zoom to Selection"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:80", "crates/engine/src/cmd/view.rs:277"]
+commands = ["view.zoomToSelection"]
+
+[verdict."view-new-window"]
+title = "New Window"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:167", "crates/engine/src/cmd/extra/window.rs:121"]
+commands = ["view.newWindow"]
+
+[verdict."view-arrange-all"]
+title = "Arrange All"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:169", "crates/engine/src/cmd/extra/window.rs:136"]
+commands = ["view.arrangeAll"]
+
+[verdict."view-freeze-panes"]
+title = "Freeze Panes"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:15", "crates/engine/src/cmd/view.rs:167"]
+commands = ["view.freezePanes"]
+
+[verdict."view-freeze-top-row"]
+title = "Freeze Top Row"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:23"]
+commands = ["view.freezeTopRow"]
+
+[verdict."view-freeze-first-column"]
+title = "Freeze First Column"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:28"]
+commands = ["view.freezeFirstColumn"]
+
+[verdict."view-unfreeze-panes"]
+title = "Unfreeze Panes"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/view.rs:33"]
+commands = ["view.unfreezePanes"]
+
+[verdict."view-split"]
+title = "Split"
+verdict = "PARTIAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:166", "crates/engine/src/cmd/extra/window.rs:116"]
+commands = ["view.split"]
+# toggles frozen panes only; no independent split panes (extra/window.rs:116, registration says "shown as frozen panes")
+
+[verdict."view-hide"]
+title = "Hide"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:177", "crates/engine/src/cmd/extra/window.rs:153"]
+commands = ["view.hideWindow"]
+
+[verdict."view-unhide"]
+title = "Unhide"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:178", "crates/engine/src/cmd/extra/window.rs:159"]
+commands = ["view.unhideWindow"]
+
+[verdict."view-switch-windows"]
+title = "Switch Windows"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:180", "crates/engine/src/cmd/extra/window.rs:175"]
+commands = ["view.switchWindows"]
+
+[verdict."view-macros"]
+title = "Macros"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:189", "crates/engine/src/cmd/extra/scripts.rs:35"]
+commands = ["view.macros"]
+
+[verdict."view-record-macro"]
+title = "Record Macro"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/macros.rs:45", "crates/engine/src/cmd/macros.rs:200"]
+commands = ["macro.record"]
+
+[verdict."automate-new-script"]
+title = "New Script"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:226", "crates/engine/src/cmd/extra/scripts.rs:21"]
+commands = ["automate.newScript"]
+
+[verdict."automate-all-scripts"]
+title = "All Scripts"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:234", "crates/engine/src/cmd/extra/scripts.rs:35"]
+commands = ["automate.allScripts"]
+
+[verdict."automate-record-actions"]
+title = "Record Actions"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:224", "crates/engine/src/cmd/extra/scripts.rs:3"]
+commands = ["automate.recordActions"]
+
+[verdict."automate-trust-scripts"]
+title = "Trust Scripts"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:245", "crates/engine/src/cmd/extra/scripts.rs:78"]
+commands = ["automate.trustScripts"]
+
+[verdict."table-design-table-name"]
+title = "Table Name"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:59", "crates/engine/src/cmd/insert.rs:541"]
+commands = ["table.rename"]
+
+[verdict."table-design-resize-table"]
+title = "Resize Table"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:191", "crates/engine/src/cmd/extra/data.rs:3"]
+commands = ["table.resize"]
+
+[verdict."table-design-summarize-with-pivottable"]
+title = "Summarize with PivotTable"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:55", "crates/engine/src/cmd/pivot/create.rs:313"]
+commands = ["table.summarizePivot"]
+
+[verdict."table-design-remove-duplicates"]
+title = "Remove Duplicates"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:192", "crates/engine/src/cmd/extra/data.rs:45"]
+commands = ["table.removeDuplicates"]
+
+[verdict."table-design-convert-to-range"]
+title = "Convert to Range"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:60", "crates/engine/src/cmd/insert.rs:583"]
+commands = ["table.convertToRange"]
+
+[verdict."table-design-insert-slicer"]
+title = "Insert Slicer"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/slicer.rs:28", "crates/engine/src/cmd/slicer.rs:101"]
+commands = ["table.insertSlicer"]
+
+[verdict."table-design-header-row"]
+title = "Header Row"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:53"]
+commands = ["table.headerRow"]
+
+[verdict."table-design-total-row"]
+title = "Total Row"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:40"]
+commands = ["table.totalRow"]
+
+[verdict."table-design-banded-rows"]
+title = "Banded Rows"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:43"]
+commands = ["table.bandedRows"]
+
+[verdict."table-design-first-column"]
+title = "First Column"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:54"]
+commands = ["table.firstColumn"]
+
+[verdict."table-design-last-column"]
+title = "Last Column"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:57"]
+commands = ["table.lastColumn"]
+
+[verdict."table-design-banded-columns"]
+title = "Banded Columns"
+verdict = "REAL"
+level = "wired"
+evidence = ["crates/engine/src/cmd/insert.rs:48"]
+commands = ["table.bandedColumns"]
+
+[verdict."table-design-table-styles"]
+title = "Table Styles"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:58", "crates/engine/src/cmd/insert.rs:519"]
+commands = ["table.style"]
+
+[verdict."chart-design-add-chart-element"]
+title = "Add Chart Element"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:37", "crates/engine/src/cmd/extra/chart.rs:26"]
+commands = ["chart.addElement"]
+
+[verdict."chart-design-quick-layout"]
+title = "Quick Layout"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:45", "crates/engine/src/cmd/extra/chart.rs:119"]
+commands = ["chart.quickLayout"]
+
+[verdict."chart-design-change-colors"]
+title = "Change Colors"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:47", "crates/engine/src/cmd/extra/chart.rs:144"]
+commands = ["chart.changeColors"]
+
+[verdict."chart-design-chart-styles"]
+title = "Chart Styles"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:98", "crates/engine/src/cmd/insert.rs:882"]
+commands = ["chart.set"]
+
+[verdict."chart-design-switch-row-column"]
+title = "Switch Row/Column"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/insert.rs:106", "crates/engine/src/cmd/insert.rs:980"]
+commands = ["chart.switchRowColumn"]
+
+[verdict."chart-design-select-data"]
+title = "Select Data"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:56", "crates/engine/src/cmd/extra/chart.rs:166"]
+commands = ["chart.selectData"]
+
+[verdict."chart-design-change-chart-type"]
+title = "Change Chart Type"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:64", "crates/engine/src/cmd/extra/chart.rs:236"]
+commands = ["chart.changeType"]
+
+[verdict."chart-design-move-chart"]
+title = "Move Chart"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:67", "crates/engine/src/cmd/extra/chart.rs:236"]
+commands = ["chart.move"]
+
+[verdict."format-format-selection"]
+title = "Format Selection"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:76", "crates/engine/src/cmd/extra/chart.rs:254"]
+commands = ["chart.formatSelection"]
+
+[verdict."format-shape-fill"]
+title = "Shape Fill"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:85", "crates/engine/src/cmd/extra/objects.rs:27"]
+commands = ["chart.shapeFill"]
+
+[verdict."format-shape-outline"]
+title = "Shape Outline"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/extra.rs:93", "crates/engine/src/cmd/extra/objects.rs:35"]
+commands = ["chart.shapeOutline"]
+
+[verdict."pivottable-analyze-field-list"]
+title = "Field List"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:82", "crates/engine/src/cmd/pivot/fields.rs:232"]
+commands = ["pivot.fieldList"]
+
+[verdict."pivottable-analyze-refresh"]
+title = "Refresh"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:180", "crates/engine/src/cmd/pivot/layout.rs:207"]
+commands = ["pivot.refresh"]
+
+[verdict."pivottable-analyze-change-data-source"]
+title = "Change Data Source"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:191", "crates/engine/src/cmd/pivot/layout.rs:231"]
+commands = ["pivot.changeSource"]
+
+[verdict."pivottable-analyze-fields-items-sets"]
+title = "Fields, Items & Sets"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:64", "crates/engine/src/cmd/pivot/fields.rs:312"]
+commands = ["pivot.calculatedField"]
+
+[verdict."pivottable-design-grand-totals"]
+title = "Grand Totals"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:150", "crates/engine/src/cmd/pivot/layout.rs:188"]
+commands = ["pivot.grandTotals"]
+
+[verdict."pivottable-design-subtotals"]
+title = "Subtotals"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:158", "crates/engine/src/cmd/pivot/layout.rs:133"]
+commands = ["pivot.subtotals"]
+
+[verdict."pivottable-design-report-layout"]
+title = "Report Layout"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:163", "crates/engine/src/cmd/pivot/layout.rs:133"]
+commands = ["pivot.reportLayout"]
+
+[verdict."pivottable-design-pivottable-styles"]
+title = "PivotTable Styles"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:172", "crates/engine/src/cmd/pivot/layout.rs:133"]
+commands = ["pivot.style"]
+
+[verdict."pivottable-analyze-add-field"]
+title = "Add Field"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:85", "crates/engine/src/cmd/pivot/fields.rs:296"]
+commands = ["pivot.addField"]
+
+[verdict."pivottable-analyze-remove-field"]
+title = "Remove Field"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:94", "crates/engine/src/cmd/pivot/fields.rs:381"]
+commands = ["pivot.removeField"]
+
+[verdict."pivottable-analyze-move-field"]
+title = "Move Field"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:103", "crates/engine/src/cmd/pivot/fields.rs:407"]
+commands = ["pivot.moveField"]
+
+[verdict."pivottable-analyze-value-field-settings"]
+title = "Value Field Settings"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:112", "crates/engine/src/cmd/pivot/fields.rs:475"]
+commands = ["pivot.valueSettings"]
+
+[verdict."pivottable-analyze-filter"]
+title = "Filter"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:120", "crates/engine/src/cmd/pivot/layout.rs:9"]
+commands = ["pivot.filter"]
+
+[verdict."pivottable-analyze-sort"]
+title = "Sort"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:121", "crates/engine/src/cmd/pivot/layout.rs:65"]
+commands = ["pivot.sort"]
+
+[verdict."pivottable-analyze-group-field"]
+title = "Group Field"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:123", "crates/engine/src/cmd/pivot/layout.rs:80"]
+commands = ["pivot.group"]
+
+[verdict."pivottable-analyze-collapse-field"]
+title = "Collapse Field"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:132", "crates/engine/src/cmd/pivot/layout.rs:99"]
+commands = ["pivot.collapse"]
+
+[verdict."pivottable-analyze-clear-all"]
+title = "Clear All"
+verdict = "REAL"
+level = "read"
+evidence = ["crates/engine/src/cmd/pivot.rs:218", "crates/engine/src/cmd/pivot/layout.rs:269"]
+commands = ["pivot.delete"]
