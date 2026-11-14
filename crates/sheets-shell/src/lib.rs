@@ -13,10 +13,13 @@ mod gsheets;
 mod native_menu;
 mod print;
 
+#[cfg(any(target_os = "macos", not(target_arch = "wasm32")))]
 use std::cell::RefCell;
+#[cfg(not(target_arch = "wasm32"))]
 use std::rc::Rc;
 
 use iridium_engine::Session;
+#[cfg(not(target_arch = "wasm32"))]
 use iridium_ui_egui::doc_windows::DocWindows;
 use iridium_ui_egui::{Services, SheetApp};
 use serde_json::json;
@@ -46,6 +49,8 @@ pub struct Launch {
 /// The app, its native window per workbook window, and (macOS) the menu bar and Finder events.
 pub struct Shell {
     app: SheetApp,
+    // Native windows are desktop-only; on wasm32 the one egui surface draws the app directly.
+    #[cfg(not(target_arch = "wasm32"))]
     windows: DocWindows,
     launch: Launch,
     #[cfg(target_os = "macos")]
@@ -107,6 +112,7 @@ impl Shell {
                 Err(e) => log::error!("control channel on port {port}: {e}"),
             }
         }
+        #[cfg(not(target_arch = "wasm32"))]
         let windows = DocWindows::new(&mut app, launch.viewport.clone(), DocWindows::platform_quits_with_last_window());
         #[cfg(target_os = "macos")]
         let inbox = {
@@ -116,6 +122,7 @@ impl Shell {
         };
         Self {
             app,
+            #[cfg(not(target_arch = "wasm32"))]
             windows,
             launch,
             #[cfg(target_os = "macos")]
@@ -168,6 +175,7 @@ impl Shell {
             apple_events::poll(&self.inbox, &mut self.app, ctx);
         }
         self.app.logic(ctx);
+        #[cfg(not(target_arch = "wasm32"))]
         self.windows.logic(&mut self.app, ctx);
         if ctx.input(|input| input.viewport().close_requested()) && self.app.printing.busy() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
@@ -187,7 +195,10 @@ impl Shell {
 
     /// Draw the app into the given region.
     pub fn ui(&mut self, ui: &mut egui::Ui) {
+        #[cfg(not(target_arch = "wasm32"))]
         self.windows.show(&mut self.app, ui);
+        #[cfg(target_arch = "wasm32")]
+        self.app.ui(ui);
     }
 
     /// Open a file path as a workbook.
@@ -245,6 +256,7 @@ fn save_prefs(app: &SheetApp, launch: &Launch) {
     }
 }
 /// Read the system clipboard through the shared handle, creating it on first use.
+#[cfg(not(target_arch = "wasm32"))]
 fn read_clipboard<T>(
     handle: &RefCell<Option<arboard::Clipboard>>,
     read: impl FnOnce(&mut arboard::Clipboard) -> Result<T, arboard::Error>,
@@ -258,9 +270,14 @@ fn read_clipboard<T>(
 
 fn services() -> Services {
     // Keep the owner alive: X11/Wayland serve clipboard data from this handle.
+    // The system clipboard is desktop-only: arboard has no wasm32 backend, and
+    // a browser tab has its own clipboard API.
+    #[cfg(not(target_arch = "wasm32"))]
     let clipboard: Rc<RefCell<Option<arboard::Clipboard>>> = Rc::default();
+    #[cfg(not(target_arch = "wasm32"))]
     let (html_clipboard, text_clipboard, image_clipboard) = (clipboard.clone(), clipboard.clone(), clipboard.clone());
     Services {
+        #[cfg(not(target_arch = "wasm32"))]
         copy_html: Some(Box::new(move |html, text| {
             let mut clipboard = clipboard.borrow_mut();
             if clipboard.is_none() {
@@ -268,12 +285,17 @@ fn services() -> Services {
             }
             clipboard.as_mut().ok_or("clipboard unavailable")?.set_html(html, Some(text)).map_err(|e| e.to_string())
         })),
+        #[cfg(not(target_arch = "wasm32"))]
         paste_html: Some(Box::new(move || read_clipboard(&html_clipboard, |clipboard| clipboard.get().html()))),
+        #[cfg(not(target_arch = "wasm32"))]
         paste_text: Some(Box::new(move || read_clipboard(&text_clipboard, |clipboard| clipboard.get_text()))),
+        #[cfg(not(target_arch = "wasm32"))]
         paste_image: Some(Box::new(move || {
             let image = read_clipboard(&image_clipboard, |clipboard| clipboard.get_image())?;
             image::RgbaImage::from_raw(u32::try_from(image.width).ok()?, u32::try_from(image.height).ok()?, image.bytes.into_owned())
         })),
+        // The blocking rfd::FileDialog doesn't exist on wasm32: the pickers stay None there.
+        #[cfg(not(target_arch = "wasm32"))]
         pick_open: Some(Box::new(|| {
             rfd::FileDialog::new()
                 .add_filter("Spreadsheets", &["xlsx", "xlsm", "xls", "xlsb", "ods", "csv", "tsv", "txt", "slk", "json"])
@@ -285,12 +307,14 @@ fn services() -> Services {
                 .pick_file()
                 .and_then(|p| p.to_str().map(str::to_string))
         })),
+        #[cfg(not(target_arch = "wasm32"))]
         pick_picture: Some(Box::new(|| {
             rfd::FileDialog::new()
                 .add_filter("Pictures (PNG, JPEG)", &["png", "jpg", "jpeg"])
                 .pick_file()
                 .and_then(|p| p.to_str().map(str::to_string))
         })),
+        #[cfg(not(target_arch = "wasm32"))]
         pick_save: Some(Box::new(|suggested: &str| {
             let path = std::path::Path::new(suggested);
             let stem = path.file_stem().and_then(std::ffi::OsStr::to_str).unwrap_or("Book1").to_string();

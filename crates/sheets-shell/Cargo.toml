@@ -21,7 +21,7 @@ image = { workspace = true }
 chrono = { workspace = true }
 craft-print = { git = "https://github.com/ngjordan/craft-libs", rev = "04428cee1e5bb2b85c3b6537aeb10ba0da228ff9" }
 rfd = { workspace = true }
-arboard = { workspace = true, features = ["image-data"] }
+
 iridium-mcp = { workspace = true }
 getrandom = "0.4"
 
@@ -41,3 +41,8 @@ objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std
 [[test]]
 name = "mac_menu_appkit"
 harness = false
+
+# The desktop clipboard. A browser tab has its own clipboard API and
+# arboard has no wasm32 backend.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+arboard = { workspace = true, features = ["image-data"] }
