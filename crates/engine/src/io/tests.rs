@@ -51,11 +51,17 @@ fn save_keeps_the_destination_access_restrictions() {
     write_file(dest.to_str().unwrap(), b"v2").unwrap();
     let mode = std::fs::metadata(&dest).unwrap().permissions().mode() & 0o777;
     assert_eq!(mode, 0o600);
-    // And a brand-new file is created with the restrictive, not permissive, default.
+    // And a brand-new file takes the usual mode, which is the caller's umask
+    // and not a fixed one: the same rule Docs follows. The test compares it
+    // with a probe file created the same way, so it says the same thing
+    // whatever the umask is.
     let fresh = dir.join("new.xlsx");
     write_file(fresh.to_str().unwrap(), b"v").unwrap();
+    let probe = dir.join("probe");
+    std::fs::write(&probe, b"p").unwrap();
     let mode = std::fs::metadata(&fresh).unwrap().permissions().mode() & 0o777;
-    assert!(mode & 0o022 == 0, "mode {mode:o}");
+    let probe_mode = std::fs::metadata(&probe).unwrap().permissions().mode() & 0o777;
+    assert_eq!(mode, probe_mode, "a new file takes the umask's mode, not a wider one");
     let _ = std::fs::remove_dir_all(&dir);
 }
 
