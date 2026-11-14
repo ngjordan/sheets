@@ -39,12 +39,12 @@ body with a transparent margin.
 | `iridium-sheets-macos-512.png` | Runtime Dock icon on macOS (for `apps/iridium-sheets` to embed) |
 | `iridium-sheets.icns` | macOS bundle icon (`CFBundleIconFile`) |
 | `iridium-sheets.ico` | Windows exe icon, 16–256 px (embedded by `apps/iridium-sheets/build.rs`) |
-| `hicolor/<size>/apps/ph.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
-| `hicolor/scalable/apps/ph.sheets.svg` | Linux scalable icon |
+| `hicolor/<size>/apps/ph.iridium.sheets.png` | Linux icon theme, 16–512 px; the 256 px one is also the runtime window icon on Windows and Linux |
+| `hicolor/scalable/apps/ph.iridium.sheets.svg` | Linux scalable icon |
 | `LICENSE.txt` | MIT OR Apache-2.0 |
 
-The app ID is `ph.sheets`. It's used for the hicolor icon names, the Wayland app
-ID and `packaging/linux/ph.sheets.desktop`.
+The app ID is `ph.iridium.sheets`. It's used for the hicolor icon names, the Wayland app
+ID and `packaging/linux/ph.iridium.sheets.desktop`.
 
 ## Regenerate
 

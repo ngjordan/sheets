@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/ph.sheets.png" width="128" height="128" alt="Sheets icon: a spreadsheet page on a green tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/ph.iridium.sheets.png" width="128" height="128" alt="Sheets icon: a spreadsheet page on a green tile">
 </p>
 
 <h1 align="center">Sheets</h1>

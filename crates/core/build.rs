@@ -10,7 +10,7 @@ use std::{env, fs, path::PathBuf};
 const DEFAULTS: &[(&str, &str)] = &[
     ("APP_NAME", "Sheets"),
     ("APP_SLUG", "iridium-sheets"),
-    ("APP_ID", "ph.sheets"),
+    ("APP_ID", "ph.iridium.sheets"),
     ("APP_VENDOR", "Iridium Technologies, Inc."),
     ("APP_HOMEPAGE", "https://github.com/ngjordan/iridium-sheets"),
 ];
