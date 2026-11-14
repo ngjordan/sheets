@@ -10,4 +10,4 @@
 
 **Evidence:** 262 verdict(s) rest on a handler that was read; 32 rest on the command being registered only.
 
-Catalogue rows: 302. Verdicts recorded: 302. Registry ids: 403.
+Catalogue rows: 302. Verdicts recorded: 302. Registry ids: 402.
