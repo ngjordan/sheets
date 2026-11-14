@@ -8,6 +8,6 @@
 
 **Catalogue coverage:** 286 (97.3 %) of 294 rows are works or partial; 272 (92.5 %) works outright; **0 (0.0 %) unaudited**.
 
-**Evidence:** 222 verdict(s) rest on a handler that was read; 72 rest on the command being registered only.
+**Evidence:** 262 verdict(s) rest on a handler that was read; 32 rest on the command being registered only.
 
 Catalogue rows: 302. Verdicts recorded: 302. Registry ids: 403.

@@ -52,9 +52,10 @@ commands = ["file.exportPdf"]
 [verdict."file-csv"]
 title = "CSV"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/file.rs:16"]
+level = "read"
+evidence = ["crates/engine/src/cmd/file.rs:186"]
 commands = ["file.exportCsv"]
+note = "export body read: path required, appends .csv, values=true exports computed values; exportCsv closure not opened"
 
 [verdict."file-web-page"]
 title = "Web Page"
@@ -220,23 +221,26 @@ commands = ["home.fontColor"]
 [verdict."home-top-align"]
 title = "Top Align"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:103"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:606"]
 commands = ["home.alignTop"]
+note = "valign body read: apply_style sets align.v"
 
 [verdict."home-middle-align"]
 title = "Middle Align"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:104"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:606"]
 commands = ["home.alignMiddle"]
+note = "valign body read: apply_style sets align.v"
 
 [verdict."home-bottom-align"]
 title = "Bottom Align"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:105"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:606"]
 commands = ["home.alignBottom"]
+note = "valign body read: apply_style sets align.v"
 
 [verdict."home-orientation"]
 title = "Orientation"
@@ -248,23 +252,26 @@ commands = ["home.orientation"]
 [verdict."home-align-left"]
 title = "Align Left"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:95"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:599"]
 commands = ["home.alignLeft"]
+note = "halign body read: sets align.h, clicking the active alignment again returns to General"
 
 [verdict."home-center"]
 title = "Center"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:99"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:599"]
 commands = ["home.alignCenter"]
+note = "halign body read"
 
 [verdict."home-align-right"]
 title = "Align Right"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:101"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:599"]
 commands = ["home.alignRight"]
+note = "halign body read"
 
 [verdict."home-decrease-indent"]
 title = "Decrease Indent"
@@ -290,23 +297,26 @@ commands = ["home.wrapText"]
 [verdict."home-merge-center"]
 title = "Merge & Center"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:131"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:635"]
 commands = ["home.mergeCenter"]
+note = "merge body read (target ranges, edit with spill check, merge-and-center variant)"
 
 [verdict."home-merge-across"]
 title = "Merge Across"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:132"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:635"]
 commands = ["home.mergeAcross"]
+note = "merge body read"
 
 [verdict."home-merge-cells"]
 title = "Merge Cells"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:133"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:635"]
 commands = ["home.mergeCells"]
+note = "merge body read"
 
 [verdict."home-unmerge-cells"]
 title = "Unmerge Cells"
@@ -332,30 +342,34 @@ commands = ["home.accounting"]
 [verdict."home-percent-style"]
 title = "Percent Style"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:146"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:733"]
 commands = ["home.percent"]
+note = "set_fmt body read: applies NumFmt code to the range style"
 
 [verdict."home-comma-style"]
 title = "Comma Style"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:147"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:733"]
 commands = ["home.comma"]
+note = "set_fmt body read"
 
 [verdict."home-increase-decimal"]
 title = "Increase Decimal"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:148"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:804"]
 commands = ["home.increaseDecimal"]
+note = "decimals body read: adjust_decimals on the active cell format then set_fmt"
 
 [verdict."home-decrease-decimal"]
 title = "Decrease Decimal"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:149"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format.rs:804"]
 commands = ["home.decreaseDecimal"]
+note = "decimals body read"
 
 [verdict."home-conditional-formatting"]
 title = "Conditional Formatting"
@@ -409,9 +423,10 @@ commands = ["home.insertCells"]
 [verdict."home-insert-sheet-rows"]
 title = "Insert Sheet Rows"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/sheet.rs:22"]
+level = "read"
+evidence = ["crates/engine/src/cmd/sheet.rs:284"]
 commands = ["home.insertRows"]
+note = "insert_lines body read: sheet-end limit, protection check, push-off check, then edit"
 
 [verdict."home-insert-sheet-columns"]
 title = "Insert Sheet Columns"
@@ -493,30 +508,34 @@ commands = ["home.defaultWidth"]
 [verdict."home-hide-rows"]
 title = "Hide Rows"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:182"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format/sizes.rs:222"]
 commands = ["home.hideRows"]
+note = "hide body read (line targets, marks hidden)"
 
 [verdict."home-hide-columns"]
 title = "Hide Columns"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:185"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format/sizes.rs:222"]
 commands = ["home.hideColumns"]
+note = "hide body read"
 
 [verdict."home-unhide-rows"]
 title = "Unhide Rows"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:189"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format/sizes.rs:222"]
 commands = ["home.unhideRows"]
+note = "hide body read: on=false reveals hidden neighbours of a single line; unhide closure args not opened"
 
 [verdict."home-unhide-columns"]
 title = "Unhide Columns"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/format.rs:198"]
+level = "read"
+evidence = ["crates/engine/src/cmd/format/sizes.rs:222"]
 commands = ["home.unhideColumns"]
+note = "hide body read; unhide closure args not opened"
 
 [verdict."home-hide-sheet"]
 title = "Hide Sheet"
@@ -584,30 +603,34 @@ commands = ["formulas.autoSum"]
 [verdict."home-fill-down"]
 title = "Fill Down"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:124"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit/fill.rs:5"]
 commands = ["edit.fillDown"]
+note = "fill_dir body read: whole rows/cols fill only within used range"
 
 [verdict."home-fill-right"]
 title = "Fill Right"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:125"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit/fill.rs:5"]
 commands = ["edit.fillRight"]
+note = "fill_dir body read (shared with fill down)"
 
 [verdict."home-fill-up"]
 title = "Fill Up"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:126"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit/fill.rs:5"]
 commands = ["edit.fillUp"]
+note = "fill_dir body read (shared with fill down)"
 
 [verdict."home-fill-left"]
 title = "Fill Left"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:127"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit/fill.rs:5"]
 commands = ["edit.fillLeft"]
+note = "fill_dir body read (shared with fill down)"
 
 [verdict."home-series"]
 title = "Series"
@@ -626,51 +649,58 @@ commands = ["edit.flashFill"]
 [verdict."home-clear-all"]
 title = "Clear All"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:115"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:247"]
 commands = ["edit.clearAll"]
+note = "clear() body started (edit.rs:247: target ranges, checkbox two-pass delete); mode \"all\" branch read only for contents"
 
 [verdict."home-clear-formats"]
 title = "Clear Formats"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:116"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:247"]
 commands = ["edit.clearFormats"]
+note = "clear() body started (edit.rs:247: target ranges, checkbox two-pass delete); mode \"formats\" branch read only for contents"
 
 [verdict."home-clear-contents"]
 title = "Clear Contents"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:117"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:247"]
 commands = ["edit.clearContents"]
+note = "clear() body started (edit.rs:247: target ranges, checkbox two-pass delete); mode \"contents\" branch read only for contents"
 
 [verdict."home-clear-comments"]
 title = "Clear Comments"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:120"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:247"]
 commands = ["edit.clearComments"]
+note = "clear() body started (edit.rs:247: target ranges, checkbox two-pass delete); mode \"comments\" branch read only for contents"
 
 [verdict."home-clear-hyperlinks"]
 title = "Clear Hyperlinks"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:123"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit.rs:247"]
 commands = ["edit.clearHyperlinks"]
+note = "clear() body started (edit.rs:247: target ranges, checkbox two-pass delete); mode \"hyperlinks\" branch read only for contents"
 
 [verdict."home-sort-a-to-z"]
 title = "Sort A to Z"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/data.rs:40"]
+level = "read"
+evidence = ["crates/engine/src/cmd/data/sort.rs:31"]
 commands = ["data.sortAscending"]
+note = "quick_sort body read: sorts target range by one column, guesses header row"
 
 [verdict."home-sort-z-to-a"]
 title = "Sort Z to A"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/data.rs:43"]
+level = "read"
+evidence = ["crates/engine/src/cmd/data/sort.rs:31"]
 commands = ["data.sortDescending"]
+note = "quick_sort body read: sorts target range by one column, guesses header row"
 
 [verdict."home-custom-sort"]
 title = "Custom Sort"
@@ -717,9 +747,10 @@ commands = ["edit.replace"]
 [verdict."home-go-to"]
 title = "Go To"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/edit.rs:78"]
+level = "read"
+evidence = ["crates/engine/src/cmd/edit/go_to.rs:13"]
 commands = ["edit.goTo"]
+note = "go_to body read: reference or range param, named-range list mode, selects areas on target sheet"
 
 [verdict."home-go-to-special"]
 title = "Go To Special"
@@ -1041,9 +1072,10 @@ commands = ["pageLayout.scaleToFit"]
 [verdict."page-layout-view-gridlines"]
 title = "View Gridlines"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:38"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:195"]
 commands = ["view.gridlines"]
+note = "sheet_flag body read: sets sheet.show_gridlines"
 
 [verdict."page-layout-print-gridlines"]
 title = "Print Gridlines"
@@ -1055,9 +1087,10 @@ commands = ["pageLayout.printGridlines"]
 [verdict."page-layout-view-headings"]
 title = "View Headings"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:39"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:195"]
 commands = ["view.headings"]
+note = "sheet_flag body read: sets sheet.show_headings"
 
 [verdict."page-layout-print-headings"]
 title = "Print Headings"
@@ -1343,16 +1376,18 @@ commands = ["data.geography"]
 [verdict."data-sort-a-to-z"]
 title = "Sort A to Z"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/data.rs:40"]
+level = "read"
+evidence = ["crates/engine/src/cmd/data/sort.rs:31"]
 commands = ["data.sortAscending"]
+note = "quick_sort body read: sorts target range by one column, guesses header row"
 
 [verdict."data-sort-z-to-a"]
 title = "Sort Z to A"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/data.rs:43"]
+level = "read"
+evidence = ["crates/engine/src/cmd/data/sort.rs:31"]
 commands = ["data.sortDescending"]
+note = "quick_sort body read: sorts target range by one column, guesses header row"
 
 [verdict."data-sort"]
 title = "Sort"
@@ -1712,16 +1747,18 @@ commands = ["view.formulaBar"]
 [verdict."view-gridlines"]
 title = "Gridlines"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:38"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:195"]
 commands = ["view.gridlines"]
+note = "sheet_flag body read: sets sheet.show_gridlines"
 
 [verdict."view-headings"]
 title = "Headings"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:39"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:195"]
 commands = ["view.headings"]
+note = "sheet_flag body read: sets sheet.show_headings"
 
 [verdict."view-zoom"]
 title = "Zoom"
@@ -1733,9 +1770,10 @@ commands = ["view.zoom"]
 [verdict."view-100"]
 title = "100%"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:66"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:262"]
 commands = ["view.zoom100"]
+note = "zoom body read: clamps percent 10-400 and sets sheet.zoom; view.zoom100 calls it with 100"
 
 [verdict."view-zoom-to-selection"]
 title = "Zoom to Selection"
@@ -1768,16 +1806,18 @@ commands = ["view.freezePanes"]
 [verdict."view-freeze-top-row"]
 title = "Freeze Top Row"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:23"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:188"]
 commands = ["view.freezeTopRow"]
+note = "set_freeze body read: sets sheet.freeze to (1,0) / (0,1)"
 
 [verdict."view-freeze-first-column"]
 title = "Freeze First Column"
 verdict = "REAL"
-level = "wired"
-evidence = ["crates/engine/src/cmd/view.rs:28"]
+level = "read"
+evidence = ["crates/engine/src/cmd/view.rs:188"]
 commands = ["view.freezeFirstColumn"]
+note = "set_freeze body read: sets sheet.freeze to (1,0) / (0,1)"
 
 [verdict."view-unfreeze-panes"]
 title = "Unfreeze Panes"
