@@ -546,3 +546,13 @@ fn a_rule_with_an_unknown_type_operator_or_error_style_is_refused() {
     assert_eq!(sh.validations.len(), 3);
     assert!(check_validation(&s.doc().unwrap().wb, 0, CellRef::parse("A2").unwrap(), "0").is_some());
 }
+
+#[test]
+fn filter_values_quotes_literal_blanks_text() {
+    let mut s = Session::new();
+    s.new_workbook();
+    s.execute("range.setValues", json!({"range": "A1", "values": [["h"], ["(Blanks)"], [null]]})).unwrap();
+    s.execute("data.filter", json!({"range": "A1:A3"})).unwrap();
+    let vals: Vec<String> = filter_values(&s.doc().unwrap().wb, 0, 0).into_iter().map(|(t, _)| t).collect();
+    assert_eq!(vals, vec!["\"(Blanks)\"", "(Blanks)"]);
+}

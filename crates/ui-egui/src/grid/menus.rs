@@ -3,24 +3,33 @@ use super::geo::Geo;
 use super::tables::filter_table_range;
 use super::{Arc, Drag, FillTag, RangeRef, Rect, Sense, Sheet, SheetApp, Stroke, Tokens, col_to_letters, json, pos2, vec2};
 
+const FILTER_MENU_W: f32 = 230.0;
+/// Popup origin relative to the header button: right-aligned under it, 10 below.
+const FILTER_MENU_OFFSET: egui::Vec2 = vec2(50.0 - FILTER_MENU_W, 10.0);
+
+/// Runs a popup command; a refusal (e.g. protected sheet) is shown and keeps the popup open.
+fn run_or_report(app: &mut SheetApp, id: &str, p: serde_json::Value) -> bool {
+    let r = app.run(id, p);
+    if let Err(e) = &r {
+        app.message = Some(("Filter".into(), crate::clean_error(e)));
+    }
+    r.is_ok()
+}
+
 /// Draws the filter-header popup: sort, search/select-all, apply/clear, a lazily installed table autofilter, new-open search focus and dismissal.
 pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_open: bool) {
     let Some((col, row, at)) = app.grid.filter_menu else { return };
     let Some(d) = app.session.active() else { return };
     let wb = d.wb.clone();
     let si = wb.active_sheet();
-    let Some(sh) = wb.sheet(si) else { return };
     let _ = geo;
     // Tables get an autofilter on demand.
-    let table_range = filter_table_range(sh, col, row);
-    if sh.autofilter.is_none()
-        && let Some(r) = table_range
-    {
-        let _ = app.session.run("data.filter", json!({"range": r.a1()}));
-        let _ = app.session.run("data.filter", json!({"range": r.a1()}));
-        if let Some(sh2) = app.session.active().and_then(|d| d.wb.active()).map(|s| s.autofilter.is_some())
-            && !sh2
-        {
+    let table_range = wb.sheet(si).and_then(|sh| filter_table_range(sh, col, row));
+    let has_filter = wb.sheet(si).is_some_and(|sh| sh.autofilter.is_some());
+    if !has_filter && let Some(r) = table_range {
+        // Not `data.filter`: on a table it toggles the header buttons, and twice is a no-op. A protected sheet refuses filtering.
+        let allowed = wb.sheet(si).is_some_and(|sh| sh.protection.as_ref().is_none_or(|p| p.autofilter));
+        if allowed {
             let d = app.session.active_mut();
             if let Some(d) = d {
                 let wbm = Arc::make_mut(&mut d.wb);
@@ -30,7 +39,10 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
             }
         }
     }
+    // The install changed the workbook, so take a fresh copy of it, and read
+    // the sheet from that: the old one is borrowed for as long as it is held.
     let wb = app.session.active().map(|d| d.wb.clone()).unwrap_or(wb);
+    let Some(sh) = wb.sheet(si) else { return };
     let values = iridium_engine::cmd::data::filter_values(&wb, si, col);
     let key = egui::Id::unique(("filter_sel", col));
     let search_key = egui::Id::unique(("filter_search", col));
@@ -41,22 +53,24 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
     let on_button = ui.ctx().memory(|m| m.focused()).is_some_and(|f| buttons.contains(&f));
     let enter = !on_button && ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
     let mut close = false;
-    let area = egui::Area::new(egui::Id::unique("filter_menu")).fixed_pos(at + vec2(-180.0, 10.0)).order(egui::Order::Foreground);
+    let area = egui::Area::new(egui::Id::unique("filter_menu")).fixed_pos(at + FILTER_MENU_OFFSET).order(egui::Order::Foreground);
     let response = area.show(ui.ctx(), |ui| {
         egui::Frame::popup(ui.style()).show(ui, |ui| {
-            ui.set_width(230.0);
+            ui.set_width(FILTER_MENU_W);
             let ascending = ui.button("↑  Sort Ascending");
             if ascending.clicked() {
-                let _ = app.run("data.sortAscending", json!({"column": col_to_letters(col)}));
-                close = true;
+                close = run_or_report(app, "data.sortAscending", json!({"column": col_to_letters(col)}));
             }
             let descending = ui.button("↓  Sort Descending");
             if descending.clicked() {
-                let _ = app.run("data.sortDescending", json!({"column": col_to_letters(col)}));
-                close = true;
+                close = run_or_report(app, "data.sortDescending", json!({"column": col_to_letters(col)}));
             }
             ui.separator();
-            ui.label(egui::RichText::new("Filter").strong());
+            let shown = sh.autofilter.as_ref().filter(|af| !af.criteria.is_empty()).map(|af| {
+                let data = af.range.start.row + 1..=af.range.end.row;
+                (data.clone().filter(|r| !sh.is_row_filtered(*r)).count(), data.count())
+            });
+            ui.label(egui::RichText::new(shown.map_or("Filter".into(), |(n, m)| format!("Filter · {n} of {m} rows"))).strong());
             let mut checks: Vec<(String, bool)> = ui.ctx().data_mut(|d| d.get_temp::<Vec<(String, bool)>>(key)).unwrap_or(values.clone());
             // A search narrows the list; Select All and Apply then only cover the matches.
             let mut search: String = ui.ctx().data_mut(|d| d.get_temp(search_key)).unwrap_or_default();
@@ -66,7 +80,7 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
             }
             let needle = search.trim().to_lowercase();
             let matches = |v: &str| needle.is_empty() || v.to_lowercase().contains(&needle);
-            let all = checks.iter().filter(|(v, _)| matches(v)).all(|(_, b)| *b);
+            let all = checks.iter().any(|(v, _)| matches(v)) && checks.iter().filter(|(v, _)| matches(v)).all(|(_, b)| *b);
             let mut all_new = all;
             let label = if needle.is_empty() { "(Select All)" } else { "(Select All Search Results)" };
             if ui.checkbox(&mut all_new, label).changed() {
@@ -90,8 +104,7 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
             ui.horizontal(|ui| {
                 let clear = ui.button("Clear Filter");
                 if clear.clicked() {
-                    let _ = app.run("data.filterBy", json!({"column": col_to_letters(col), "clear": true}));
-                    close = true;
+                    close = run_or_report(app, "data.filterBy", json!({"column": col_to_letters(col), "clear": true}));
                 }
                 // Nothing checked would hide every row, so Enter (unlike a click on Apply) does nothing then.
                 let any = checks.iter().any(|(_, on)| *on);
@@ -99,14 +112,18 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
                 ui.ctx().data_mut(|d| d.insert_temp(buttons_key, vec![ascending.id, descending.id, clear.id, apply.id]));
                 if apply.clicked() || (enter && any) {
                     let blanks = checks.iter().any(|(v, on)| v == "(Blanks)" && *on);
-                    let vals: Vec<String> = checks.iter().filter(|(v, on)| *on && v != "(Blanks)").map(|(v, _)| v.clone()).collect();
+                    // The engine quotes a cell whose text is literally (Blanks); send it unquoted.
+                    let vals: Vec<String> = checks
+                        .iter()
+                        .filter(|(v, on)| *on && v != "(Blanks)")
+                        .map(|(v, _)| if v == "\"(Blanks)\"" { "(Blanks)".into() } else { v.clone() })
+                        .collect();
                     let p = if checks.iter().all(|(_, b)| *b) {
                         json!({"column": col_to_letters(col), "clear": true})
                     } else {
                         json!({"column": col_to_letters(col), "values": vals, "blanks": blanks})
                     };
-                    let _ = app.run("data.filterBy", p);
-                    close = true;
+                    close = run_or_report(app, "data.filterBy", p);
                 }
             });
         });
@@ -512,6 +529,7 @@ pub(super) fn header_menu(app: &mut SheetApp, ui: &mut egui::Ui, was_open: bool)
                     ("Hide", "home.hideColumns"),
                     ("Unhide", "home.unhideColumns"),
                     ("Sort A to Z", "data.sortAscending"),
+                    ("Sort Z to A", "data.sortDescending"),
                     ("Group", "data.group"),
                 ]
             };

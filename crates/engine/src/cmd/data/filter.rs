@@ -313,7 +313,9 @@ pub fn filter_values(wb: &Workbook, sheet: usize, col: u32) -> Vec<(String, bool
             _ => true,
         };
         let key = if blank { sort_key(&Value::Empty) } else { sort_key(&v) };
-        seen.entry((key, t)).or_insert(on);
+        // Text that is literally "(Blanks)" is quoted so it can't pass for the blank-cells entry.
+        let shown = if !blank && t.eq_ignore_ascii_case("(Blanks)") { format!("\"{t}\"") } else { t };
+        seen.entry((key, shown)).or_insert(on);
     }
     seen.into_iter().map(|((_, t), on)| (t, on)).collect()
 }
