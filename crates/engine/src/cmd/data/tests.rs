@@ -556,3 +556,30 @@ fn filter_values_quotes_literal_blanks_text() {
     let vals: Vec<String> = filter_values(&s.doc().unwrap().wb, 0, 0).into_iter().map(|(t, _)| t).collect();
     assert_eq!(vals, vec!["\"(Blanks)\"", "(Blanks)"]);
 }
+
+#[test]
+fn an_installed_filter_stays_put_and_is_undoable() {
+    let mut s = Session::new();
+    s.new_workbook();
+    s.execute("range.setValues", json!({"range": "A1", "values": [["h"], ["v"]]})).unwrap();
+    s.execute("data.filter", json!({"range": "A1:B2"})).unwrap();
+    assert!(s.doc().unwrap().wb.active().unwrap().autofilter.is_some());
+    // Installing again leaves the filter where it is: the toggle would take it
+    // off, and the filter popup asks for the install.
+    s.execute("data.filter", json!({"range": "A1:B2", "install": true})).unwrap();
+    assert!(s.doc().unwrap().wb.active().unwrap().autofilter.is_some());
+    // One undo step per install, so undo takes the filter off.
+    s.execute("edit.undo", json!({})).unwrap();
+    assert!(s.doc().unwrap().wb.active().unwrap().autofilter.is_some());
+    s.execute("edit.undo", json!({})).unwrap();
+    assert!(s.doc().unwrap().wb.active().unwrap().autofilter.is_none());
+}
+
+#[test]
+fn a_protected_sheet_refuses_the_install() {
+    let mut s = Session::new();
+    s.new_workbook();
+    s.execute("review.protectSheet", json!({})).unwrap();
+    assert!(s.execute("data.filter", json!({"range": "A1:B2", "install": true})).is_err());
+    assert!(s.doc().unwrap().wb.active().unwrap().autofilter.is_none());
+}

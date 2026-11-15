@@ -27,17 +27,11 @@ pub(super) fn filter_menu(app: &mut SheetApp, ui: &mut egui::Ui, geo: &Geo, was_
     let table_range = wb.sheet(si).and_then(|sh| filter_table_range(sh, col, row));
     let has_filter = wb.sheet(si).is_some_and(|sh| sh.autofilter.is_some());
     if !has_filter && let Some(r) = table_range {
-        // Not `data.filter`: on a table it toggles the header buttons, and twice is a no-op. A protected sheet refuses filtering.
-        let allowed = wb.sheet(si).is_some_and(|sh| sh.protection.as_ref().is_none_or(|p| p.autofilter));
-        if allowed {
-            let d = app.session.active_mut();
-            if let Some(d) = d {
-                let wbm = Arc::make_mut(&mut d.wb);
-                if let Some(s) = wbm.sheet_mut(si) {
-                    s.autofilter = Some(iridium_engine::model::AutoFilter { range: r, criteria: vec![] });
-                }
-            }
-        }
+        // `install` puts the filter on without toggling: on a table the toggle
+        // flips the header buttons instead, and twice is a no-op. The engine
+        // refuses a protected sheet and records the change, so undo takes the
+        // filter back off.
+        run_or_report(app, "data.filter", json!({"range": r.a1(), "install": true}));
     }
     // The install changed the workbook, so take a fresh copy of it, and read
     // the sheet from that: the old one is borrowed for as long as it is held.

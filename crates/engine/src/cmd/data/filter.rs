@@ -9,6 +9,13 @@ use super::{
 pub(super) fn toggle_filter(s: &mut Session, p: &Json) -> Result<Json> {
     let (sheet, r) = data_target(s, p, "data.filter")?;
     crate::cmd::refuse_unless_allowed(s, sheet, "Filtering", |p| p.autofilter)?;
+    // `install` puts the filter on and leaves it there: on a table the toggle
+    // would flip the header buttons instead, and on a sheet that already has a
+    // filter it would take it off again. The UI opens the filter popup on a
+    // table that has no filter yet, so it asks for the install.
+    if bool_param(p, "install").unwrap_or(false) {
+        return install_filter(s, p);
+    }
     // The active cell belongs to the active sheet: on another sheet the table is the one at `range`.
     let at = if sheet == s.doc()?.wb.active_sheet() { s.doc()?.selection.active } else { r.start };
     let has = s.doc()?.wb.sheet(sheet).is_some_and(|sh| sh.autofilter.is_some());

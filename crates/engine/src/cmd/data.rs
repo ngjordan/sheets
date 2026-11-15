@@ -55,7 +55,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Filter",
             ["Data", "Sort & Filter"],
             Some("Ctrl+Shift+L"),
-            "{range?} toggles AutoFilter on the current region",
+            "{range?} toggles AutoFilter on the current region, {install?: bool} puts it on without toggling",
             has_doc,
             toggle_filter
         ),
